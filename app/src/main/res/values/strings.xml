@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">SEM_APP</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string-array name="cls">
+        <item>First Year</item>
+        <item>Second Year</item>
+        <item>Third Year</item>
+        <item>Fourth Year</item>
+    </string-array>
+
+    <string-array name="branch">
+        <item>Computer Engineering</item>
+        <item>IT Engineering</item>
+        <item>ENTC Engineering</item>
+        <item>Civil Engineering</item>
+        <item>Mechanical Engineering</item>
+        <item>Electrical Engineering</item>
+        <item>Printing Engineering</item>
+    </string-array>
+    <string-array name="sportsList">
+
+        <item>Cricket</item>
+        <item>Football</item>
+        <item>Volleyball</item>
+        <item>Basketball</item>
+        <item>Badminton</item>
+        <item>Dodgeball</item>
+        <item>Kho-Kho</item>
+        <item>Kabaddi</item>
+        <item>Chess</item>
+        <item>Carrom</item>
+
+    </string-array>
+    <string name="menu_first">Tournaments</string>
+    <string name="menu_second">My Profile</string>
+    <string name="menu_third">Logout</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
