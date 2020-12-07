@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -18,11 +19,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -36,6 +41,7 @@ public class TournamentViewFragment extends Fragment {
     String selectsports;
     Button button;
     Map map;
+    ArrayList allusers = new ArrayList();
 
 
 
@@ -94,183 +100,192 @@ public class TournamentViewFragment extends Fragment {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String ID = firebaseUser.getUid();
 
+        CollectionReference colref=firebaseFirestore.collection("Users");
+        colref.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                allusers.clear();
 
-        CollectionReference collref =firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-          Query query=collref.whereEqualTo("Tournament Name", tournamentname);
-          query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                for(DocumentSnapshot Snapshot:value)
+                {
+
+                    allusers.add(Snapshot.getId());
+
+                }
+              /*  if(allusers.contains(ID))
+                {
+                    allusers.remove(ID);
+                }*/
+
+                for(Object i:allusers) {
+
+                   CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
+                    Query query=collref.whereEqualTo("Tournament Name", tournamentname);
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                        if (task.isSuccessful()) {
+                            if (task.isSuccessful()) {
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
 
 
                                     map=document.getData();
-                                String name = map.get("Tournament Name").toString();
+                                    String name = map.get("Tournament Name").toString();
 
-                                Tname.setText(name);
+                                    Tname.setText(name);
+
+                                }
+                            } else {
+
+                                Log.d(TAG,"invalid");
+
 
                             }
-                        } else {
-
-                            Log.d(TAG,"invalid");
-
-
                         }
+                    });
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+
+                                    map=document.getData();
+
+                                    String mname = map.get("Tournament Manager Name").toString();
+
+                                    TMname.setText(mname);
+
+                                }
+                            } else {
+
+                                Log.d(TAG,"invalid");
+
+
+                            }
                         }
-                });
+
+
+                    });
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                    map=document.getData();
+
+                                    String mnumber = map.get("Tournament Manager Phone Number").toString();
+
+                                    TMnumber.setText(mnumber);
+
+                                }
+                            } else {
+
+                                Log.d(TAG,"invalid");
+
+
+                            }
+                        }
+
+
+                    });
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                    map=document.getData();
+
+                                    String host = map.get("Tournament Host").toString();
+
+                                    Thost.setText(host);
+
+                                }
+                            } else {
+
+                                Log.d(TAG,"invalid");
+
+
+                            }
+                        }
+
+
+                    });
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+
+                                    map=document.getData();
+
+                                    String sdate = map.get("Starting Date").toString();
+
+                                    Tstart.setText(sdate);
+                                }
+                            } else {
+
+                                Log.d(TAG,"invalid");
+
+
+                            }
+                        }
+
+
+                    });
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+
+                                    map=document.getData();
+
+                                    String edate = map.get("Ending Date").toString();
+
+                                    Tend.setText(edate);
+
+                                }
+                            } else {
+
+                                Log.d(TAG,"invalid");
+
+
+                            }
+                        }
+
+
+                    });
 
 
 
-       // CollectionReference collref1 =firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-       // Query query1=collref.whereEqualTo("Tournament Name", tournamentname);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                if (task.isSuccessful()) {
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                        map=document.getData();
-
-                        String mname = map.get("Tournament Manager Name").toString();
-
-                        TMname.setText(mname);
-
-                    }
-                } else {
-
-                    Log.d(TAG,"invalid");
-
+                    ////////////////////////////////////////////////////////////////////
 
                 }
+
+
             }
-
-
         });
 
 
-        CollectionReference collref2 =firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-        Query query2=collref.whereEqualTo("Tournament Name", tournamentname);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                if (task.isSuccessful()) {
+        //////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-                        map=document.getData();
-
-                        String mnumber = map.get("Tournament Manager Phone Number").toString();
-
-                        TMnumber.setText(mnumber);
-
-                    }
-                } else {
-
-                    Log.d(TAG,"invalid");
-
-
-                }
-            }
-
-
-        });
-
-        /////////////////////////////////////////////////////////
-
-        CollectionReference collref3 =firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-        Query query3=collref.whereEqualTo("Tournament Name", tournamentname);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                if (task.isSuccessful()) {
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-                        map=document.getData();
-
-                        String host = map.get("Tournament Host").toString();
-
-                        Thost.setText(host);
-
-                    }
-                } else {
-
-                    Log.d(TAG,"invalid");
-
-
-                }
-            }
-
-
-        });
-
-        /////////////////////////////////////////////////////////////////
-
-        CollectionReference collref4 =firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-        Query query4=collref.whereEqualTo("Tournament Name", tournamentname);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                if (task.isSuccessful()) {
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                        map=document.getData();
-
-                        String sdate = map.get("Starting Date").toString();
-
-                        Tstart.setText(sdate);
-                    }
-                } else {
-
-                    Log.d(TAG,"invalid");
-
-
-                }
-            }
-
-
-        });
-
-        /////////////////////////////////////////////////////
-
-        CollectionReference collref5 =firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-        Query query5=collref.whereEqualTo("Tournament Name", tournamentname);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                if (task.isSuccessful()) {
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                        map=document.getData();
-
-                        String edate = map.get("Ending Date").toString();
-
-                        Tend.setText(edate);
-
-                    }
-                } else {
-
-                    Log.d(TAG,"invalid");
-
-
-                }
-            }
-
-
-        });
 
 
 

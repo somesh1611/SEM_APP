@@ -18,13 +18,14 @@ public class ParticipatedEventsFragment extends Fragment {
 
     ListView listView;
     String TAG;
-
+    String tournamentName;
     ArrayList<String> participated_sports=new ArrayList<>();
 
-   ParticipatedEventsFragment(ArrayList sp)
+   ParticipatedEventsFragment(ArrayList sp,String tname)
    {
 
        participated_sports.addAll(sp);
+       tournamentName=tname;
 
    }
 

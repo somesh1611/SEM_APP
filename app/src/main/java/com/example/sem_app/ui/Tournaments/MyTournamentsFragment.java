@@ -82,7 +82,10 @@ public class MyTournamentsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View root = inflater.inflate(R.layout.fragment_my_tournaments, container, false);
+
+
 
         listView = root.findViewById(R.id.my_tournaments_list);
 
@@ -99,7 +102,11 @@ public class MyTournamentsFragment extends Fragment {
                         my_tournaments.clear();
                         for(DocumentSnapshot Snapshot:value)
                         {
-                            my_tournaments.add(Snapshot.getString("Tournament Name"));
+                            String tname = Snapshot.getString("Tournament Name");
+
+                            //String tsdate=(Snapshot.getString("Starting Date"));
+
+                            my_tournaments.add(tname);
 
                             //my_tournaments.add(Snapshot.getString("Starting Date"));
 
