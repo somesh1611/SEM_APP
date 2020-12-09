@@ -14,7 +14,7 @@
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="0dp"
             android:gravity="center"
             android:text="Events List"
@@ -24,22 +24,14 @@
             android:id="@+id/tournament_events_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginTop="100dp"
             android:choiceMode="multipleChoice" />
 
 
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/participate_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:text="Participate"
-        />
+
 
 
 </FrameLayout>

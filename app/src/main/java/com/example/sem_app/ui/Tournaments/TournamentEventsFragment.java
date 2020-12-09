@@ -2,14 +2,13 @@ package com.example.sem_app.ui.Tournaments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,13 +17,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,7 +31,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -74,7 +69,7 @@ public class TournamentEventsFragment extends Fragment {
 
          View root = inflater.inflate(R.layout.fragment_tournament_events, container, false);
         listview = root.findViewById(R.id.tournament_events_listview);
-        button1 = root.findViewById(R.id.participate_button);
+      //  button1 = root.findViewById(R.id.participate_button);
 
         firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
@@ -119,7 +114,7 @@ public class TournamentEventsFragment extends Fragment {
 
                                 }
                                 ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                                        android.R.layout.simple_list_item_multiple_choice, events);
+                                        android.R.layout.simple_list_item_activated_1, events);
                                 adapter.notifyDataSetChanged();
                                 listview.setAdapter(adapter);
                             } else {
@@ -142,6 +137,17 @@ public class TournamentEventsFragment extends Fragment {
             }
         });
 
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                EventViewFragment fragment=new EventViewFragment(tournamentname,listview.getItemAtPosition(position).toString());
+                FragmentTransaction transaction=getFragmentManager().beginTransaction();
+                transaction.replace(R.id.nav_host_fragment,fragment);
+                transaction.addToBackStack("back");
+                transaction.commit();
+            }
+        });
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +155,7 @@ public class TournamentEventsFragment extends Fragment {
 
 
 
-        button1.setOnClickListener(new View.OnClickListener() {
+       /* button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -222,7 +228,7 @@ public class TournamentEventsFragment extends Fragment {
                                                             public void onComplete(@NonNull Task<DocumentReference> task) {
 
                                                                 if (task.isSuccessful()) {
-                                                                    ParticipatedEventsFragment fragment = new ParticipatedEventsFragment(selectsports,tournamentname);
+                                                                    ParticipatedEventsFragment fragment = new ParticipatedEventsFragment(events,selectsports,tournamentname);
                                                                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                                                     transaction.replace(R.id.nav_host_fragment, fragment);
                                                                     transaction.addToBackStack("back");
@@ -278,9 +284,10 @@ public class TournamentEventsFragment extends Fragment {
 
 
                 }
+                ///////////////////////////////////else end/////////////////////////////////////////
 
             }
-        });
+        }); */
 
 
 
