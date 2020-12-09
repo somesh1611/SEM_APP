@@ -49,12 +49,15 @@ public class TournamentEventsFragment extends Fragment {
     Map map;
     ArrayList allusers = new ArrayList();
     ArrayList events = new ArrayList();
+    Boolean isAdmin;
 
 
 
-    public TournamentEventsFragment(String tname) {
+    public TournamentEventsFragment(String tname,Boolean a) {
 
         tournamentname = tname;
+        isAdmin=a;
+
 
     }
 
@@ -140,7 +143,7 @@ public class TournamentEventsFragment extends Fragment {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EventViewFragment fragment=new EventViewFragment(tournamentname,listview.getItemAtPosition(position).toString());
+                EventViewFragment fragment=new EventViewFragment(tournamentname,listview.getItemAtPosition(position).toString(),isAdmin);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

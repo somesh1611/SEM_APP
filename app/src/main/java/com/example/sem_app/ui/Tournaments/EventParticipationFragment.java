@@ -1,5 +1,7 @@
 package com.example.sem_app.ui.Tournaments;
 
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +15,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,29 +44,27 @@ import java.util.Map;
 
 public class EventParticipationFragment extends Fragment {
 
-    String tournamentname,sportname,TAG;
-    TextView tname,sname;
+    String tournamentname, sportname, TAG;
+    TextView tname, sname;
     ListView listView;
     Button join;
     FloatingActionButton fab_slot;
-    ArrayList participant=new ArrayList();
+    ArrayList participant = new ArrayList();
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     ArrayList allusers = new ArrayList();
     ArrayAdapter<String> adapter;
     String id;
+    Boolean isAdmin;
 
 
+    public EventParticipationFragment(String tn, String sn,Boolean a) {
 
-    public EventParticipationFragment(String tn, String sn) {
-
-        tournamentname=tn;
-        sportname=sn;
+        tournamentname = tn;
+        sportname = sn;
+        isAdmin=a;
 
     }
-
-
-
 
 
     @Override
@@ -72,30 +75,36 @@ public class EventParticipationFragment extends Fragment {
         tname = root.findViewById(R.id.tournament_name);
         sname = root.findViewById(R.id.sport_name);
         join = root.findViewById(R.id.join);
-        fab_slot= root.findViewById(R.id.create_slot);
+        fab_slot = root.findViewById(R.id.create_slot);
         listView = root.findViewById(R.id.participant_list);
+
+        if(!isAdmin)
+        {
+            fab_slot.setVisibility(View.GONE);
+        }else{
+            fab_slot.setVisibility(View.VISIBLE);
+        }
 
         tname.setText(tournamentname);
         sname.setText(sportname);
 
-         adapter = new ArrayAdapter(getActivity(),
+        adapter = new ArrayAdapter(getActivity(),
                 android.R.layout.simple_list_item_1, participant);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
 
-        firebaseFirestore=FirebaseFirestore.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////
 
-        CollectionReference colref=firebaseFirestore.collection("Users");
+        CollectionReference colref = firebaseFirestore.collection("Users");
         colref.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 allusers.clear();
 
-                for(DocumentSnapshot Snapshot:value)
-                {
+                for (DocumentSnapshot Snapshot : value) {
 
                     allusers.add(Snapshot.getId());
 
@@ -105,10 +114,10 @@ public class EventParticipationFragment extends Fragment {
                     allusers.remove(ID);
                 }*/
 
-                for(Object i:allusers) {
+                for (Object i : allusers) {
                     participant.clear();
                     CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                    Query query=collref.whereEqualTo("Tournament Name", tournamentname);
+                    Query query = collref.whereEqualTo("Tournament Name", tournamentname);
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -129,16 +138,16 @@ public class EventParticipationFragment extends Fragment {
 
                                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                    Map map=document.getData();
+                                                    Map map = document.getData();
                                                     participant.add(map.get("Name"));
 
                                                 }
-                                              //  ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                                                       // android.R.layout.simple_list_item_1, participant);
+                                                //  ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
+                                                // android.R.layout.simple_list_item_1, participant);
                                                 adapter.notifyDataSetChanged();
-                                              // listView.setAdapter(adapter);
-                                            }else{
-                                                Log.d(TAG,"error!");
+                                                // listView.setAdapter(adapter);
+                                            } else {
+                                                Log.d(TAG, "error!");
                                             }
 
                                         }
@@ -149,14 +158,12 @@ public class EventParticipationFragment extends Fragment {
 
                             } else {
 
-                                Log.d(TAG,"invalid");
+                                Log.d(TAG, "invalid");
 
 
                             }
                         }
                     });
-
-
 
 
                     ////////////////////////////////////////////////////////////////////
@@ -167,7 +174,7 @@ public class EventParticipationFragment extends Fragment {
             }
         });
 
-        firebaseAuth= FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String ID = firebaseUser.getUid();
 
@@ -216,10 +223,54 @@ public class EventParticipationFragment extends Fragment {
             }
         });
 
+        fab_slot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setTitle("Select Type of Event");
+
+                builder.setSingleChoiceItems(R.array.event_type, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        switch (which) {
+                            case 0:
+                                Toast.makeText(getActivity(), "Knockout", Toast.LENGTH_SHORT).show();
+                                break;
+                            case 1:
+                                Toast.makeText(getActivity(), "League", Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
 
 
+                });
+                builder.setPositiveButton("Create Draw", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                       EventDrawFragment fragment=new EventDrawFragment();
+                        FragmentTransaction transaction=getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.nav_host_fragment,fragment);
+                        transaction.addToBackStack("back");
+                        transaction.commit();
 
 
+                    }
+                });
+
+                builder.create();
+                builder.show();
+
+            }
+
+
+        });
         return root;
     }
+
 }

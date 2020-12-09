@@ -42,6 +42,7 @@ public class TournamentViewFragment extends Fragment {
     Button button;
     Map map;
     ArrayList allusers = new ArrayList();
+    Boolean isAdmin;
 
 
 
@@ -51,8 +52,10 @@ public class TournamentViewFragment extends Fragment {
     }
 
 
-    public TournamentViewFragment(Object tname) {
-      tournamentname=tname.toString();
+    public TournamentViewFragment(Object tname,boolean a) {
+
+        tournamentname=tname.toString();
+        isAdmin=a;
     }
 
    /* /**
@@ -293,7 +296,7 @@ public class TournamentViewFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentname);
+                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentname,isAdmin);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

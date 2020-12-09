@@ -21,25 +21,27 @@
         android:id="@+id/part"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="50dp"
+        android:backgroundTint="@color/color_blue"
         android:gravity="center"
-        android:text="Partcipant List" />
+        android:text="Partcipant List"
+        android:textColor="@color/black" />
 
 
     <Button
         android:id="@+id/rule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:text="Rules" />
+        android:backgroundTint="@color/color_blue"
+        android:text="Rules"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/sport_name_text"

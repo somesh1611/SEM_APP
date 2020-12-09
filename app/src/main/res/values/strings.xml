@@ -40,6 +40,10 @@
         <item>Carrom</item>
 
     </string-array>
+    <string-array name="event_type">
+        <item>Knockout</item>
+        <item>League</item>
+    </string-array>
     <string name="menu_first">Tournaments</string>
     <string name="menu_second">My Profile</string>
     <string name="menu_third">Logout</string>

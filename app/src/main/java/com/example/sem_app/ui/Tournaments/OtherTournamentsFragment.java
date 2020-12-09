@@ -34,6 +34,7 @@ public class OtherTournamentsFragment extends Fragment {
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     private String TAG;
+    Boolean admin=false;
 
 
 
@@ -114,7 +115,7 @@ public class OtherTournamentsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TournamentViewFragment fragment=new TournamentViewFragment(listView.getItemAtPosition(position));
+                TournamentViewFragment fragment=new TournamentViewFragment(listView.getItemAtPosition(position),admin);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("Back");

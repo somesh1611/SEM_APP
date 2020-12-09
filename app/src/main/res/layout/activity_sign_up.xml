@@ -67,7 +67,7 @@
             android:id="@+id/signUp_name"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Enter your Name"
+            android:hint="Enter your Full Name"
             android:inputType="textPersonName" />
 
         <EditText
@@ -102,10 +102,10 @@
             android:layout_marginLeft="60dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/round"
-            android:text="Sign Up"
+            android:backgroundTint="@color/color_blue"
 
-            android:textColor="@android:color/white"
+            android:text="Sign Up"
+            android:textColor="@color/black"
             tools:ignore="MissingConstraints" />
 
 

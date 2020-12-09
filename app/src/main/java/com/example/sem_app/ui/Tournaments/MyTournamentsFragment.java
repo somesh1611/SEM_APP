@@ -33,7 +33,7 @@ public class MyTournamentsFragment extends Fragment {
 
     ListView listView;
     ArrayList<String> my_tournaments =new ArrayList<>();
-
+    Boolean admin=true;
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     private String TAG;
@@ -126,7 +126,7 @@ public class MyTournamentsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TournamentViewFragment fragment=new TournamentViewFragment(listView.getItemAtPosition(position));
+                TournamentViewFragment fragment=new TournamentViewFragment(listView.getItemAtPosition(position),admin);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("Back");

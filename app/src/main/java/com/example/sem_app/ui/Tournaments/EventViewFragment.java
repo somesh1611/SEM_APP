@@ -17,12 +17,14 @@ public class EventViewFragment extends Fragment {
     String tournamentname,sportname;
     TextView tname,sname;
     Button part,rule;
+    Boolean isAdmin;
 
 
 
-    public EventViewFragment(String tn, String sn) {
+    public EventViewFragment(String tn, String sn,Boolean a) {
         tournamentname=tn;
         sportname=sn;
+        isAdmin=a;
 
     }
 
@@ -44,7 +46,7 @@ public class EventViewFragment extends Fragment {
        part.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               EventParticipationFragment fragment=new EventParticipationFragment(tournamentname,sportname);
+               EventParticipationFragment fragment=new EventParticipationFragment(tournamentname,sportname,isAdmin);
                FragmentTransaction transaction=getFragmentManager().beginTransaction();
                transaction.replace(R.id.nav_host_fragment,fragment);
                transaction.addToBackStack("back");
