@@ -235,7 +235,13 @@ public class TournamentsFragment extends Fragment implements DatePickerDialog.On
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                addTournamentManager();
+                if(userSports.isEmpty())
+                {
+                    Toast.makeText(getActivity(),"Select atleast One Sport!",Toast.LENGTH_SHORT).show();
+                }else {
+
+                    addTournamentManager();
+                }
 
 
 

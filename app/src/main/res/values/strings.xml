@@ -44,6 +44,20 @@
         <item>Knockout</item>
         <item>League</item>
     </string-array>
+    <string-array name="updateProfile">
+        <item>Name</item>
+        <item>E-Mail</item>
+        <item>Branch</item>
+        <item>Year</item>
+    </string-array>
+    <string-array name="updateTournament">
+        <item>Tournament Name</item>
+        <item>Tournament Host</item>
+        <item>Tournament Start Date</item>
+        <item>Tournament End Date</item>
+        <item>Tournament Manager Name</item>
+        <item>Tournament Manager Phone Number</item>
+    </string-array>
     <string name="menu_first">Tournaments</string>
     <string name="menu_second">My Profile</string>
     <string name="menu_third">Logout</string>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/relative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/edit_tname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:hint="Enter Tournament Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edit_thost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_tname"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="16dp"
+            android:hint="Enter Tournament Host Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edit_tmname"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@id/edit_thost"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="16dp"
+            android:hint="Enter Tournament Manager Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edit_tmphone"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@id/edit_tmname"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="16dp"
+            android:hint="Enter Tournament Manager Phone Number"
+            android:inputType="phone" />
+    </RelativeLayout>
+
+
+    <EditText
+        android:id="@+id/edit_sdate"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Choose Start Date"
+        android:inputType="date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/relative"
+        app:layout_constraintVertical_bias="0.014" />
+
+    <ImageButton
+        android:id="@+id/edit_pickStartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/color_blue"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_sdate"
+        app:layout_constraintEnd_toEndOf="@+id/edit_sdate"
+        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintStart_toStartOf="@+id/edit_sdate"
+        app:layout_constraintTop_toTopOf="@+id/edit_sdate"
+        app:srcCompat="@drawable/ic_baseline_calendar_today_24" />
+
+    <EditText
+        android:id="@+id/edit_edate"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Choose End Date"
+        android:inputType="date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_sdate" />
+
+    <ImageButton
+        android:id="@+id/edit_pickEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/color_blue"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_edate"
+        app:layout_constraintEnd_toEndOf="@+id/edit_edate"
+        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintStart_toStartOf="@+id/edit_edate"
+        app:layout_constraintTop_toTopOf="@+id/edit_edate"
+        app:layout_constraintVertical_bias="0.606"
+        app:srcCompat="@drawable/ic_baseline_calendar_today_24" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
