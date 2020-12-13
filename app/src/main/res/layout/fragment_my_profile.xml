@@ -39,6 +39,7 @@
         android:layout_marginEnd="42dp"
         android:gravity="center"
         android:text=""
+        android:textColor="#9966cc"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -70,6 +71,7 @@
             android:id="@+id/mail_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#9966cc"
             android:textSize="20sp" />
 
     </LinearLayout>
@@ -97,6 +99,7 @@
             android:id="@+id/branch_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#9966cc"
             android:textSize="20sp" />
 
     </LinearLayout>
@@ -127,6 +130,7 @@
             android:id="@+id/year_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#9966cc"
             android:textSize="20sp" />
 
     </LinearLayout>
@@ -141,6 +145,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:baselineAlignBottom="false"
+        android:backgroundTint="@color/color_blue"
         android:clickable="true"
         android:src="@drawable/ic_baseline_edit_24"
         />

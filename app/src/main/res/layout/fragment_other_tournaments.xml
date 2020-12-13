@@ -6,22 +6,13 @@
     tools:context=".ui.Tournaments.OtherTournamentsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="OTHER TOURNAMENTS"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:textStyle="bold"></TextView>
+
     <ListView
         android:id="@+id/other_tournaments_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-
-
-        android:listSelector="@drawable/list_selector">
+         android:divider="@color/white"
+        >
 
     </ListView>
 

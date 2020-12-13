@@ -18,6 +18,7 @@
             android:layout_marginEnd="0dp"
             android:gravity="center"
             android:text="Events List"
+            android:textColor="#9966cc"
             android:textSize="30sp"
             android:textStyle="bold" />
 

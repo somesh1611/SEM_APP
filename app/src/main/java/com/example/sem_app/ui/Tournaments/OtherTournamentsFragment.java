@@ -1,13 +1,13 @@
 package com.example.sem_app.ui.Tournaments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -29,7 +29,8 @@ import java.util.ArrayList;
 public class OtherTournamentsFragment extends Fragment {
 
     ListView listView;
-    ArrayList<String> other_tournaments =new ArrayList<>();
+    ArrayList<String> other_tournaments_name =new ArrayList<>();
+    ArrayList<String> getOther_tournaments_host=new ArrayList<>();
     ArrayList allusers = new ArrayList();
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
@@ -51,6 +52,10 @@ public class OtherTournamentsFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_other_tournaments, container, false);
         listView = root.findViewById(R.id.other_tournaments_list);
+        ViewGroup header = (ViewGroup)inflater.inflate(R.layout.tournament_list_header, listView, false);
+        TextView list_header=header.findViewById(R.id.tournament_list_header_textview);
+        list_header.setText("OTHER TOURNAMENTS");
+        listView.addHeaderView(header,null,false);
         firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -63,7 +68,8 @@ public class OtherTournamentsFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 allusers.clear();
-               other_tournaments.clear();
+               other_tournaments_name.clear();
+               getOther_tournaments_host.clear();
                 for(DocumentSnapshot Snapshot:value)
                 {
 
@@ -85,18 +91,20 @@ public class OtherTournamentsFragment extends Fragment {
                                     for (DocumentSnapshot Snapshot : value) {
 
                                         String tname = Snapshot.getString("Tournament Name");
+                                        String thost = Snapshot.getString("Tournament Host");
 
                                       //  String tsdate=(Snapshot.getString("Starting Date"));
 
-                                        other_tournaments.add(tname);
+                                        other_tournaments_name.add(tname);
+                                        getOther_tournaments_host.add(thost);
                                         //other_tournaments.add(Snapshot.getString("Tournament Name"));
 
                                         //my_tournaments.add(Snapshot.getString("Starting Date"));
 
                                     }
-                                    Log.d(TAG, "document" + other_tournaments.size());
-                                    ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                                            android.R.layout.simple_list_item_1, other_tournaments);
+                                  //  Log.d(TAG, "document" + other_tournaments.size());
+                                    ArrayAdapter<String> adapter = new Tournament_list_adapter(getActivity(),
+                                            other_tournaments_name, getOther_tournaments_host);
                                     adapter.notifyDataSetChanged();
                                     listView.setAdapter(adapter);
 

@@ -51,6 +51,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/color_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.976"
