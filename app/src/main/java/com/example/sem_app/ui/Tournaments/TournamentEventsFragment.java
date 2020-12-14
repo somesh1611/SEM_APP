@@ -116,8 +116,8 @@ public class TournamentEventsFragment extends Fragment {
                                     events.addAll(Arrays.asList(tournamentEvents));
 
                                 }
-                                ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                                        android.R.layout.simple_list_item_activated_1, events);
+                                ArrayAdapter<String> adapter = new Event_list_adapter(getActivity(),
+                                         events);
                                 adapter.notifyDataSetChanged();
                                 listview.setAdapter(adapter);
                             } else {

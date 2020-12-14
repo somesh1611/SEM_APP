@@ -145,7 +145,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:baselineAlignBottom="false"
-        android:backgroundTint="@color/color_blue"
+        android:backgroundTint="#FF00FF"
         android:clickable="true"
         android:src="@drawable/ic_baseline_edit_24"
         />
