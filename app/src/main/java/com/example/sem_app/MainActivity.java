@@ -3,12 +3,9 @@ package com.example.sem_app;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -26,38 +23,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
-    EditText newTournamentName,newTournamentHost,newTournamentStartDate,newTournamentEndDate,tournamentManagerName1,tournamentManagerNumber1;
-    private TextView startDateDisplay;
-    private TextView endDateDisplay;
-    private ImageButton startPickDate;
-    private ImageButton endPickDate;
-    private Calendar startDate;
-    private Calendar endDate;
-    static final int DATE_DIALOG_ID = 0;
-    private TextView activeDateDisplay;
-    private Calendar activeDate;
     TextView userName;
     private TextView userMail;
-    private String creator;
-    private String tournamentNumber;
-    public int count;
-
-
-    //Boolean[]checkedSports;
-    ArrayList<String> userSports=new ArrayList<String>();
-
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
-
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
@@ -82,10 +54,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseAuth=FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-
         String id = firebaseUser.getUid();
-
 
         DocumentReference acc_ref=firebaseFirestore.collection("Users").document(id);
         acc_ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -104,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     Log.d(TAG, "document does not exist!");
                 }
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -112,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Failed to read data!");
             }
         });
-
 
     }
 
@@ -129,7 +96,4 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-
-
 }

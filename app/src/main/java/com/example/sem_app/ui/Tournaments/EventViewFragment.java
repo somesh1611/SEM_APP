@@ -53,6 +53,16 @@ public class EventViewFragment extends Fragment {
                transaction.commit();
            }
        });
+       rule.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               EventRulesFragment fragment=new EventRulesFragment(tournamentname,sportname,isAdmin);
+               FragmentTransaction transaction=getFragmentManager().beginTransaction();
+               transaction.replace(R.id.nav_host_fragment,fragment);
+               transaction.addToBackStack("back");
+               transaction.commit();
+           }
+       });
         return root;
     }
 }
