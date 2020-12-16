@@ -161,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                         i1.addCategory(Intent.CATEGORY_HOME);
                         i1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i1);
+                        finishAffinity();
                         finish();
                     }
                 }).setNegativeButton("no", null).show();

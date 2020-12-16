@@ -15,7 +15,9 @@
         android:textAlignment="center"
         android:textColor="#9966cc"
         android:textSize="30sp"
-        android:textStyle="bold"></TextView>
+        android:textStyle="bold">
+
+    </TextView>
 
     <ListView
 
