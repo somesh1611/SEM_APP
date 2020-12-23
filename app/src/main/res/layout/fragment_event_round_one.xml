@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.Tournaments.EventRoundOneFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/tournament_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="#9966cc"
+        android:textSize="30sp"
+        android:textStyle="bold">
+
+    </TextView>
+    <TextView
+        android:id="@+id/sport_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:textColor="#9966cc"
+        android:layout_marginTop="90dp"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/round_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:textColor="#9966cc"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="90dp"
+        android:textSize="24sp"
+        android:textStyle="bold">
+
+    </TextView>
+
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="150dp"
+        android:background="?android:attr/listDivider">
+
+    </View>
+
+    <ListView
+        android:id="@+id/drawlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="150dp">
+
+    </ListView>
+
+</FrameLayout>

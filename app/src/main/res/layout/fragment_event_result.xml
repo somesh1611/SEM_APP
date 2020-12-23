@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.Tournaments.EventResultFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:orientation="vertical"
+        tools:context=".ui.main.MainFragment"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:id="@+id/tName_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:text="Zest"
+            android:textAlignment="center"
+            android:textColor="#9966cc"
+            android:textSize="30sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/sport_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tName_text"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:text="Cricket"
+            android:textColor="#9966cc"
+            android:textSize="24sp"
+            android:textStyle="bold"></TextView>
+
+        <TextView
+            android:id="@+id/round_text"
+            android:layout_width="wrap_content"
+            android:textColor="#9966cc"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/sport_text"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:text="Round1"
+            android:textSize="24sp"
+            android:textStyle="bold">
+        </TextView>
+
+        <TextView
+            android:id="@+id/match_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sport_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="Match 1"
+            android:textSize="22sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/sport_text"
+            android:background="?android:attr/listDivider">
+
+        </View>
+
+        <TextView
+            android:id="@+id/score1_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/match_text"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:text="--"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="40sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/score2_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/match_text"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:text="--"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="40sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/team1_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/score1_text"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="22sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+
+        <TextView
+            android:id="@+id/team2_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/score2_text"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:text=""
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="22sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/set1.1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/team1_text"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+
+        <TextView
+            android:id="@+id/set1.2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/set1.1"
+            android:layout_marginStart="32dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/set1.3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/set1.2"
+            android:layout_marginStart="32dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/set2.1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/team1_text"
+            android:layout_alignBaseline="@id/set1.1"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+
+        <TextView
+            android:id="@+id/set2.2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/set2.1"
+            android:layout_alignBaseline="@id/set1.2"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="32dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/set2.3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/set2.2"
+            android:layout_alignBaseline="@id/set1.3"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="32dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold">
+
+        </TextView>
+
+    </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/add_score"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        android:backgroundTint="#ff69b4"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+
+</FrameLayout>

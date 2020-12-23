@@ -42,7 +42,11 @@
     </string-array>
     <string-array name="event_type">
         <item>Knockout</item>
-        <item>League</item>
+        <item>Knockout + League</item>
+    </string-array>
+    <string-array name="score_type">
+        <item>Points</item>
+        <item>Sets</item>
     </string-array>
     <string-array name="updateProfile">
         <item>Name</item>

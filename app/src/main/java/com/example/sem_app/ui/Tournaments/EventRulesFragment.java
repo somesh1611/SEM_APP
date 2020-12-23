@@ -242,10 +242,10 @@ public class EventRulesFragment extends Fragment {
                         builder.create();
                         builder.show();
 
+                    }else{
+                        Toast.makeText(getActivity(),"Built In Rule,Cannot be Deleted!",Toast.LENGTH_SHORT).show();
                     }
 
-                }else{
-                        Toast.makeText(getActivity(),"Built In Rule,Cannot be Deleted!",Toast.LENGTH_SHORT).show();
                 }
 
                 return true;
@@ -307,7 +307,7 @@ public class EventRulesFragment extends Fragment {
 
                                             Toast.makeText(getActivity(), "New Rule Added Successfully", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(getActivity(), "New Rule not added", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(), "Error!", Toast.LENGTH_SHORT).show();
 
 
                                             Log.d(TAG, "error!");

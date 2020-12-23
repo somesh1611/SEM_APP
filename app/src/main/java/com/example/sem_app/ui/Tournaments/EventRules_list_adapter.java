@@ -29,7 +29,6 @@ public class EventRules_list_adapter extends ArrayAdapter<String> {
 
         TextView titleText = (TextView) rowView.findViewById(R.id.rule_text);
 
-
         titleText.setText(rule.get(position).toString());
 
         return rowView;

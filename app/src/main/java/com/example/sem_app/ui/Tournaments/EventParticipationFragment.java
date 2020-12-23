@@ -49,16 +49,19 @@ public class EventParticipationFragment extends Fragment {
     TextView tname, sname;
     ListView listView;
     Button join;
-    FloatingActionButton fab_slot;
+    FloatingActionButton fab_slot,fab_slot_view;
     ArrayList participant = new ArrayList();
     ArrayList participant_id = new ArrayList();
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     ArrayList allusers = new ArrayList();
+    ArrayList allusers1 = new ArrayList();
     ArrayAdapter<String> adapter;
-    String id;
+    String id,tid,tid1;
+    int type;
     String sy,sb, sy1,sb1;
     Boolean isAdmin;
+
 
 
     public EventParticipationFragment(String tn, String sn,Boolean a) {
@@ -79,14 +82,10 @@ public class EventParticipationFragment extends Fragment {
         sname = root.findViewById(R.id.sport_name);
         join = root.findViewById(R.id.join);
         fab_slot = root.findViewById(R.id.create_slot);
+        fab_slot_view = root.findViewById(R.id.view_slot);
         listView = root.findViewById(R.id.participant_list);
 
-        if(!isAdmin)
-        {
-            fab_slot.setVisibility(View.GONE);
-        }else{
-            fab_slot.setVisibility(View.VISIBLE);
-        }
+
 
         tname.setText(tournamentname);
         sname.setText(sportname);
@@ -424,53 +423,213 @@ public class EventParticipationFragment extends Fragment {
         });
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if(isAdmin)
+        {
+            CollectionReference cref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
+            Query query = cref.whereEqualTo("Tournament Name", tournamentname);
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    if (task.isSuccessful()) {
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                             tid=document.getId();
+
+                        }
+                        CollectionReference dref = firebaseFirestore.collection(sportname).document(tid).collection("Round1");
+                        dref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                if (task.isSuccessful()) {
+
+                                    if(!task.getResult().isEmpty())
+                                    {
+
+                                        fab_slot.setVisibility(View.GONE);
+                                        join.setVisibility(View.GONE);
+                                        fab_slot_view.setVisibility(View.VISIBLE);
+
+                                    }else {
+                                        fab_slot_view.setVisibility(View.GONE);
+                                        fab_slot.setVisibility(View.VISIBLE);
+                                    }
+
+                                }
+
+
+                                }
+                        });
+
+                    }
+
+
+                }
+            });
+
+        }
+        else{
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            CollectionReference col1 = firebaseFirestore.collection("Users");
+            col1.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                                allusers1.clear();
+
+                                                for (DocumentSnapshot Snapshot : value) {
+
+                                                    allusers1.add(Snapshot.getId());
+
+                                                }
+
+                                                for (Object i : allusers1) {
+                                                    CollectionReference c1 = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
+                                                    Query query = c1.whereEqualTo("Tournament Name", tournamentname);
+                                                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                            if (task.isSuccessful()) {
+
+                                                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                    tid1 = document.getId();
+
+                                                                    CollectionReference drawref = firebaseFirestore.collection(sportname).document(tid1).collection("Round1");
+
+                                                                    drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                                            if (task.isSuccessful()) {
+                                                                                if(!task.getResult().isEmpty())
+                                                                                {
+
+                                                                                    fab_slot.setVisibility(View.GONE);
+                                                                                    join.setVisibility(View.GONE);
+                                                                                    fab_slot_view.setVisibility(View.VISIBLE);
+
+
+                                                                                }else {
+                                                                                    fab_slot.setVisibility(View.GONE);
+                                                                                    fab_slot_view.setVisibility(View.GONE);
+                                                                                   join.setVisibility(View.VISIBLE);
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+
+
+
+
+                                                        ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+           // fab_slot.setVisibility(View.GONE);
+            //fab_slot_view.setVisibility(View.VISIBLE);
+
+        }
+
 
         fab_slot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                builder.setTitle("Select Type of Event");
+                new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Confirm Participant List")
+                        .setMessage("Are you sure?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                builder.setSingleChoiceItems(R.array.event_type, 0, new DialogInterface.OnClickListener() {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                                builder.setTitle("Select Type of Event");
+
+                                builder.setSingleChoiceItems(R.array.event_type, 2, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        switch (which) {
+                                            case 0:
+                                                Toast.makeText(getActivity(), "Knockout", Toast.LENGTH_SHORT).show();
+                                                type=1;
+                                                break;
+                                            case 1:
+                                                Toast.makeText(getActivity(), "Knockout + League", Toast.LENGTH_SHORT).show();
+                                                type=2;
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+
+
+                                });
+                               builder.setPositiveButton("Create Draw", new DialogInterface.OnClickListener() {
+                                    @RequiresApi(api = Build.VERSION_CODES.O)
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        switch (type) {
+                                            case 1:
+                                                Boolean is_slot=false;
+                                                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot, participant, participant_id);
+                                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                                transaction.replace(R.id.nav_host_fragment, fragment);
+                                                transaction.addToBackStack("back");
+                                                transaction.commit();
+                                                break;
+                                            case 2:
+                                                Toast.makeText(getActivity(), "Coming Soon", Toast.LENGTH_SHORT).show();
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+
+
+                                    }
+                                });
+
+                                builder.create();
+                                builder.show();
+
+                            }
+                        }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        switch (which) {
-                            case 0:
-                                Toast.makeText(getActivity(), "Knockout", Toast.LENGTH_SHORT).show();
-                                break;
-                            case 1:
-                                Toast.makeText(getActivity(), "League", Toast.LENGTH_SHORT).show();
-                                break;
-                            default:
-                                break;
-                        }
                     }
+                }).show();
 
+                /////////////////////////////////////////////////////////////////////////////////////////
 
-                });
-                builder.setPositiveButton("Create Draw", new DialogInterface.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                       EventDrawFragment fragment=new EventDrawFragment();
-                        FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                        transaction.replace(R.id.nav_host_fragment,fragment);
-                        transaction.addToBackStack("back");
-                        transaction.commit();
-
-
-                    }
-                });
-
-                builder.create();
-                builder.show();
 
             }
 
 
+        });
+
+        fab_slot_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Boolean is_slot=true;
+                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot,participant_id);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.nav_host_fragment, fragment);
+                transaction.addToBackStack("back");
+                transaction.commit();
+
+            }
         });
         return root;
     }
