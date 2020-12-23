@@ -1,6 +1,7 @@
 package com.example.sem_app.ui.Tournaments;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -316,15 +317,24 @@ public class EventResultFragment extends Fragment {
                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                                                Map map = document.getData();
-                                                                               if(map.get("Score1")==null)
+                                                                               if(map.containsKey("Winner"))
                                                                                {
-                                                                                   Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
-                                                                               }else{
-                                                                               String x1 = map.get("Score1").toString();
-                                                                               String x2 = map.get("Score2").toString();
-                                                                               add_score.setVisibility(View.GONE);
+                                                                                   String x1 = map.get("Score1").toString();
+                                                                                   String x2 = map.get("Score2").toString();
+                                                                                   String w1 = map.get("Winner").toString();
+                                                                                   if (w1.contentEquals(p1[0])) {
+                                                                                       team1.setTextColor(Color.GREEN);
+                                                                                       score1.setTextColor(Color.GREEN);
+                                                                                   } else {
+                                                                                       team2.setTextColor(Color.GREEN);
+                                                                                       score2.setTextColor(Color.GREEN);
+                                                                                   }
+                                                                                   add_score.setVisibility(View.GONE);
                                                                                    score1.setText(x1);
                                                                                    score2.setText(x2);
+                                                                               }
+                                                                               else{
+                                                                                   Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
                                                                                }
 
                                                                            }
