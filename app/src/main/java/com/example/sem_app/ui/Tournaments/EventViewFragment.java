@@ -135,67 +135,68 @@ public class EventViewFragment extends Fragment {
                                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                                                                Map map = document.getData();
-                                                                                               String w=map.get("Winner").toString();
-                                                                                               DocumentReference wdref=firebaseFirestore.collection("Users").document(w);
-                                                                                               wdref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                                                   @Override
-                                                                                                   public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                                               if (map.containsKey("Winner")) {
+                                                                                                   String w = map.get("Winner").toString();
+                                                                                                   DocumentReference wdref = firebaseFirestore.collection("Users").document(w);
+                                                                                                   wdref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                                                       @Override
+                                                                                                       public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                                                                                                       if(documentSnapshot.exists())
-                                                                                                       {
-                                                                                                           String name=documentSnapshot.getString("Name");
-                                                                                                           String wyear=documentSnapshot.getString("Year");
-                                                                                                           String wbranch=documentSnapshot.getString("Branch");
+                                                                                                           if (documentSnapshot.exists()) {
+                                                                                                               String name = documentSnapshot.getString("Name");
+                                                                                                               String wyear = documentSnapshot.getString("Year");
+                                                                                                               String wbranch = documentSnapshot.getString("Branch");
 
-                                                                                                           switch (wyear){
-                                                                                                               case "First Year":
-                                                                                                                   wsy1="FE";
-                                                                                                                   break;
-                                                                                                               case "Second Year":
-                                                                                                                   wsy1="SE";
-                                                                                                                   break;
-                                                                                                               case "Third Year":
-                                                                                                                   wsy1="TE";
-                                                                                                                   break;
-                                                                                                               case "Fourth Year":
-                                                                                                                   wsy1="BE";
-                                                                                                                   break;
-                                                                                                               default:
-                                                                                                                   break;
+                                                                                                               switch (wyear) {
+                                                                                                                   case "First Year":
+                                                                                                                       wsy1 = "FE";
+                                                                                                                       break;
+                                                                                                                   case "Second Year":
+                                                                                                                       wsy1 = "SE";
+                                                                                                                       break;
+                                                                                                                   case "Third Year":
+                                                                                                                       wsy1 = "TE";
+                                                                                                                       break;
+                                                                                                                   case "Fourth Year":
+                                                                                                                       wsy1 = "BE";
+                                                                                                                       break;
+                                                                                                                   default:
+                                                                                                                       break;
+                                                                                                               }
+
+                                                                                                               switch (wbranch) {
+                                                                                                                   case "Computer Engineering":
+                                                                                                                       wsb1 = "COMP";
+                                                                                                                       break;
+                                                                                                                   case "IT Engineering":
+                                                                                                                       wsb1 = "IT";
+                                                                                                                       break;
+                                                                                                                   case "ENTC Engineering":
+                                                                                                                       wsb1 = "ENTC";
+                                                                                                                       break;
+                                                                                                                   case "Civil Engineering":
+                                                                                                                       wsb1 = "CIVIL";
+                                                                                                                       break;
+                                                                                                                   case "Mechanical Engineering":
+                                                                                                                       wsb1 = "MECH";
+                                                                                                                       break;
+                                                                                                                   case "Electrical Engineering":
+                                                                                                                       wsb1 = "ELE";
+                                                                                                                       break;
+                                                                                                                   case "Printing Engineering":
+                                                                                                                       wsb1 = "PRINTING";
+                                                                                                                       break;
+                                                                                                                   default:
+                                                                                                                       break;
+                                                                                                               }
+                                                                                                               wname.setVisibility(View.VISIBLE);
+                                                                                                               wname.setTextColor(getResources().getColor(R.color.color_pink));
+                                                                                                               wname.setText("Winner : " + wsy1 + " " + wsb1);
+
                                                                                                            }
-
-                                                                                                           switch (wbranch){
-                                                                                                               case "Computer Engineering":
-                                                                                                                   wsb1="COMP";
-                                                                                                                   break;
-                                                                                                               case "IT Engineering":
-                                                                                                                   wsb1="IT";
-                                                                                                                   break;
-                                                                                                               case "ENTC Engineering":
-                                                                                                                   wsb1="ENTC";
-                                                                                                                   break;
-                                                                                                               case "Civil Engineering":
-                                                                                                                   wsb1="CIVIL";
-                                                                                                                   break;
-                                                                                                               case "Mechanical Engineering":
-                                                                                                                   wsb1="MECH";
-                                                                                                                   break;
-                                                                                                               case "Electrical Engineering":
-                                                                                                                   wsb1="ELE";
-                                                                                                                   break;
-                                                                                                               case "Printing Engineering":
-                                                                                                                   wsb1="PRINTING";
-                                                                                                                   break;
-                                                                                                               default:
-                                                                                                                   break;
-                                                                                                           }
-                                                                                                           wname.setVisibility(View.VISIBLE);
-                                                                                                           wname.setTextColor(getResources().getColor(R.color.color_pink));
-                                                                                                           wname.setText("Winner : "+wsy1+" "+wsb1);
-
                                                                                                        }
-                                                                                                   }
-                                                                                               });
+                                                                                                   });
+                                                                                               }
                                                                                            }
                                                                                        }
 
