@@ -170,6 +170,7 @@ public class Draw_list_adapter extends ArrayAdapter {
       if(p1[1].contentEquals("BYE"))
       {
           player2.setText(p1[1]);
+          player1.setTextColor(Color.GREEN);
       }else
           { acc_ref2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

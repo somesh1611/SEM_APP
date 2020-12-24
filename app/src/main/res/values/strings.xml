@@ -38,7 +38,31 @@
         <item>Kabaddi</item>
         <item>Chess</item>
         <item>Carrom</item>
+        <item>Box-Cricket</item>
+        <item>Relay_100*4</item>
 
+    </string-array>
+    <string-array name="team_sports">
+        <item>Cricket</item>
+        <item>Football</item>
+        <item>Volleyball</item>
+        <item>Basketball</item>
+        <item>Badminton(T)</item>
+        <item>Dodgeball</item>
+        <item>Kho-Kho</item>
+        <item>Kabaddi</item>
+        <item>Chess(T)</item>
+        <item>Carrom(T)</item>
+        <item>Box-Cricket</item>
+        <item>Relay 100*4m</item>
+        <item>Table-Tennis(T)</item>
+    </string-array>
+    <string-array name="individual_sports">
+        <item>Badminton(I)</item>
+        <item>Chess(I)</item>
+        <item>Carrom(I)</item>
+        <item>Table-Tennis(I)</item>
+        <item>Running 100m</item>
     </string-array>
     <string-array name="event_type">
         <item>Knockout</item>

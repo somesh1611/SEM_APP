@@ -6,53 +6,74 @@
     tools:context=".ui.Tournaments.EventViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/tournament_name_textview"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="20dp"
-        android:text=""
-        android:textColor="#9966cc"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/part"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="50dp"
-        android:backgroundTint="@color/color_blue"
-        android:gravity="center"
-        android:text="Partcipant List"
-        android:textColor="@color/black" />
+        <TextView
+            android:id="@+id/tournament_name_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="#9966cc"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/sport_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tournament_name_textview"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:textColor="#9966cc"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/winner_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sport_name_text"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:text=""
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
 
-    <Button
-        android:id="@+id/rule"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
-        android:backgroundTint="@color/color_blue"
-        android:text="Rules"
-        android:textColor="@color/black" />
+        <Button
+            android:id="@+id/part"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
-    <TextView
-        android:id="@+id/sport_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp"
-        android:textColor="#9966cc"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_centerVertical="true"
+
+            android:backgroundTint="@color/color_blue"
+            android:text="Partcipant List"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/rule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/part"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:backgroundTint="@color/color_blue"
+            android:text="Rules"
+            android:textColor="@color/black" />
+
+
+    </RelativeLayout>
 
 
 </FrameLayout>

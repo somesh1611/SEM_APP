@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/team1_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_toRightOf="@id/set1_textview"
+        android:text="Team 1"
+        android:textSize="18sp"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/team2_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/team1_name"
+        android:layout_toRightOf="@id/team1_name"
+
+        android:text="Team 2"
+        android:textSize="18sp"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/set1_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/team2_name"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="SET 1"
+        android:textSize="18sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/set2_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/set1_textview"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="SET 2"
+        android:textSize="18sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/set3_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/set2_textview"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="SET 3"
+        android:textSize="18sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/set4_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/set3_textview"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="SET 4"
+        android:textSize="18sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/set5_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/set4_textview"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="SET 5"
+        android:textSize="18sp">
+
+    </TextView>
+
+    <EditText
+        android:id="@+id/set1Team1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set1_textview"
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@id/set1_textview"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set1Team2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set1_textview"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@id/set1Team1"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set2Team1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set2_textview"
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@id/set2_textview"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set2Team2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set2_textview"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@id/set2Team1"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set3Team1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set3_textview"
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@id/set3_textview"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set3Team2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set3_textview"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@id/set3Team1"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set4Team1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set4_textview"
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@id/set4_textview"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set4Team2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set4_textview"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@id/set4Team1"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set5Team1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set5_textview"
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@id/set5_textview"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/set5Team2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/set5_textview"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@id/set1Team1"
+        android:hint="score"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="18sp">
+
+    </EditText>
+
+
+</RelativeLayout>

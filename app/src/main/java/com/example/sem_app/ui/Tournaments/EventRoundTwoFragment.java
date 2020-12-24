@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -49,8 +50,8 @@ public class EventRoundTwoFragment extends Fragment {
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
     ArrayList allusers = new ArrayList();
-    ArrayList allusers1 = new ArrayList();
-    ArrayList allusers2 = new ArrayList();
+    ArrayList players1 = new ArrayList();
+    ArrayList winners = new ArrayList();
     ArrayList draw=new ArrayList();
     ArrayList predraw=new ArrayList();
     ArrayList postdraw=new ArrayList();
@@ -122,12 +123,6 @@ public class EventRoundTwoFragment extends Fragment {
         sname = root.findViewById(R.id.sport_name);
         make_draw=root.findViewById(R.id.make_draw_fab);
 
-        if(!isAdmin)
-        {
-            make_draw.setVisibility(View.GONE);
-        }else {
-            make_draw.setVisibility(View.VISIBLE);
-        }
 
         drawlist=root.findViewById(R.id.drawlist);
 
@@ -164,8 +159,46 @@ public class EventRoundTwoFragment extends Fragment {
         drawlist.setAdapter(adapter);
 
 
-
         firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseAuth= FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String Id = firebaseUser.getUid();
+        CollectionReference ref1 = firebaseFirestore.collection("Sports Tournaments").document(Id).collection("My Tournaments");
+        Query query2 = ref1.whereEqualTo("Tournament Name", tournamentname);
+        query2.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                winners.clear();
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        id2 = document.getId();
+                        CollectionReference drawref = firebaseFirestore.collection(sportname).document(id2).collection(preround);
+                        drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                        Map map = document.getData();
+                                        if(map.containsKey("Player1"))
+                                        {
+                                            players1.add(map.get("Player1").toString());
+                                        }
+                                        if(map.containsKey("Winner")) {
+                                            winners.add(map.get("Winner").toString());
+                                        }
+
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
 
         ///////////////////////////////////////////////////////////////////////////////////////
         CollectionReference colref = firebaseFirestore.collection("Users");
@@ -210,9 +243,9 @@ public class EventRoundTwoFragment extends Fragment {
 
                                                                                Map map = document.getData();
                                                                                String p1= (String) map.get("Player1");
-
                                                                                String p2= (String) map.get("Player2");
                                                                                draw.add(p1+","+p2);
+
                                                                                //////////////////////////////////////////////////////////////////////////////////////////
 
                                                                            }
@@ -242,10 +275,15 @@ public class EventRoundTwoFragment extends Fragment {
                                                                            }
 
 
-                                                                       }
-                                                                   }else {
-                                                                       Toast.makeText(getActivity(),"Draws Yet to be Displayed!",Toast.LENGTH_SHORT).show();
+                                                                       }else {
+                                                                           if((isAdmin)&&(winners.size()==players1.size()))
+                                                                           {
+                                                                               make_draw.setVisibility(View.VISIBLE);
+                                                                           }
 
+                                                                           Toast.makeText(getActivity(),"Draws Yet to be Displayed!",Toast.LENGTH_SHORT).show();
+
+                                                                       }
                                                                    }
 
 
@@ -266,153 +304,69 @@ public class EventRoundTwoFragment extends Fragment {
         make_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //////////////////////////////////////////////////////////////////////////////////////
-
-                CollectionReference colref1 = firebaseFirestore.collection("Users");
-                colref1.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                firebaseAuth= FirebaseAuth.getInstance();
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                String ID = firebaseUser.getUid();
+                CollectionReference collref1 = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
+                Query query = collref1.whereEqualTo("Tournament Name", tournamentname);
+                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        allusers1.clear();
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        predraw.clear();
+                        if (task.isSuccessful()) {
 
-                        for (DocumentSnapshot Snapshot : value) {
-
-                            allusers1.add(Snapshot.getId());
-
-                        }
-
-                        for (Object i : allusers1) {
-                            CollectionReference collref1 = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                            Query query = collref1.whereEqualTo("Tournament Name", tournamentname);
-                            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    predraw.clear();
-
-                                    if (task.isSuccessful()) {
-
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
 
 
-                                            id = document.getId();
+                                id = document.getId();
+                                CollectionReference drawref = firebaseFirestore.collection(sportname).document(id).collection(preround);
+                                drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                                            /*start*/   CollectionReference drawref = firebaseFirestore.collection(sportname).document(id).collection(preround);
-                                            drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                    if (task.isSuccessful()) {
-                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                Map map = document.getData();
+                                                predraw.add(map.get("Winner").toString());
 
-                                                            Map map = document.getData();
-                                                            predraw.add(map.get("Winner").toString());
+                                            }
+                                            postdraw = DrawMaker(predraw);
+                                            for (Object d : postdraw) {
+                                                String p = d.toString();
+                                                DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
+                                                String[] pp = p.split(",");
+                                                Map<String, Object> draw = new HashMap<>();
+                                                draw.put("Player1", pp[0]);
+                                                draw.put("Player2", pp[1]);
 
+                                                doc.collection(roundname).add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+
+                                                        if (task.isSuccessful()) {
+                                                            // getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
+                                                            Toast.makeText(getActivity(), roundname+"Draws Listed!", Toast.LENGTH_SHORT).show();
+                                                            make_draw.setVisibility(View.GONE);
+                                                            getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
+
+                                                        } else {
+                                                            Log.d(TAG, "error!");
                                                         }
-                                                        postdraw = DrawMaker(predraw);
-                                                        for (Object d : postdraw) {
-                                                            String p = d.toString();
-                                                            DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
-                                                            String[] pp = p.split(",");
-                                                            Map<String, Object> draw = new HashMap<>();
-                                                            draw.put("Player1", pp[0]);
-                                                            draw.put("Player2", pp[1]);
-
-                                                            doc.collection(roundname).add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<DocumentReference> task) {
-
-                                                                    if (task.isSuccessful()) {
-                                                                       // getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
-                                                                        Toast.makeText(getActivity(), "Round 2 Draws Listed!", Toast.LENGTH_SHORT).show();
-                                                                        make_draw.setVisibility(View.GONE);
-                                                                        getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
-
-                                                                    } else {
-                                                                        Log.d(TAG, "error!");
-                                                                    }
-
-                                                                }
-                                                            });
-                                                        } /*start*/
-                                                        //////////////////////////////////////////////////////////////////////////////////////
 
                                                     }
-                                                }
-                                            }); /*start*/
-
+                                                });
+                                            }
+                                            //////////////////////////////////////////////////////////////////////////////////////
                                         }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
+
                 });
-
-                //////////////////////////////////////////////////////////////////////////////////////////////////
-                   /*postdraw = DrawMaker(predraw);
-
-                CollectionReference ref1 = firebaseFirestore.collection("Users");
-                ref1.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        allusers2.clear();
-
-                        for (DocumentSnapshot Snapshot : value) {
-
-                            allusers2.add(Snapshot.getId());
-
-                        }
-
-                        for (Object i : allusers2) {
-                            CollectionReference coref1 = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                            Query query = coref1.whereEqualTo("Tournament Name", tournamentname);
-                            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                    if (task.isSuccessful()) {
-
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                            id1 = document.getId();
-                                        }
-
-                                         for (Object d : postdraw) {
-                                            String p = d.toString();
-
-                                            DocumentReference doc = firebaseFirestore.collection(sportname).document(id1);
-                                            String[] pp = p.split(",");
-                                            Map<String, Object> draw = new HashMap<>();
-                                            draw.put("Player1", pp[0]);
-                                            draw.put("Player2", pp[1]);
-
-
-                                            doc.collection(roundname).add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentReference> task) {
-
-                                                    if (task.isSuccessful()) {
-                                                        //getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
-                                                        Toast.makeText(getActivity(), "Round 2 Draws Listed!", Toast.LENGTH_SHORT).show();
-                                                        make_draw.setVisibility(View.GONE);
-                                                        //getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
-
-                                                    } else {
-                                                        Log.d(TAG, "error!");
-                                                    }
-
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                }
-                            });
-                        }
-                    }
-                });*/
-
-
-                /////////////////////////////////////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////////////////////////////////
             }
         });
 
