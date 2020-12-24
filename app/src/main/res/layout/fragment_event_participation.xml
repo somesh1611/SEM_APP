@@ -38,6 +38,7 @@
         android:backgroundTint="#32cd32"
         android:text="Join"
         android:textColor="@color/black"
+        android:visibility="gone"
         android:textSize="18sp" />
 
     <TextView

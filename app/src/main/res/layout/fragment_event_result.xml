@@ -218,6 +218,18 @@
 
         </TextView>
 
+        <TextView
+            android:id="@+id/tie_breaker_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/set1.3"
+            android:layout_marginTop="24dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold">
+
+        </TextView>
+
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

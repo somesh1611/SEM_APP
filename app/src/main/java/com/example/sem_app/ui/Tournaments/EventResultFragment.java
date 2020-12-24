@@ -46,15 +46,16 @@ import java.util.Map;
  */
 public class EventResultFragment extends Fragment {
 
-    TextView tname, sname,rname,match,score1,score2,team1,team2,team01,team02;
+    TextView tname, sname,rname,match,score1,score2,team1,team2,team01,team02,tie;
     EditText score01,score02;
     FloatingActionButton add_score;
     ArrayList allusers = new ArrayList();
     String tournamentname,sportname,roundname,pos,mroundname;
     String s1,id,docid,tid;
     String docid1,id1;
+    String docid2,id2;
     int type;
-    Boolean fwin;
+    Boolean fwin,ftie;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
     String sy,sb,sy1,sb1;
@@ -126,6 +127,7 @@ public class EventResultFragment extends Fragment {
         team1 = root.findViewById(R.id.team1_text);
         team2 = root.findViewById(R.id.team2_text);
         add_score = root.findViewById(R.id.add_score);
+        tie=root.findViewById(R.id.tie_breaker_text);
 
         tname.setText(tournamentname);
         sname.setText(sportname);
@@ -376,7 +378,18 @@ public class EventResultFragment extends Fragment {
                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                                                Map map = document.getData();
-                                                                               if(map.containsKey("Winner"))
+                                                                               if(map.containsKey("Tie"))
+                                                                               {
+                                                                                   String t1 = map.get("Tie").toString();
+                                                                                   String tx1 = map.get("Score1").toString();
+                                                                                   String tx2 = map.get("Score2").toString();
+                                                                                   tie.setTextColor(Color.GREEN);
+                                                                                   tie.setText(t1);
+                                                                                   add_score.setVisibility(View.GONE);
+                                                                                   score1.setText(tx1);
+                                                                                   score2.setText(tx2);
+                                                                               }
+                                                                               else if(map.containsKey("Winner"))
                                                                                {
                                                                                    String x1 = map.get("Score1").toString();
                                                                                    String x2 = map.get("Score2").toString();
@@ -471,37 +484,23 @@ public class EventResultFragment extends Fragment {
                                         if (TextUtils.isEmpty(sc1) || TextUtils.isEmpty(sc2)) {
                                             Toast.makeText(getActivity(), "Please Enter the Score!", Toast.LENGTH_SHORT).show();
                                         } else {
+                                            if(Integer.valueOf(sc1)==Integer.valueOf(sc2))
+                                            {
+                                                AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
+                                                builder2.setTitle("Tie Match");
+                                                builder2.setMessage("Who won the Tie-Breaker?");
+                                                builder2.setPositiveButton(team1.getText().toString(), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        firebaseAuth = FirebaseAuth.getInstance();
+                                                        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                                                        String ID = firebaseUser.getUid();
+                                                        firebaseFirestore = FirebaseFirestore.getInstance();
 
-
-                                            if (Integer.valueOf(sc1) > Integer.valueOf(sc2)) {
-                                                fwin = true;
-                                            } else {
-                                                fwin = false;
-                                            }
-
-                                            firebaseAuth = FirebaseAuth.getInstance();
-                                            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-
-                                            String ID = firebaseUser.getUid();
-                                            firebaseFirestore = FirebaseFirestore.getInstance();
-
-                                            CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                            Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                                            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                    if (task.isSuccessful()) {
-
-                                                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                            id = document.getId();
-                                                        }
-                                                        CollectionReference scolref = firebaseFirestore.collection(sportname).document(id).collection(roundname);
-                                                        String[] a = s1.split(",");
-                                                        Query q = scolref.whereEqualTo("Player1", a[0]);
-                                                        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        ///////////////////////////////////////////////////////////////////////
+                                                        CollectionReference tcollref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
+                                                        Query tquery = tcollref.whereEqualTo("Tournament Name", tournamentname);
+                                                        tquery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -509,41 +508,209 @@ public class EventResultFragment extends Fragment {
 
                                                                     for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                                        docid = document.getId();
+                                                                        id2 = document.getId();
                                                                     }
-                                                                    DocumentReference docref = firebaseFirestore.collection(sportname).document(id).collection(roundname).document(docid);
-                                                                    Map<String, Object> score = new HashMap<>();
-                                                                    score.put("Score1", sc1);
-                                                                    score.put("Score2", sc2);
-                                                                    if (fwin) {
-                                                                        score.put("Winner", a[0]);
-                                                                    } else {
-                                                                        score.put("Winner", a[1]);
-                                                                    }
-                                                                    docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    CollectionReference scolref = firebaseFirestore.collection(sportname).document(id2).collection(roundname);
+                                                                    String[] t = s1.split(",");
+                                                                    Query q = scolref.whereEqualTo("Player1", t[0]);
+                                                                    q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                                         @Override
-                                                                        public void onSuccess(Void aVoid) {
-                                                                            Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                                            add_score.setVisibility(View.GONE);
-                                                                            score1.setText(score01.getText());
-                                                                            score2.setText(score02.getText());
+                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                                            if (task.isSuccessful()) {
+
+                                                                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                                    docid2 = document.getId();
+                                                                                }
+                                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(id2).collection(roundname).document(docid2);
+                                                                                Map<String, Object> score = new HashMap<>();
+                                                                                score.put("Score1", sc1);
+                                                                                score.put("Score2", sc2);
+
+
+                                                                                score.put("Tie", "Tie-Breaker Won by " + team1.getText().toString());
+                                                                                score.put("Winner", t[0]);
+
+
+                                                                                docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                                        add_score.setVisibility(View.GONE);
+                                                                                        score1.setText(score01.getText());
+                                                                                        score2.setText(score02.getText());
+                                                                                        tie.setText("Tie-Breaker Won by " + team1.getText().toString());
+                                                                                    }
+                                                                                });
+                                                                            }
+
+
                                                                         }
                                                                     });
+
+
                                                                 }
 
+                                                            }
+                                                        });
+
+                                                        ///////////////////////////////////////////////////////////////////////
+
+
+                                                    }
+                                                }).setNegativeButton(team2.getText().toString(), new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        ///////////////////////////////////////////////////////////////////////////////////////
+                                                        firebaseAuth = FirebaseAuth.getInstance();
+                                                        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                                                        String ID = firebaseUser.getUid();
+                                                        firebaseFirestore = FirebaseFirestore.getInstance();
+                                                        ///////////////////////////////////////////////////////////////////////
+                                                        CollectionReference tcollref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
+                                                        Query tquery = tcollref.whereEqualTo("Tournament Name", tournamentname);
+                                                        tquery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                                if (task.isSuccessful()) {
+
+                                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                        id2 = document.getId();
+                                                                    }
+                                                                    CollectionReference scolref = firebaseFirestore.collection(sportname).document(id2).collection(roundname);
+                                                                    String[] t = s1.split(",");
+                                                                    Query q = scolref.whereEqualTo("Player1", t[0]);
+                                                                    q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                                            if (task.isSuccessful()) {
+
+                                                                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                                    docid2 = document.getId();
+                                                                                }
+                                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(id2).collection(roundname).document(docid2);
+                                                                                Map<String, Object> score = new HashMap<>();
+                                                                                score.put("Score1", sc1);
+                                                                                score.put("Score2", sc2);
+
+
+                                                                                score.put("Tie", "Tie-Breaker Won by " + team2.getText().toString());
+                                                                                score.put("Winner", t[1]);
+
+
+                                                                                docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                                        add_score.setVisibility(View.GONE);
+                                                                                        score1.setText(score01.getText());
+                                                                                        score2.setText(score02.getText());
+                                                                                        tie.setText("Tie-Breaker Won by " + team2.getText().toString());
+                                                                                    }
+                                                                                });
+                                                                            }
+
+
+                                                                        }
+                                                                    });
+
+
+                                                                }
 
                                                             }
                                                         });
 
 
+
                                                     }
+                                                });
+                                                builder2.create();
+                                                builder2.show();
 
+
+
+                                            }else {
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                if (Integer.valueOf(sc1) > Integer.valueOf(sc2)) {
+                                                    fwin = true;
+                                                } else {
+                                                    fwin = false;
                                                 }
-                                            });
-                                            //////////////////////////////////////////////////////
 
 
-                                        }
+                                                firebaseAuth = FirebaseAuth.getInstance();
+                                                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+
+                                                String ID = firebaseUser.getUid();
+                                                firebaseFirestore = FirebaseFirestore.getInstance();
+
+                                                CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
+                                                Query query = collref.whereEqualTo("Tournament Name", tournamentname);
+                                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                        if (task.isSuccessful()) {
+
+                                                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                id = document.getId();
+                                                            }
+                                                            CollectionReference scolref = firebaseFirestore.collection(sportname).document(id).collection(roundname);
+                                                            String[] a = s1.split(",");
+                                                            Query q = scolref.whereEqualTo("Player1", a[0]);
+                                                            q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                                                    if (task.isSuccessful()) {
+
+                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                                            docid = document.getId();
+                                                                        }
+                                                                        DocumentReference docref = firebaseFirestore.collection(sportname).document(id).collection(roundname).document(docid);
+                                                                        Map<String, Object> score = new HashMap<>();
+                                                                        score.put("Score1", sc1);
+                                                                        score.put("Score2", sc2);
+
+                                                                            if (fwin) {
+                                                                                score.put("Winner", a[0]);
+                                                                            } else {
+                                                                                score.put("Winner", a[1]);
+                                                                            }
+
+                                                                        docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                                add_score.setVisibility(View.GONE);
+                                                                                score1.setText(score01.getText());
+                                                                                score2.setText(score02.getText());
+                                                                            }
+                                                                        });
+                                                                    }
+
+
+                                                                }
+                                                            });
+
+
+                                                        }
+
+                                                    }
+                                                });
+                                                ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                            }
+
+                                        }/*end of else*/
                                     }
                                 });
                                 builder1.create();

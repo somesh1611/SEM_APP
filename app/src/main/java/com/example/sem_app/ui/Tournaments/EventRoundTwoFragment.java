@@ -170,6 +170,7 @@ public class EventRoundTwoFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 winners.clear();
+                players1.clear();
                 if (task.isSuccessful()) {
 
                     for (QueryDocumentSnapshot document : task.getResult()) {

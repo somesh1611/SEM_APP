@@ -230,108 +230,7 @@ public class EventParticipationFragment extends Fragment {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String ID = firebaseUser.getUid();
 
-        join.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-
-
-                DocumentReference acc_ref = firebaseFirestore.collection("Users").document(ID);
-                acc_ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-
-                            String name = documentSnapshot.getString("Name");
-                            String year = documentSnapshot.getString("Year");
-                            String branch = documentSnapshot.getString("Branch");
-
-                            switch (year){
-                                case "First Year":
-                                    sy1="FE";
-                                    break;
-                                case "Second Year":
-                                    sy1="SE";
-                                    break;
-                                case "Third Year":
-                                    sy1="TE";
-                                    break;
-                                case "Fourth Year":
-                                    sy1="BE";
-                                    break;
-                                default:
-                                    break;
-                            }
-
-                            switch (branch){
-                                case "Computer Engineering":
-                                    sb1="COMP";
-                                    break;
-                                case "IT Engineering":
-                                    sb1="IT";
-                                    break;
-                                case "ENTC Engineering":
-                                    sb1="ENTC";
-                                    break;
-                                case "Civil Engineering":
-                                    sb1="CIVIL";
-                                    break;
-                                case "Mechanical Engineering":
-                                    sb1="MECH";
-                                    break;
-                                case "Electrical Engineering":
-                                    sb1="ELE";
-                                    break;
-                                case "Printing Engineering":
-                                    sb1="PRINTING";
-                                    break;
-                                default:
-                                    break;
-                            }
-
-
-
-                            if(participant_id.contains(ID))
-                            {
-                                Toast.makeText(getActivity(), "Your Already Participated!", Toast.LENGTH_SHORT).show();
-
-                            }
-                            else
-                                {
-
-                                Map<String, Object> user = new HashMap<>();
-                                user.put("Name", name);
-                                user.put("Year", year);
-                                user.put("Branch", branch);
-                                user.put("uid",ID);
-
-                                DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
-                                doc.collection("participants").add(user).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
-
-                                        if (task.isSuccessful()) {
-
-                                            participant.add(name+":"+sy1+" "+sb1);
-                                            participant_id.add(ID);
-                                            adapter.notifyDataSetChanged();
-
-                                            Toast.makeText(getActivity(), "Participation Confirmed!", Toast.LENGTH_SHORT).show();
-                                        } else {
-
-                                            Log.d(TAG, "error!");
-                                        }
-
-                                    }
-                                });
-                            }
-                            ////////////////////////////////////////////////////////////////////////
-                        }
-                    }
-                });
-
-            }
-        });
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -449,11 +348,12 @@ public class EventParticipationFragment extends Fragment {
                                     {
 
                                         fab_slot.setVisibility(View.GONE);
-                                        join.setVisibility(View.GONE);
+
                                         fab_slot_view.setVisibility(View.VISIBLE);
 
                                     }else {
                                         fab_slot_view.setVisibility(View.GONE);
+                                        join.setVisibility(View.VISIBLE);
                                         fab_slot.setVisibility(View.VISIBLE);
                                     }
 
@@ -508,7 +408,7 @@ public class EventParticipationFragment extends Fragment {
                                                                                 {
 
                                                                                     fab_slot.setVisibility(View.GONE);
-                                                                                    join.setVisibility(View.GONE);
+
                                                                                     fab_slot_view.setVisibility(View.VISIBLE);
 
 
@@ -537,6 +437,110 @@ public class EventParticipationFragment extends Fragment {
             //fab_slot_view.setVisibility(View.VISIBLE);
 
         }
+        ////////////////////////////////////////////////////////////////////////////////////////
+        join.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+                DocumentReference acc_ref = firebaseFirestore.collection("Users").document(ID);
+                acc_ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+
+                            String name = documentSnapshot.getString("Name");
+                            String year = documentSnapshot.getString("Year");
+                            String branch = documentSnapshot.getString("Branch");
+
+                            switch (year){
+                                case "First Year":
+                                    sy1="FE";
+                                    break;
+                                case "Second Year":
+                                    sy1="SE";
+                                    break;
+                                case "Third Year":
+                                    sy1="TE";
+                                    break;
+                                case "Fourth Year":
+                                    sy1="BE";
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            switch (branch){
+                                case "Computer Engineering":
+                                    sb1="COMP";
+                                    break;
+                                case "IT Engineering":
+                                    sb1="IT";
+                                    break;
+                                case "ENTC Engineering":
+                                    sb1="ENTC";
+                                    break;
+                                case "Civil Engineering":
+                                    sb1="CIVIL";
+                                    break;
+                                case "Mechanical Engineering":
+                                    sb1="MECH";
+                                    break;
+                                case "Electrical Engineering":
+                                    sb1="ELE";
+                                    break;
+                                case "Printing Engineering":
+                                    sb1="PRINTING";
+                                    break;
+                                default:
+                                    break;
+                            }
+
+
+
+                            if(participant_id.contains(ID))
+                            {
+                                Toast.makeText(getActivity(), "Your Already Participated!", Toast.LENGTH_SHORT).show();
+
+                            }
+                            else
+                            {
+
+                                Map<String, Object> user = new HashMap<>();
+                                user.put("Name", name);
+                                user.put("Year", year);
+                                user.put("Branch", branch);
+                                user.put("uid",ID);
+
+                                DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
+                                doc.collection("participants").add(user).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+
+                                        if (task.isSuccessful()) {
+
+                                            participant.add(name+":"+sy1+" "+sb1);
+                                            participant_id.add(ID);
+                                            adapter.notifyDataSetChanged();
+
+                                            Toast.makeText(getActivity(), "Participation Confirmed!", Toast.LENGTH_SHORT).show();
+                                        } else {
+
+                                            Log.d(TAG, "error!");
+                                        }
+
+                                    }
+                                });
+                            }
+                            ////////////////////////////////////////////////////////////////////////
+                        }
+                    }
+                });
+
+            }
+        });
+        //////////////////////////////////////////////////////////////////////////////////////////
 
 
         fab_slot.setOnClickListener(new View.OnClickListener() {

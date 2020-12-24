@@ -155,7 +155,7 @@ public class EventKnockoutDrawFragment extends Fragment {
         if (!participant_id.isEmpty()) {
 
             n = participant_id.size();
-            int a = n;
+            int b = n;
 
 
             while (n > 0) {
@@ -163,7 +163,7 @@ public class EventKnockoutDrawFragment extends Fragment {
                 count++;
             }
 
-            if (arrayList.contains((a))) {
+            if (arrayList.contains((b))) {
                 count = count - 1;
 
             }
