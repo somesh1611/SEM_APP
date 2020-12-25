@@ -24,12 +24,10 @@
 
     <TextView
         android:id="@+id/player1_label"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
-        android:text="Team 1:"
         android:textSize="18sp">
 
     </TextView>
@@ -37,7 +35,6 @@
 
     <TextView
         android:id="@+id/player2_label"
-        android:text="Team 2:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/player1_label"

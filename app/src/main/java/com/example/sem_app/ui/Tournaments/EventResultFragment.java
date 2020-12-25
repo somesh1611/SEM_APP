@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public class EventResultFragment extends Fragment {
 
-    TextView tname, sname,rname,match,score1,score2,team1,team2,team01,team02,tie;
+    TextView tname, sname,rname,match,score1,score2,team1,team2,team01,team02,tie,iteam1,iteam2;
     EditText score01,score02;
     FloatingActionButton add_score;
     ArrayList allusers = new ArrayList();
@@ -60,7 +60,7 @@ public class EventResultFragment extends Fragment {
     FirebaseFirestore firebaseFirestore;
     String sy,sb,sy1,sb1;
     String TAG;
-    Boolean isAdmin;
+    Boolean isAdmin,isTeam;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,7 +74,7 @@ public class EventResultFragment extends Fragment {
     public EventResultFragment() {
         // Required empty public constructor
     }
-    public EventResultFragment(String s,String tn,String sn,String mrn,String rn,Boolean a,int p) {
+    public EventResultFragment(String s,String tn,String sn,String mrn,String rn,Boolean a,int p,Boolean b) {
 
         s1=s;
         tournamentname = tn;
@@ -83,6 +83,7 @@ public class EventResultFragment extends Fragment {
         mroundname=mrn;
         isAdmin=a;
         pos=String.valueOf(p+1);
+        isTeam=b;
 
     }
 
@@ -126,6 +127,8 @@ public class EventResultFragment extends Fragment {
         score2 = root.findViewById(R.id.score2_text);
         team1 = root.findViewById(R.id.team1_text);
         team2 = root.findViewById(R.id.team2_text);
+        iteam1=root.findViewById(R.id.team1_1_text);
+        iteam2=root.findViewById(R.id.team2_1_text);
         add_score = root.findViewById(R.id.add_score);
         tie=root.findViewById(R.id.tie_breaker_text);
 
@@ -191,7 +194,12 @@ public class EventResultFragment extends Fragment {
                         default:
                             break;
                     }
-                    team1.setText(sy1+" "+sb1);
+                    if(isTeam) {
+                        team1.setText(sy1 + " " + sb1);
+                    }else{
+                        team1.setText(name);
+                        iteam1.setText(sy1 + " " + sb1);
+                    }
 
 
 
@@ -321,7 +329,12 @@ public class EventResultFragment extends Fragment {
                             break;
                     }
 
-                    team2.setText(sy1 + " " + sb1);
+                    if(isTeam) {
+                        team2.setText(sy1 + " " + sb1);
+                    }else{
+                        team2.setText(name);
+                        iteam2.setText(sy1 + " " + sb1);
+                    }
 
 
 

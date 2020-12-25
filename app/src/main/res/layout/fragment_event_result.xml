@@ -37,7 +37,9 @@
             android:text="Cricket"
             android:textColor="#9966cc"
             android:textSize="24sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold">
+
+        </TextView>
 
         <TextView
             android:id="@+id/round_text"
@@ -119,6 +121,19 @@
 
         </TextView>
 
+        <TextView
+            android:id="@+id/team1_1_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/team1_text"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="22sp"
+            android:textStyle="bold">
+        </TextView>
+
 
         <TextView
             android:id="@+id/team2_text"
@@ -137,10 +152,24 @@
         </TextView>
 
         <TextView
+            android:id="@+id/team2_1_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/team2_text"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="22sp"
+            android:textStyle="bold">
+        </TextView>
+
+        <TextView
             android:id="@+id/set1.1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/team1_text"
+            android:layout_below="@id/team1_1_text"
             android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
             android:text=""
@@ -178,7 +207,7 @@
             android:id="@+id/set2.1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/team1_text"
+            android:layout_below="@id/team1_1_text"
             android:layout_alignBaseline="@id/set1.1"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="8dp"

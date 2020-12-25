@@ -39,6 +39,7 @@ public class Draw_list_adapter extends ArrayAdapter {
     String tournamentname,sportname,roundname;
     String sy,sb,sy1,sb1;
     String TAG,id;
+    Boolean isTeam;
 
     private final ArrayList d;
 
@@ -50,7 +51,7 @@ public class Draw_list_adapter extends ArrayAdapter {
 
 
 
-    public Draw_list_adapter(@NonNull Activity context, ArrayList p1,String t,String s,String r) {
+    public Draw_list_adapter(@NonNull Activity context, ArrayList p1,String t,String s,String r,Boolean c) {
         super(context, R.layout.draw_list_item,p1);
 
         this.context=context;
@@ -59,6 +60,7 @@ public class Draw_list_adapter extends ArrayAdapter {
         this.tournamentname=t;
         this.sportname=s;
         this.roundname=r;
+        this.isTeam=c;
 
     }
 
@@ -77,14 +79,21 @@ public class Draw_list_adapter extends ArrayAdapter {
            String[]p1=p.split(",");
 
            TextView player1 = (TextView) rowView.findViewById(R.id.player1);
-      //  player1.setText(p1.get(position).toString());
-
+           TextView player1Label=rowView.findViewById(R.id.player1_label);
+           TextView player2Label=rowView.findViewById(R.id.player2_label);
            TextView player2 = (TextView) rowView.findViewById(R.id.player2);
-        //player2.setText(p2.get(position).toString());
+           TextView score1 = (TextView) rowView.findViewById(R.id.score1);
+           TextView score2 = (TextView) rowView.findViewById(R.id.score2);
 
-          TextView score1 = (TextView) rowView.findViewById(R.id.score1);
+           if(!isTeam)
+           {
+               player1Label.setText("Player 1:");
+               player2Label.setText("Player 2:");
 
-          TextView score2 = (TextView) rowView.findViewById(R.id.score2);
+           }else{
+               player1Label.setText("Team 1:");
+               player2Label.setText("Team 2:");
+           }
 
 
 
@@ -151,7 +160,11 @@ public class Draw_list_adapter extends ArrayAdapter {
                         default:
                             break;
                     }
-                    player1.setText(sy1+" "+sb1);
+                    if(isTeam) {
+                        player1.setText(sy1 + " " + sb1);
+                    }else{
+                        player1.setText(name+" : "+sy1+" "+sb1);
+                    }
 
 
 
@@ -224,7 +237,11 @@ public class Draw_list_adapter extends ArrayAdapter {
                             break;
                     }
 
+                    if(isTeam) {
                         player2.setText(sy1 + " " + sb1);
+                    }else{
+                        player2.setText(name+" : "+sy1+" "+sb1);
+                    }
 
 
 

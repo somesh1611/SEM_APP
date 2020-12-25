@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 
@@ -36,12 +38,13 @@ public class EventViewFragment extends Fragment {
     TextView tname,sname,wname;
     ArrayList allusers=new ArrayList();
     ArrayList arrayList=new ArrayList();
+    ArrayList team_sports=new ArrayList();
     String id;
     String wsy1,wsb1;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
     Button part,rule;
-    Boolean isAdmin;
+    Boolean isAdmin,isTeam;
 
 
 
@@ -68,6 +71,20 @@ public class EventViewFragment extends Fragment {
        rule = root.findViewById(R.id.rule);
        tname.setText(tournamentname);
        sname.setText(sportname);
+
+       //team_sports.addAll(Collections.singleton(R.array.sportsList));
+        team_sports.addAll(Arrays.asList(getResources().getStringArray(R.array.team_sports)));
+       if(team_sports.contains(sportname))
+       {
+           isTeam=true;
+           Toast.makeText(getActivity(),"Team",Toast.LENGTH_SHORT).show();
+       }else {
+           isTeam=false;
+           Toast.makeText(getActivity(),"Single",Toast.LENGTH_SHORT).show();
+       }
+
+
+
 
         arrayList.add(2);
         arrayList.add(4);
@@ -191,7 +208,11 @@ public class EventViewFragment extends Fragment {
                                                                                                                }
                                                                                                                wname.setVisibility(View.VISIBLE);
                                                                                                                wname.setTextColor(getResources().getColor(R.color.color_pink));
-                                                                                                               wname.setText("Winner : " + wsy1 + " " + wsb1);
+                                                                                                               if(isTeam) {
+                                                                                                                   wname.setText("Winner : " + wsy1 + " " + wsb1);
+                                                                                                               }else {
+                                                                                                                   wname.setText("Winner : " + name + " " + "("+wsy1 + " " + wsb1+")");
+                                                                                                               }
 
                                                                                                            }
                                                                                                        }
@@ -228,7 +249,7 @@ public class EventViewFragment extends Fragment {
        part.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               EventParticipationFragment fragment=new EventParticipationFragment(tournamentname,sportname,isAdmin);
+               EventParticipationFragment fragment=new EventParticipationFragment(tournamentname,sportname,isAdmin,isTeam);
                FragmentTransaction transaction=getFragmentManager().beginTransaction();
                transaction.replace(R.id.nav_host_fragment,fragment);
                transaction.addToBackStack("back");

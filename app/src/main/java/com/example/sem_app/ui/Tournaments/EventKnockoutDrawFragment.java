@@ -52,7 +52,7 @@ public class EventKnockoutDrawFragment extends Fragment {
     ArrayList players_draw=new ArrayList();
     String id;
     String player1,player2;
-    Boolean isSlot;
+    Boolean isSlot,isTeam;
     int n;
 
 
@@ -68,17 +68,18 @@ public class EventKnockoutDrawFragment extends Fragment {
     public EventKnockoutDrawFragment() {
         // Required empty public constructor
     }
-    public EventKnockoutDrawFragment(String tn1, String sn1,Boolean b,Boolean c,ArrayList p1) {
+    public EventKnockoutDrawFragment(String tn1, String sn1,Boolean b,Boolean c,ArrayList p1,Boolean d) {
 
         tournamentname = tn1;
         sportname = sn1;
         isAdmin=b;
         isSlot=c;
         participant_id=p1;
+        isTeam=d;
 
     }
 
-    public EventKnockoutDrawFragment(String tn, String sn,Boolean a,Boolean c,ArrayList p,ArrayList p_id){
+    public EventKnockoutDrawFragment(String tn, String sn,Boolean a,Boolean c,ArrayList p,ArrayList p_id,Boolean d){
 
         tournamentname = tn;
         sportname = sn;
@@ -86,6 +87,7 @@ public class EventKnockoutDrawFragment extends Fragment {
         isSlot=c;
         participant=p;
         participant_id=p_id;
+        isTeam=d;
 
     }
 
@@ -350,7 +352,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                String round="Round1";
-                EventRoundOneFragment fragment=new EventRoundOneFragment(tournamentname,sportname,round,isAdmin,isSlot);
+                EventRoundOneFragment fragment=new EventRoundOneFragment(tournamentname,sportname,round,isAdmin,isSlot,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -363,7 +365,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round2";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -375,7 +377,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round3";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -387,7 +389,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round4";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -399,7 +401,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round5";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -411,7 +413,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round6";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -423,7 +425,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round7";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

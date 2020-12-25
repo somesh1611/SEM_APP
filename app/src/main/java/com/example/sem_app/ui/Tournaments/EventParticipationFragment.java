@@ -60,15 +60,16 @@ public class EventParticipationFragment extends Fragment {
     String id,tid,tid1;
     int type;
     String sy,sb, sy1,sb1;
-    Boolean isAdmin;
+    Boolean isAdmin,isTeam;
 
 
 
-    public EventParticipationFragment(String tn, String sn,Boolean a) {
+    public EventParticipationFragment(String tn, String sn,Boolean a,Boolean b) {
 
         tournamentname = tn;
         sportname = sn;
         isAdmin=a;
+        isTeam=b;
 
     }
 
@@ -585,7 +586,7 @@ public class EventParticipationFragment extends Fragment {
                                         switch (type) {
                                             case 1:
                                                 Boolean is_slot=false;
-                                                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot, participant, participant_id);
+                                                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot, participant, participant_id,isTeam);
                                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                                 transaction.replace(R.id.nav_host_fragment, fragment);
                                                 transaction.addToBackStack("back");
@@ -627,7 +628,7 @@ public class EventParticipationFragment extends Fragment {
             public void onClick(View v) {
 
                 Boolean is_slot=true;
-                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot,participant_id);
+                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot,participant_id,isTeam);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment, fragment);
                 transaction.addToBackStack("back");

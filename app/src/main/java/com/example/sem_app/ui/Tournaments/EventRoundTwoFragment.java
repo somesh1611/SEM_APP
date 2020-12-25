@@ -46,7 +46,7 @@ public class EventRoundTwoFragment extends Fragment {
 
     String tournamentname, sportname,TAG,roundname,mround,preround;
     FloatingActionButton make_draw;
-    Boolean isAdmin,isSlot;
+    Boolean isAdmin,isSlot,isTeam;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
     ArrayList allusers = new ArrayList();
@@ -76,12 +76,13 @@ public class EventRoundTwoFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public EventRoundTwoFragment(String tn, String sn,String r, Boolean a){
+    public EventRoundTwoFragment(String tn, String sn,String r, Boolean a,Boolean c){
 
         tournamentname = tn;
         sportname = sn;
         roundname=r;
         isAdmin=a;
+        isTeam=c;
 
 
     }
@@ -154,7 +155,7 @@ public class EventRoundTwoFragment extends Fragment {
         }
 
 
-        adapter=new Draw_list_adapter(getActivity(),draw,tournamentname,sportname,roundname);
+        adapter=new Draw_list_adapter(getActivity(),draw,tournamentname,sportname,roundname,isTeam);
         adapter.notifyDataSetChanged();
         drawlist.setAdapter(adapter);
 
@@ -375,7 +376,7 @@ public class EventRoundTwoFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentname,sportname,mround,roundname,isAdmin,position);
+                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentname,sportname,mround,roundname,isAdmin,position,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
