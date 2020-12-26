@@ -348,12 +348,9 @@ public class EventParticipationFragment extends Fragment {
                                     if(!task.getResult().isEmpty())
                                     {
 
-                                        fab_slot.setVisibility(View.GONE);
-
                                         fab_slot_view.setVisibility(View.VISIBLE);
 
                                     }else {
-                                        fab_slot_view.setVisibility(View.GONE);
                                         join.setVisibility(View.VISIBLE);
                                         fab_slot.setVisibility(View.VISIBLE);
                                     }
@@ -408,14 +405,10 @@ public class EventParticipationFragment extends Fragment {
                                                                                 if(!task.getResult().isEmpty())
                                                                                 {
 
-                                                                                    fab_slot.setVisibility(View.GONE);
-
                                                                                     fab_slot_view.setVisibility(View.VISIBLE);
 
-
                                                                                 }else {
-                                                                                    fab_slot.setVisibility(View.GONE);
-                                                                                    fab_slot_view.setVisibility(View.GONE);
+
                                                                                    join.setVisibility(View.VISIBLE);
                                                                                 }
                                                                             }
@@ -428,15 +421,6 @@ public class EventParticipationFragment extends Fragment {
                                                 }
                                             }
                                         });
-
-
-
-
-                                                        ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-           // fab_slot.setVisibility(View.GONE);
-            //fab_slot_view.setVisibility(View.VISIBLE);
-
         }
         ////////////////////////////////////////////////////////////////////////////////////////
         join.setOnClickListener(new View.OnClickListener() {

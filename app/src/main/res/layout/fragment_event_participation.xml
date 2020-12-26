@@ -58,6 +58,7 @@
         android:layout_gravity="bottom|right"
         android:src="@drawable/ic_baseline_sports_basketball_24"
         android:backgroundTint="#ff69b4"
+        android:visibility="gone"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="24dp">
 
@@ -69,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:src="@android:drawable/ic_menu_send"
+        android:visibility="gone"
         android:backgroundTint="#ff69b4"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="24dp">

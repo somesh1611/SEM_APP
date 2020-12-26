@@ -146,6 +146,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
 
                    CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
                     Query query=collref.whereEqualTo("Tournament Name", tournamentname);
+                    
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {

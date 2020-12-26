@@ -34,6 +34,7 @@ public class MyTournamentsFragment extends Fragment {
     ListView listView;
     ArrayList<String> my_tournaments_name =new ArrayList<>();
     ArrayList<String> my_tournaments_host =new ArrayList<>();
+    ArrayList<String> my_tournaments_id =new ArrayList<>();
     Boolean admin=true;
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
@@ -111,11 +112,13 @@ public class MyTournamentsFragment extends Fragment {
                         {
                             String tname = Snapshot.getString("Tournament Name");
                             String thost = Snapshot.getString("Tournament Host");
+                            String id = Snapshot.getId();
 
                             //String tsdate=(Snapshot.getString("Starting Date"));
 
                             my_tournaments_name.add(tname);
                             my_tournaments_host.add(thost);
+                            my_tournaments_id.add(id);
 
                             //my_tournaments.add(Snapshot.getString("Starting Date"));
 
