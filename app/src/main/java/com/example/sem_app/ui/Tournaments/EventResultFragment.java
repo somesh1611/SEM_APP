@@ -132,6 +132,7 @@ public class EventResultFragment extends Fragment {
         add_score = root.findViewById(R.id.add_score);
         tie=root.findViewById(R.id.tie_breaker_text);
 
+
         tname.setText(tournamentname);
         sname.setText(sportname);
         rname.setText(mroundname);
@@ -139,6 +140,12 @@ public class EventResultFragment extends Fragment {
         //////////////////////////////////////////////////////////////////////////////////////////
 
         String[]p1=s1.split(",");
+
+
+        /*if(isAdmin||!p1[1].contentEquals("BYE"))
+        {
+            add_score.setVisibility(View.VISIBLE);
+        }*/
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         DocumentReference acc_ref1=firebaseFirestore.collection("Users").document(p1[0]);
@@ -220,61 +227,65 @@ public class EventResultFragment extends Fragment {
             team2.setText(p1[1]);
 
             ///////////////////////////////////////////////////////////////////////////////////////
-            firebaseAuth = FirebaseAuth.getInstance();
-            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-            String Id = firebaseUser.getUid();
-            CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(Id).collection("My Tournaments");
-            Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    if (task.isSuccessful()) {
+            if(isAdmin) {
+                firebaseAuth = FirebaseAuth.getInstance();
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                String Id = firebaseUser.getUid();
+                CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(Id).collection("My Tournaments");
+                Query query = collref.whereEqualTo("Tournament Name", tournamentname);
+                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                        for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (task.isSuccessful()) {
 
-                            id1 = document.getId();
-                        }
-                        CollectionReference scolref1 = firebaseFirestore.collection(sportname).document(id1).collection(roundname);
+                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                        Query q = scolref1.whereEqualTo("Player1", p1[0]);
-                        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                id1 = document.getId();
 
-                                if (task.isSuccessful()) {
+                                CollectionReference scolref1 = firebaseFirestore.collection(sportname).document(id1).collection(roundname);
 
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                Query q = scolref1.whereEqualTo("Player1", p1[0]);
+                                q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                                        docid1 = document.getId();
-                                    }
-                                    DocumentReference doref = firebaseFirestore.collection(sportname).document(id1).collection(roundname).document(docid1);
-                                    Map<String, Object> score = new HashMap<>();
-                                    score.put("Score1", "+");
-                                    score.put("Score2", "-");
-                                    score.put("Winner", p1[0]);
+                                        if (task.isSuccessful()) {
 
-                                    doref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                          //  Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                            add_score.setVisibility(View.GONE);
-                                            team1.setTextColor(Color.GREEN);
-                                            score1.setText("+");
-                                            score2.setText("-");
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                docid1 = document.getId();
+                                            }
+                                            DocumentReference doref = firebaseFirestore.collection(sportname).document(id1).collection(roundname).document(docid1);
+                                            Map<String, Object> score = new HashMap<>();
+                                            score.put("Score1", "+");
+                                            score.put("Score2", "-");
+                                            score.put("Winner", p1[0]);
+
+                                            doref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    //  Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                    add_score.setVisibility(View.GONE);
+                                                    team1.setTextColor(Color.GREEN);
+                                                    score1.setText("+");
+                                                    score2.setText("-");
+                                                }
+                                            });
                                         }
-                                    });
-                                }
+
+
+                                    }
+                                });
 
 
                             }
-                        });
-
+                        }
 
                     }
-
-                }
-            });
+                });
+            }
             //////////////////////////////////////////////////////////////////////////////////////
         }else
         { acc_ref2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -398,7 +409,7 @@ public class EventResultFragment extends Fragment {
                                                                                    String tx2 = map.get("Score2").toString();
                                                                                    tie.setTextColor(Color.GREEN);
                                                                                    tie.setText(t1);
-                                                                                   add_score.setVisibility(View.GONE);
+
                                                                                    score1.setText(tx1);
                                                                                    score2.setText(tx2);
                                                                                }
@@ -414,12 +425,16 @@ public class EventResultFragment extends Fragment {
                                                                                        team2.setTextColor(Color.GREEN);
                                                                                        score2.setTextColor(Color.GREEN);
                                                                                    }
-                                                                                   add_score.setVisibility(View.GONE);
+
                                                                                    score1.setText(x1);
                                                                                    score2.setText(x2);
                                                                                }
                                                                                else{
                                                                                    Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
+                                                                                   if(isAdmin)
+                                                                                   {
+                                                                                       add_score.setVisibility(View.VISIBLE);
+                                                                                   }
                                                                                }
 
                                                                            }
@@ -440,12 +455,12 @@ public class EventResultFragment extends Fragment {
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////
-        if(!isAdmin||p1[1].contentEquals("BYE"))
+
+         /*if(isAdmin||!p1[1].contentEquals("BYE"))
         {
-            add_score.setVisibility(View.GONE);
-        }else{
             add_score.setVisibility(View.VISIBLE);
-        }
+        }*/
+
         add_score.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -550,7 +565,7 @@ public class EventResultFragment extends Fragment {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
                                                                                         Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                                                        add_score.setVisibility(View.GONE);
+                                                                                       add_score.setVisibility(View.GONE);
                                                                                         score1.setText(score01.getText());
                                                                                         score2.setText(score02.getText());
                                                                                         tie.setText("Tie-Breaker Won by " + team1.getText().toString());
@@ -620,7 +635,7 @@ public class EventResultFragment extends Fragment {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
                                                                                         Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                                                        add_score.setVisibility(View.GONE);
+                                                                                       add_score.setVisibility(View.GONE);
                                                                                         score1.setText(score01.getText());
                                                                                         score2.setText(score02.getText());
                                                                                         tie.setText("Tie-Breaker Won by " + team2.getText().toString());

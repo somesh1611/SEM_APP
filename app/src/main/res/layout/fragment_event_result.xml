@@ -269,6 +269,7 @@
         app:srcCompat="@drawable/ic_baseline_add_24"
         android:backgroundTint="#ff69b4"
         android:layout_marginRight="16dp"
+        android:visibility="gone"
         android:layout_marginBottom="16dp">
 
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
