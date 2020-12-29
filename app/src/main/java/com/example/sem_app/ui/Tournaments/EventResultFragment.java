@@ -47,17 +47,24 @@ import java.util.Map;
 public class EventResultFragment extends Fragment {
 
     TextView tname, sname,rname,match,score1,score2,team1,team2,team01,team02,tie,iteam1,iteam2;
+    TextView ws1t1,ws1t2,ws2t1,ws2t2,ws3t1,ws3t2,ws4t1,ws4t2,ws5t1,ws5t2;
+    TextView steam1,steam2,set1,set2,set3,set4,set5;
+    EditText t1s1,t1s2,t1s3,t1s4,t1s5,t2s1,t2s2,t2s3,t2s4,t2s5;
     EditText score01,score02;
     FloatingActionButton add_score;
     ArrayList allusers = new ArrayList();
     String tournamentname,sportname,roundname,pos,mroundname;
-    String s1,id,docid,tid;
+    String s1,id,docid,tid,sid;
     String docid1,id1;
     String docid2,id2;
-    int type;
+    String sdocid;
+    String s1t1,s2t1,s3t1,s4t1,s5t1,s1t2,s2t2,s3t2,s4t2,s5t2;
+    int type,stype;
     Boolean fwin,ftie;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
+    ArrayList ws1=new ArrayList();
+    ArrayList ws2=new ArrayList();
     String sy,sb,sy1,sb1;
     String TAG;
     Boolean isAdmin,isTeam;
@@ -130,6 +137,16 @@ public class EventResultFragment extends Fragment {
         iteam1=root.findViewById(R.id.team1_1_text);
         iteam2=root.findViewById(R.id.team2_1_text);
         add_score = root.findViewById(R.id.add_score);
+        ws1t1 = root.findViewById(R.id.set1_1);
+        ws2t1 = root.findViewById(R.id.set1_2);
+        ws3t1 = root.findViewById(R.id.set1_3);
+        ws4t1 = root.findViewById(R.id.set1_4);
+        ws5t1 = root.findViewById(R.id.set1_5);
+        ws1t2 = root.findViewById(R.id.set2_1);
+        ws2t2 = root.findViewById(R.id.set2_2);
+        ws3t2 = root.findViewById(R.id.set2_3);
+        ws4t2 = root.findViewById(R.id.set2_4);
+        ws5t2 = root.findViewById(R.id.set2_5);
         tie=root.findViewById(R.id.tie_breaker_text);
 
 
@@ -396,7 +413,6 @@ public class EventResultFragment extends Fragment {
                                                               q1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                                    @Override
                                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
                                                                        if (task.isSuccessful()) {
 
                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
@@ -428,6 +444,76 @@ public class EventResultFragment extends Fragment {
 
                                                                                    score1.setText(x1);
                                                                                    score2.setText(x2);
+
+                                                                                   if(map.containsKey("SET1"))
+                                                                                   {
+                                                                                       String z1=map.get("SET1").toString();
+                                                                                       String[]zz=z1.split("-");
+                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                                                                       {
+
+                                                                                           ws1t1.setText(z1);
+                                                                                       }else{
+
+                                                                                           ws1t2.setText(z1);
+                                                                                       }
+                                                                                   }
+                                                                                   if(map.containsKey("SET2"))
+                                                                                   {
+                                                                                       String z2=map.get("SET2").toString();
+                                                                                       String[]zz=z2.split("-");
+                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                                                                       {
+
+                                                                                               ws2t1.setText(z2);
+
+                                                                                       }else{
+
+                                                                                            ws2t2.setText(z2);
+                                                                                       }
+                                                                                   }
+                                                                                   if(map.containsKey("SET3"))
+                                                                                   {
+                                                                                       String z3=map.get("SET3").toString();
+                                                                                       String[]zz=z3.split("-");
+                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                                                                       {
+
+                                                                                               ws3t1.setText(z3);
+
+                                                                                       }else{
+
+                                                                                               ws3t2.setText(z3);
+
+                                                                                       }
+                                                                                   }
+                                                                                   if(map.containsKey("SET4"))
+                                                                                   {
+                                                                                       String z4=map.get("SET4").toString();
+                                                                                       String[]zz=z4.split("-");
+                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                                                                       {
+
+                                                                                               ws4t1.setText(z4);
+                                                                                       }else{
+
+                                                                                               ws4t2.setText(z4);
+
+                                                                                       }
+                                                                                   }
+                                                                                   if(map.containsKey("SET5"))
+                                                                                   {
+                                                                                       String z5=map.get("SET5").toString();
+                                                                                       String[]zz=z5.split("-");
+                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                                                                       {
+                                                                                          ws5t1.setText(z5);
+                                                                                       }else{
+                                                                                           ws5t2.setText(z5);
+                                                                                       }
+                                                                                   }
+
+
                                                                                }
                                                                                else{
                                                                                    Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
@@ -745,6 +831,238 @@ public class EventResultFragment extends Fragment {
                                 builder1.show();
                                 break;
                             case 2:
+                                ////////////////////////////////////////////////////////////////////////
+                                AlertDialog.Builder sbuilder1 = new AlertDialog.Builder(getActivity());
+
+                                sbuilder1.setTitle("Select Number of Sets Played");
+
+                                sbuilder1.setSingleChoiceItems(R.array.Sets, 5, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        switch (which) {
+                                            case 0:
+                                                Toast.makeText(getActivity(), "1", Toast.LENGTH_SHORT).show();
+                                                stype=1;
+                                                break;
+                                            case 1:
+                                                Toast.makeText(getActivity(), "2", Toast.LENGTH_SHORT).show();
+                                                stype=2;
+                                                break;
+                                            case 2:
+                                                Toast.makeText(getActivity(), "3", Toast.LENGTH_SHORT).show();
+                                                stype=3;
+                                                break;
+                                            case 3:
+                                                Toast.makeText(getActivity(), "4", Toast.LENGTH_SHORT).show();
+                                                stype=4;
+                                                break;
+                                            case 4:
+                                                Toast.makeText(getActivity(), "5", Toast.LENGTH_SHORT).show();
+                                                stype=5;
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+
+                                });
+                                ////////////////////////////////////////////////////////////////////////
+
+                                sbuilder1.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                AlertDialog.Builder sbuilder = new AlertDialog.Builder(getActivity());
+                                final View sets_score = getLayoutInflater().inflate(R.layout.add_score_sets, null);
+                                steam1 = sets_score.findViewById(R.id.steam1_name);
+                                steam2 = sets_score.findViewById(R.id.steam2_name);
+                                set1 = sets_score.findViewById(R.id.set1_textview);
+                                set2 = sets_score.findViewById(R.id.set2_textview);
+                                set3 = sets_score.findViewById(R.id.set3_textview);
+                                set4 = sets_score.findViewById(R.id.set4_textview);
+                                set5 = sets_score.findViewById(R.id.set5_textview);
+                                t1s1 = sets_score.findViewById(R.id.set1Team1);
+                                t1s2 = sets_score.findViewById(R.id.set2Team1);
+                                t1s3 = sets_score.findViewById(R.id.set3Team1);
+                                t1s4 = sets_score.findViewById(R.id.set4Team1);
+                                t1s5 = sets_score.findViewById(R.id.set5Team1);
+
+                                t2s1 = sets_score.findViewById(R.id.set1Team2);
+                                t2s2 = sets_score.findViewById(R.id.set2Team2);
+                                t2s3 = sets_score.findViewById(R.id.set3Team2);
+                                t2s4 = sets_score.findViewById(R.id.set4Team2);
+                                t2s5 = sets_score.findViewById(R.id.set5Team2);
+
+                                steam1.setText(team1.getText()+": ");
+                                steam2.setText(team2.getText()+": ");
+                                sbuilder.setView(sets_score);
+                                sbuilder.setTitle("Add Score");
+
+                                switch (stype)
+                                {
+                                    case 1:
+                                        set1.setVisibility(View.VISIBLE);
+                                        t1s1.setVisibility(View.VISIBLE);
+                                        t2s1.setVisibility(View.VISIBLE);
+                                        break;
+                                    case 2:
+                                        set1.setVisibility(View.VISIBLE);
+                                        t1s1.setVisibility(View.VISIBLE);
+                                        t2s1.setVisibility(View.VISIBLE);
+                                        set2.setVisibility(View.VISIBLE);
+                                        t1s2.setVisibility(View.VISIBLE);
+                                        t2s2.setVisibility(View.VISIBLE);
+                                        break;
+                                    case 3:
+                                        set1.setVisibility(View.VISIBLE);
+                                        t1s1.setVisibility(View.VISIBLE);
+                                        t2s1.setVisibility(View.VISIBLE);
+                                        set2.setVisibility(View.VISIBLE);
+                                        t1s2.setVisibility(View.VISIBLE);
+                                        t2s2.setVisibility(View.VISIBLE);
+                                        set3.setVisibility(View.VISIBLE);
+                                        t1s3.setVisibility(View.VISIBLE);
+                                        t2s3.setVisibility(View.VISIBLE);
+                                        break;
+                                    case 4:
+                                        set1.setVisibility(View.VISIBLE);
+                                        t1s1.setVisibility(View.VISIBLE);
+                                        t2s1.setVisibility(View.VISIBLE);
+                                        set2.setVisibility(View.VISIBLE);
+                                        t1s2.setVisibility(View.VISIBLE);
+                                        t2s2.setVisibility(View.VISIBLE);
+                                        set3.setVisibility(View.VISIBLE);
+                                        t1s3.setVisibility(View.VISIBLE);
+                                        t2s3.setVisibility(View.VISIBLE);
+                                        set4.setVisibility(View.VISIBLE);
+                                        t1s4.setVisibility(View.VISIBLE);
+                                        t2s4.setVisibility(View.VISIBLE);
+                                        break;
+                                    case 5:
+                                        set1.setVisibility(View.VISIBLE);
+                                        t1s1.setVisibility(View.VISIBLE);
+                                        t2s1.setVisibility(View.VISIBLE);
+                                        set2.setVisibility(View.VISIBLE);
+                                        t1s2.setVisibility(View.VISIBLE);
+                                        t2s2.setVisibility(View.VISIBLE);
+                                        set3.setVisibility(View.VISIBLE);
+                                        t1s3.setVisibility(View.VISIBLE);
+                                        t2s3.setVisibility(View.VISIBLE);
+                                        set4.setVisibility(View.VISIBLE);
+                                        t1s4.setVisibility(View.VISIBLE);
+                                        t2s4.setVisibility(View.VISIBLE);
+                                        set5.setVisibility(View.VISIBLE);
+                                        t1s5.setVisibility(View.VISIBLE);
+                                        t2s5.setVisibility(View.VISIBLE);
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+
+                                sbuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        ////////////////////////////////////////////////////////////
+                                        String[]d=s1.split(",");
+
+                                        switch (stype)
+                                        {
+                                            case 1:
+                                                s1t1=t1s1.getText().toString();
+                                                s1t2=t2s1.getText().toString();
+
+                                                if(TextUtils.isEmpty(s1t1)||TextUtils.isEmpty(s1t2))
+                                                {
+                                                    Toast.makeText(getActivity(),"Sets score Should not be Empty!",Toast.LENGTH_SHORT).show();
+                                                }else{
+                                                    setsScore(s1t1,s1t2,"-","-","-","-","-","-","-","-",d[0],d[1]);
+                                                }
+                                                break;
+                                            case 2:
+                                                s1t1=t1s1.getText().toString();
+                                                s1t2=t2s1.getText().toString();
+                                                s2t1=t1s2.getText().toString();
+                                                s2t2=t2s2.getText().toString();
+                                                if(TextUtils.isEmpty(s1t1)||TextUtils.isEmpty(s1t2)||TextUtils.isEmpty(s2t1)||TextUtils.isEmpty(s2t2))
+                                                {
+                                                    Toast.makeText(getActivity(),"Sets score Should not be Empty!",Toast.LENGTH_SHORT).show();
+
+                                                }else{
+                                                    setsScore(s1t1,s1t2,s2t1,s2t2,"-","-","-","-","-","-",d[0],d[1]);
+                                                }
+
+
+                                                break;
+                                            case 3:
+                                                s1t1=t1s1.getText().toString();
+                                                s1t2=t2s1.getText().toString();
+                                                s2t1=t1s2.getText().toString();
+                                                s2t2=t2s2.getText().toString();
+                                                s3t1=t1s3.getText().toString();
+                                                s3t2=t2s3.getText().toString();
+                                                if(TextUtils.isEmpty(s1t1)||TextUtils.isEmpty(s1t2)||TextUtils.isEmpty(s2t1)||TextUtils.isEmpty(s2t2)||TextUtils.isEmpty(s3t1)||TextUtils.isEmpty(s3t2))
+                                                {
+                                                    Toast.makeText(getActivity(),"Sets score Should not be Empty!",Toast.LENGTH_SHORT).show();
+
+                                                }else{
+                                                    setsScore(s1t1,s1t2,s2t1,s2t2,s3t1,s3t2,"-","-","-","-",d[0],d[1]);
+
+                                                }
+
+                                                break;
+                                            case 4:
+                                                s1t1=t1s1.getText().toString();
+                                                s1t2=t2s1.getText().toString();
+                                                s2t1=t1s2.getText().toString();
+                                                s2t2=t2s2.getText().toString();
+                                                s3t1=t1s3.getText().toString();
+                                                s3t2=t2s3.getText().toString();
+                                                s4t1=t1s4.getText().toString();
+                                                s4t2=t2s4.getText().toString();
+                                                if(TextUtils.isEmpty(s1t1)||TextUtils.isEmpty(s1t2)||TextUtils.isEmpty(s2t1)||TextUtils.isEmpty(s2t2)||TextUtils.isEmpty(s3t1)||TextUtils.isEmpty(s3t2)||TextUtils.isEmpty(s4t1)||TextUtils.isEmpty(s4t2))
+                                                {
+                                                    Toast.makeText(getActivity(),"Sets score Should not be Empty!",Toast.LENGTH_SHORT).show();
+
+                                                }else{
+                                                    setsScore(s1t1,s1t2,s2t1,s2t2,s3t1,s3t2,s4t1,s4t2,"-","-",d[0],d[1]);
+
+                                                }
+                                                break;
+                                            case 5:
+                                                s1t1=t1s1.getText().toString();
+                                                s1t2=t2s1.getText().toString();
+                                                s2t1=t1s2.getText().toString();
+                                                s2t2=t2s2.getText().toString();
+                                                s3t1=t1s3.getText().toString();
+                                                s3t2=t2s3.getText().toString();
+                                                s4t1=t1s4.getText().toString();
+                                                s4t2=t2s4.getText().toString();
+                                                s5t2=t2s5.getText().toString();
+                                                s5t1=t1s5.getText().toString();
+                                                if(TextUtils.isEmpty(s1t1)||TextUtils.isEmpty(s1t2)||TextUtils.isEmpty(s2t1)||TextUtils.isEmpty(s2t2)||TextUtils.isEmpty(s3t1)||TextUtils.isEmpty(s3t2)||TextUtils.isEmpty(s4t1)||TextUtils.isEmpty(s4t2)||TextUtils.isEmpty(s5t1)||TextUtils.isEmpty(s5t2))
+                                                {
+                                                    Toast.makeText(getActivity(),"Sets score Should not be Empty!",Toast.LENGTH_SHORT).show();
+
+                                                }else{
+                                                    setsScore(s1t1,s1t2,s2t1,s2t2,s3t1,s3t2,s4t1,s4t2,s5t1,s5t2,d[0],d[1]);
+                                                }
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                        /////////////////////////////////////////////////////////////
+                                    }
+                                });
+                                sbuilder.create();
+                                sbuilder.show();
+                                    }
+                                });
+                                /////////////////////////////////////////////////////////////////////////////////
+                                sbuilder1.create();
+                                sbuilder1.show();
                                 break;
                         }
 
@@ -759,5 +1077,159 @@ public class EventResultFragment extends Fragment {
             }
         });
         return root;
+    }
+
+    public void setsScore(String s1t1Score,String s1t2Score,String s2t1Score,String s2t2Score,String s3t1Score,String s3t2Score,String s4t1Score,String s4t2Score,String s5t1Score,String s5t2Score,String t1,String t2){
+
+        String st11=s1t1Score;
+        String st12=s1t2Score;
+        String st21=s2t1Score;
+        String st22=s2t2Score;
+        String st31=s3t1Score;
+        String st32=s3t2Score;
+        String st41=s4t1Score;
+        String st42=s4t2Score;
+        String st51=s5t1Score;
+        String st52=s5t2Score;
+        String p1=t1;
+        String p2=t2;
+
+        int i1,i2;
+
+      Map smap = new HashMap();
+
+      i1=i2=0;
+
+        if(st11!="-")
+        {
+            smap.put("SET1",st11+"-"+st12);
+            if(Integer.valueOf(st11)>Integer.valueOf(st12))
+            {
+                i1++;
+            }else {
+                i2++;
+            }
+
+        }
+        if(st21!="-")
+        {
+            smap.put("SET2",st21+"-"+st22);
+            if(Integer.valueOf(st21)>Integer.valueOf(st22))
+            {
+                i1++;
+            }else {
+                i2++;
+            }
+
+        }
+        if(st31!="-")
+        {
+            smap.put("SET3",st31+"-"+st32);
+            if(Integer.valueOf(st31)>Integer.valueOf(st32))
+            {
+                i1++;
+            }else {
+                i2++;
+            }
+
+        }
+        if(st41!="-")
+        {
+            smap.put("SET4",st41+"-"+st42);
+            if(Integer.valueOf(st41)>Integer.valueOf(st42))
+            {
+                i1++;
+            }else {
+                i2++;
+            }
+
+        }
+        if(st51!="-")
+        {
+            smap.put("SET5",st51+"-"+st52);
+            if(Integer.valueOf(st51)>Integer.valueOf(st52))
+            {
+                i1++;
+            }else {
+                i2++;
+            }
+
+        }
+
+        if(i1>i2)
+        {
+            smap.put("Winner",p1);
+        }else{
+            smap.put("Winner",p2);
+        }
+
+        smap.put("Score1",i1);
+        smap.put("Score2",i2);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+
+        String ID = firebaseUser.getUid();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+
+        CollectionReference scollref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
+        Query squery = scollref.whereEqualTo("Tournament Name", tournamentname);
+        int finalI = i1;
+        int finalI1 = i2;
+        squery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                        sid = document.getId();
+                    }
+                    CollectionReference sscolref = firebaseFirestore.collection(sportname).document(sid).collection(roundname);
+
+                    Query sq = sscolref.whereEqualTo("Player1", p1);
+
+                    sq.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                    sdocid = document.getId();
+                                DocumentReference sdocref = firebaseFirestore.collection(sportname).document(sid).collection(roundname).document(sdocid);
+
+
+                                sdocref.update(smap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                        add_score.setVisibility(View.GONE);
+                                        score1.setText(String.valueOf(finalI));
+                                        score2.setText(String.valueOf(finalI1));
+
+                                    }
+                                });
+
+                                }
+
+                            }
+
+
+
+                        }
+                    });
+                }
+
+
+            }
+        });
+
+
+
+
     }
 }
