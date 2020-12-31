@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -88,13 +87,6 @@ public class MyTournamentsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_my_tournaments, container, false);
 
         listView = root.findViewById(R.id.my_tournaments_list);
-        ViewGroup header = (ViewGroup)inflater.inflate(R.layout.tournament_list_header, listView, false);
-        TextView list_header=header.findViewById(R.id.tournament_list_header_textview);
-        list_header.setText("MY TOURNAMENTS");
-        listView.addHeaderView(header,null,false);
-
-
-
 
         firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
@@ -108,6 +100,7 @@ public class MyTournamentsFragment extends Fragment {
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                         my_tournaments_name.clear();
                         my_tournaments_host.clear();
+                        my_tournaments_id.clear();
                         for(DocumentSnapshot Snapshot:value)
                         {
                             String tname = Snapshot.getString("Tournament Name");
@@ -125,7 +118,7 @@ public class MyTournamentsFragment extends Fragment {
                         }
                        // Log.d(TAG, "document"+ my_tournaments.size());
                         ArrayAdapter<String> adapter = new Tournament_list_adapter(getActivity(),
-                                my_tournaments_name, my_tournaments_host);
+                                my_tournaments_name,my_tournaments_host, my_tournaments_id);
 
                         adapter.notifyDataSetChanged();
                         listView.setAdapter(adapter);
@@ -139,6 +132,7 @@ public class MyTournamentsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               // Toast.makeText(getActivity(),"mm "+listView.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
                 TournamentViewFragment fragment=new TournamentViewFragment(listView.getItemAtPosition(position),admin);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);

@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,9 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -53,7 +53,7 @@ public class EventResultFragment extends Fragment {
     EditText score01,score02;
     FloatingActionButton add_score;
     ArrayList allusers = new ArrayList();
-    String tournamentname,sportname,roundname,pos,mroundname;
+    String tournamentid,sportname,roundname,pos,mroundname;
     String s1,id,docid,tid,sid;
     String docid1,id1;
     String docid2,id2;
@@ -69,6 +69,8 @@ public class EventResultFragment extends Fragment {
     String TAG;
     Boolean isAdmin,isTeam;
 
+    EventResultViewModel eventResultViewModel;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,10 +83,10 @@ public class EventResultFragment extends Fragment {
     public EventResultFragment() {
         // Required empty public constructor
     }
-    public EventResultFragment(String s,String tn,String sn,String mrn,String rn,Boolean a,int p,Boolean b) {
+    public EventResultFragment(String s,String tid,String sn,String mrn,String rn,Boolean a,int p,Boolean b) {
 
         s1=s;
-        tournamentname = tn;
+        tournamentid = tid;
         sportname = sn;
         roundname=rn;
         mroundname=mrn;
@@ -150,8 +152,8 @@ public class EventResultFragment extends Fragment {
         tie=root.findViewById(R.id.tie_breaker_text);
 
 
-        tname.setText(tournamentname);
-        sname.setText(sportname);
+       // tname.setText(tournamentname);
+      //  sname.setText(sportname);
         rname.setText(mroundname);
         match.setText("Match "+pos);
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -249,19 +251,9 @@ public class EventResultFragment extends Fragment {
                 firebaseAuth = FirebaseAuth.getInstance();
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 String Id = firebaseUser.getUid();
-                CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(Id).collection("My Tournaments");
-                Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                        if (task.isSuccessful()) {
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                id1 = document.getId();
-
-                                CollectionReference scolref1 = firebaseFirestore.collection(sportname).document(id1).collection(roundname);
+                                CollectionReference scolref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
 
                                 Query q = scolref1.whereEqualTo("Player1", p1[0]);
                                 q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -274,7 +266,7 @@ public class EventResultFragment extends Fragment {
 
                                                 docid1 = document.getId();
                                             }
-                                            DocumentReference doref = firebaseFirestore.collection(sportname).document(id1).collection(roundname).document(docid1);
+                                            DocumentReference doref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(docid1);
                                             Map<String, Object> score = new HashMap<>();
                                             score.put("Score1", "+");
                                             score.put("Score2", "-");
@@ -296,12 +288,6 @@ public class EventResultFragment extends Fragment {
                                     }
                                 });
 
-
-                            }
-                        }
-
-                    }
-                });
             }
             //////////////////////////////////////////////////////////////////////////////////////
         }else
@@ -381,172 +367,130 @@ public class EventResultFragment extends Fragment {
         });
         }
         ///////////////////////////////////////////////////////////////////////////////////////////
+           CollectionReference partref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+        Query q1=partref.whereEqualTo("Player1",p1[0]);
+        q1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Map map = document.getData();
+                        if(map.containsKey("Tie"))
+                        {
+                            String t1 = map.get("Tie").toString();
+                            String tx1 = map.get("Score1").toString();
+                            String tx2 = map.get("Score2").toString();
+                            tie.setTextColor(Color.GREEN);
+                            tie.setText(t1);
 
-        CollectionReference acolref = firebaseFirestore.collection("Users");
-        acolref.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                       @Override
-                                       public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                                           allusers.clear();
+                            score1.setText(tx1);
+                            score2.setText(tx2);
+                        }
+                        else if(map.containsKey("Winner"))
+                        {
+                            String x1 = map.get("Score1").toString();
+                            String x2 = map.get("Score2").toString();
+                            String w1 = map.get("Winner").toString();
+                            if (w1.contentEquals(p1[0])) {
+                                team1.setTextColor(Color.GREEN);
+                                score1.setTextColor(Color.GREEN);
+                            } else {
+                                team2.setTextColor(Color.GREEN);
+                                score2.setTextColor(Color.GREEN);
+                            }
 
-                                           for (DocumentSnapshot Snapshot : value) {
+                            score1.setText(x1);
+                            score2.setText(x2);
 
-                                               allusers.add(Snapshot.getId());
+                            if(map.containsKey("SET1"))
+                            {
+                                String z1=map.get("SET1").toString();
+                                String[]zz=z1.split("-");
+                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                {
 
-                                           }
-                                           for (Object i : allusers) {
+                                    ws1t1.setText(z1);
+                                }else{
 
-                                               CollectionReference acollref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                                               Query rquery = acollref.whereEqualTo("Tournament Name", tournamentname);
-                                               rquery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                   @Override
-                                                   public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    ws1t2.setText(z1);
+                                }
+                            }
+                            if(map.containsKey("SET2"))
+                            {
+                                String z2=map.get("SET2").toString();
+                                String[]zz=z2.split("-");
+                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                {
 
-                                                       if (task.isSuccessful()) {
+                                    ws2t1.setText(z2);
 
-                                                           for (QueryDocumentSnapshot document : task.getResult()) {
+                                }else{
 
-                                                               tid = document.getId();
+                                    ws2t2.setText(z2);
+                                }
+                            }
+                            if(map.containsKey("SET3"))
+                            {
+                                String z3=map.get("SET3").toString();
+                                String[]zz=z3.split("-");
+                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                {
 
+                                    ws3t1.setText(z3);
 
-                                                           CollectionReference partref = firebaseFirestore.collection(sportname).document(tid).collection(roundname);
-                                                           Query q1=partref.whereEqualTo("Player1",p1[0]);
-                                                              q1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                   @Override
-                                                                   public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                       if (task.isSuccessful()) {
+                                }else{
 
-                                                                           for (QueryDocumentSnapshot document : task.getResult()) {
+                                    ws3t2.setText(z3);
 
-                                                                               Map map = document.getData();
-                                                                               if(map.containsKey("Tie"))
-                                                                               {
-                                                                                   String t1 = map.get("Tie").toString();
-                                                                                   String tx1 = map.get("Score1").toString();
-                                                                                   String tx2 = map.get("Score2").toString();
-                                                                                   tie.setTextColor(Color.GREEN);
-                                                                                   tie.setText(t1);
+                                }
+                            }
+                            if(map.containsKey("SET4"))
+                            {
+                                String z4=map.get("SET4").toString();
+                                String[]zz=z4.split("-");
+                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                {
 
-                                                                                   score1.setText(tx1);
-                                                                                   score2.setText(tx2);
-                                                                               }
-                                                                               else if(map.containsKey("Winner"))
-                                                                               {
-                                                                                   String x1 = map.get("Score1").toString();
-                                                                                   String x2 = map.get("Score2").toString();
-                                                                                   String w1 = map.get("Winner").toString();
-                                                                                   if (w1.contentEquals(p1[0])) {
-                                                                                       team1.setTextColor(Color.GREEN);
-                                                                                       score1.setTextColor(Color.GREEN);
-                                                                                   } else {
-                                                                                       team2.setTextColor(Color.GREEN);
-                                                                                       score2.setTextColor(Color.GREEN);
-                                                                                   }
+                                    ws4t1.setText(z4);
+                                }else{
 
-                                                                                   score1.setText(x1);
-                                                                                   score2.setText(x2);
+                                    ws4t2.setText(z4);
 
-                                                                                   if(map.containsKey("SET1"))
-                                                                                   {
-                                                                                       String z1=map.get("SET1").toString();
-                                                                                       String[]zz=z1.split("-");
-                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                                                                       {
-
-                                                                                           ws1t1.setText(z1);
-                                                                                       }else{
-
-                                                                                           ws1t2.setText(z1);
-                                                                                       }
-                                                                                   }
-                                                                                   if(map.containsKey("SET2"))
-                                                                                   {
-                                                                                       String z2=map.get("SET2").toString();
-                                                                                       String[]zz=z2.split("-");
-                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                                                                       {
-
-                                                                                               ws2t1.setText(z2);
-
-                                                                                       }else{
-
-                                                                                            ws2t2.setText(z2);
-                                                                                       }
-                                                                                   }
-                                                                                   if(map.containsKey("SET3"))
-                                                                                   {
-                                                                                       String z3=map.get("SET3").toString();
-                                                                                       String[]zz=z3.split("-");
-                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                                                                       {
-
-                                                                                               ws3t1.setText(z3);
-
-                                                                                       }else{
-
-                                                                                               ws3t2.setText(z3);
-
-                                                                                       }
-                                                                                   }
-                                                                                   if(map.containsKey("SET4"))
-                                                                                   {
-                                                                                       String z4=map.get("SET4").toString();
-                                                                                       String[]zz=z4.split("-");
-                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                                                                       {
-
-                                                                                               ws4t1.setText(z4);
-                                                                                       }else{
-
-                                                                                               ws4t2.setText(z4);
-
-                                                                                       }
-                                                                                   }
-                                                                                   if(map.containsKey("SET5"))
-                                                                                   {
-                                                                                       String z5=map.get("SET5").toString();
-                                                                                       String[]zz=z5.split("-");
-                                                                                       if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                                                                       {
-                                                                                          ws5t1.setText(z5);
-                                                                                       }else{
-                                                                                           ws5t2.setText(z5);
-                                                                                       }
-                                                                                   }
+                                }
+                            }
+                            if(map.containsKey("SET5"))
+                            {
+                                String z5=map.get("SET5").toString();
+                                String[]zz=z5.split("-");
+                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                                {
+                                    ws5t1.setText(z5);
+                                }else{
+                                    ws5t2.setText(z5);
+                                }
+                            }
 
 
-                                                                               }
-                                                                               else{
-                                                                                   Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
-                                                                                   if(isAdmin)
-                                                                                   {
-                                                                                       add_score.setVisibility(View.VISIBLE);
-                                                                                   }
-                                                                               }
+                        }
+                        else{
+                            Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
+                            if(isAdmin)
+                            {
+                                add_score.setVisibility(View.VISIBLE);
+                            }
+                        }
 
-                                                                           }
+                    }
 
-                                                                       }
-                                                                   }
-                                                               });
+                }
+            }
+        });
 
-                                                           }
-
-                                                       }
-                                                   }
-                                               });
-                                           }
-                                       }
-                                   });
-
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////
 
          /*if(isAdmin||!p1[1].contentEquals("BYE"))
         {
             add_score.setVisibility(View.VISIBLE);
         }*/
-
         add_score.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -598,23 +542,22 @@ public class EventResultFragment extends Fragment {
                                         if (TextUtils.isEmpty(sc1) || TextUtils.isEmpty(sc2)) {
                                             Toast.makeText(getActivity(), "Please Enter the Score!", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            if(Integer.valueOf(sc1)==Integer.valueOf(sc2))
-                                            {
+                                            if (Integer.valueOf(sc1) == Integer.valueOf(sc2)) {
                                                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                                                 builder2.setTitle("Tie Match");
                                                 builder2.setMessage("Who won the Tie-Breaker?");
                                                 builder2.setPositiveButton(team1.getText().toString(), new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-                                                        firebaseAuth = FirebaseAuth.getInstance();
-                                                        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                                                        String ID = firebaseUser.getUid();
+
                                                         firebaseFirestore = FirebaseFirestore.getInstance();
 
                                                         ///////////////////////////////////////////////////////////////////////
-                                                        CollectionReference tcollref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                                        Query tquery = tcollref.whereEqualTo("Tournament Name", tournamentname);
-                                                        tquery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                                                        CollectionReference scolref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+                                                        String[] t = s1.split(",");
+                                                        Query q = scolref.whereEqualTo("Player1", t[0]);
+                                                        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -622,52 +565,34 @@ public class EventResultFragment extends Fragment {
 
                                                                     for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                                        id2 = document.getId();
+                                                                        docid2 = document.getId();
                                                                     }
-                                                                    CollectionReference scolref = firebaseFirestore.collection(sportname).document(id2).collection(roundname);
-                                                                    String[] t = s1.split(",");
-                                                                    Query q = scolref.whereEqualTo("Player1", t[0]);
-                                                                    q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                    DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(docid2);
+                                                                    Map<String, Object> score = new HashMap<>();
+                                                                    score.put("Score1", sc1);
+                                                                    score.put("Score2", sc2);
+
+
+                                                                    score.put("Tie", "Tie-Breaker Won by " + team1.getText().toString());
+                                                                    score.put("Winner", t[0]);
+
+
+                                                                    docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
-                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                                            if (task.isSuccessful()) {
-
-                                                                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                                    docid2 = document.getId();
-                                                                                }
-                                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(id2).collection(roundname).document(docid2);
-                                                                                Map<String, Object> score = new HashMap<>();
-                                                                                score.put("Score1", sc1);
-                                                                                score.put("Score2", sc2);
-
-
-                                                                                score.put("Tie", "Tie-Breaker Won by " + team1.getText().toString());
-                                                                                score.put("Winner", t[0]);
-
-
-                                                                                docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                    @Override
-                                                                                    public void onSuccess(Void aVoid) {
-                                                                                        Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                                                       add_score.setVisibility(View.GONE);
-                                                                                        score1.setText(score01.getText());
-                                                                                        score2.setText(score02.getText());
-                                                                                        tie.setText("Tie-Breaker Won by " + team1.getText().toString());
-                                                                                    }
-                                                                                });
-                                                                            }
-
-
+                                                                        public void onSuccess(Void aVoid) {
+                                                                            Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                            add_score.setVisibility(View.GONE);
+                                                                            score1.setText(score01.getText());
+                                                                            score2.setText(score02.getText());
+                                                                            tie.setText("Tie-Breaker Won by " + team1.getText().toString());
                                                                         }
                                                                     });
-
-
                                                                 }
+
 
                                                             }
                                                         });
+
 
                                                         ///////////////////////////////////////////////////////////////////////
 
@@ -677,14 +602,14 @@ public class EventResultFragment extends Fragment {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         ///////////////////////////////////////////////////////////////////////////////////////
-                                                        firebaseAuth = FirebaseAuth.getInstance();
-                                                        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                                                        String ID = firebaseUser.getUid();
+
                                                         firebaseFirestore = FirebaseFirestore.getInstance();
                                                         ///////////////////////////////////////////////////////////////////////
-                                                        CollectionReference tcollref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                                        Query tquery = tcollref.whereEqualTo("Tournament Name", tournamentname);
-                                                        tquery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                                                        CollectionReference scolref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+                                                        String[] t = s1.split(",");
+                                                        Query q = scolref.whereEqualTo("Player1", t[0]);
+                                                        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -692,53 +617,33 @@ public class EventResultFragment extends Fragment {
 
                                                                     for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                                        id2 = document.getId();
+                                                                        docid2 = document.getId();
                                                                     }
-                                                                    CollectionReference scolref = firebaseFirestore.collection(sportname).document(id2).collection(roundname);
-                                                                    String[] t = s1.split(",");
-                                                                    Query q = scolref.whereEqualTo("Player1", t[0]);
-                                                                    q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                    DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(docid2);
+                                                                    Map<String, Object> score = new HashMap<>();
+                                                                    score.put("Score1", sc1);
+                                                                    score.put("Score2", sc2);
+
+
+                                                                    score.put("Tie", "Tie-Breaker Won by " + team2.getText().toString());
+                                                                    score.put("Winner", t[1]);
+
+
+                                                                    docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
-                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                                            if (task.isSuccessful()) {
-
-                                                                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                                    docid2 = document.getId();
-                                                                                }
-                                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(id2).collection(roundname).document(docid2);
-                                                                                Map<String, Object> score = new HashMap<>();
-                                                                                score.put("Score1", sc1);
-                                                                                score.put("Score2", sc2);
-
-
-                                                                                score.put("Tie", "Tie-Breaker Won by " + team2.getText().toString());
-                                                                                score.put("Winner", t[1]);
-
-
-                                                                                docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                    @Override
-                                                                                    public void onSuccess(Void aVoid) {
-                                                                                        Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                                                       add_score.setVisibility(View.GONE);
-                                                                                        score1.setText(score01.getText());
-                                                                                        score2.setText(score02.getText());
-                                                                                        tie.setText("Tie-Breaker Won by " + team2.getText().toString());
-                                                                                    }
-                                                                                });
-                                                                            }
-
-
+                                                                        public void onSuccess(Void aVoid) {
+                                                                            Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                            add_score.setVisibility(View.GONE);
+                                                                            score1.setText(score01.getText());
+                                                                            score2.setText(score02.getText());
+                                                                            tie.setText("Tie-Breaker Won by " + team2.getText().toString());
                                                                         }
                                                                     });
-
-
                                                                 }
+
 
                                                             }
                                                         });
-
 
 
                                                     }
@@ -747,8 +652,7 @@ public class EventResultFragment extends Fragment {
                                                 builder2.show();
 
 
-
-                                            }else {
+                                            } else {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                 if (Integer.valueOf(sc1) > Integer.valueOf(sc2)) {
@@ -758,16 +662,13 @@ public class EventResultFragment extends Fragment {
                                                 }
 
 
-                                                firebaseAuth = FirebaseAuth.getInstance();
-                                                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-
-                                                String ID = firebaseUser.getUid();
                                                 firebaseFirestore = FirebaseFirestore.getInstance();
 
-                                                CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                                Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                                                CollectionReference scolref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+                                                String[] a = s1.split(",");
+                                                Query q = scolref.whereEqualTo("Player1", a[0]);
+                                                q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -775,63 +676,48 @@ public class EventResultFragment extends Fragment {
 
                                                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                                id = document.getId();
+                                                                docid = document.getId();
                                                             }
-                                                            CollectionReference scolref = firebaseFirestore.collection(sportname).document(id).collection(roundname);
-                                                            String[] a = s1.split(",");
-                                                            Query q = scolref.whereEqualTo("Player1", a[0]);
-                                                            q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                            DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(docid);
+                                                            Map<String, Object> score = new HashMap<>();
+                                                            score.put("Score1", sc1);
+                                                            score.put("Score2", sc2);
+
+                                                            if (fwin) {
+                                                                score.put("Winner", a[0]);
+                                                            } else {
+                                                                score.put("Winner", a[1]);
+                                                            }
+
+                                                            docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
-                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                                    if (task.isSuccessful()) {
-
-                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                            docid = document.getId();
-                                                                        }
-                                                                        DocumentReference docref = firebaseFirestore.collection(sportname).document(id).collection(roundname).document(docid);
-                                                                        Map<String, Object> score = new HashMap<>();
-                                                                        score.put("Score1", sc1);
-                                                                        score.put("Score2", sc2);
-
-                                                                            if (fwin) {
-                                                                                score.put("Winner", a[0]);
-                                                                            } else {
-                                                                                score.put("Winner", a[1]);
-                                                                            }
-
-                                                                        docref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                                                add_score.setVisibility(View.GONE);
-                                                                                score1.setText(score01.getText());
-                                                                                score2.setText(score02.getText());
-                                                                            }
-                                                                        });
-                                                                    }
-
-
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                    add_score.setVisibility(View.GONE);
+                                                                    score1.setText(score01.getText());
+                                                                    score2.setText(score02.getText());
                                                                 }
                                                             });
-
-
                                                         }
+
 
                                                     }
                                                 });
-                                                ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                            }
 
-                                        }/*end of else*/
+
+                                                ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                                            }/*end of else*/
+                                        }
                                     }
                                 });
                                 builder1.create();
                                 builder1.show();
                                 break;
-                            case 2:
-                                ////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+      case 2:
+
                                 AlertDialog.Builder sbuilder1 = new AlertDialog.Builder(getActivity());
 
                                 sbuilder1.setTitle("Select Number of Sets Played");
@@ -1078,6 +964,22 @@ public class EventResultFragment extends Fragment {
         });
         return root;
     }
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        eventResultViewModel= new ViewModelProvider(this).get(EventResultViewModel.class);
+        sname.setText(sportname);
+        eventResultViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(!stringObjectHashMap.isEmpty()) {
+                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
+            }
+        });
+
+    }
 
     public void setsScore(String s1t1Score,String s1t2Score,String s2t1Score,String s2t2Score,String s3t1Score,String s3t2Score,String s4t1Score,String s4t2Score,String s5t1Score,String s5t2Score,String t1,String t2){
 
@@ -1166,18 +1068,17 @@ public class EventResultFragment extends Fragment {
         smap.put("Score1",i1);
         smap.put("Score2",i2);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-
-        String ID = firebaseUser.getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        CollectionReference scollref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-        Query squery = scollref.whereEqualTo("Tournament Name", tournamentname);
         int finalI = i1;
         int finalI1 = i2;
-        squery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        CollectionReference sscolref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+
+        Query sq = sscolref.whereEqualTo("Player1", p1);
+
+        sq.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -1185,51 +1086,26 @@ public class EventResultFragment extends Fragment {
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
 
-                        sid = document.getId();
-                    }
-                    CollectionReference sscolref = firebaseFirestore.collection(sportname).document(sid).collection(roundname);
+                        sdocid = document.getId();
+                        DocumentReference sdocref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(sdocid);
 
-                    Query sq = sscolref.whereEqualTo("Player1", p1);
-
-                    sq.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                    sdocid = document.getId();
-                                DocumentReference sdocref = firebaseFirestore.collection(sportname).document(sid).collection(roundname).document(sdocid);
-
-
-                                sdocref.update(smap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                        add_score.setVisibility(View.GONE);
-                                        score1.setText(String.valueOf(finalI));
-                                        score2.setText(String.valueOf(finalI1));
-
-                                    }
-                                });
-
-                                }
+                        sdocref.update(smap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                                add_score.setVisibility(View.GONE);
+                                score1.setText(String.valueOf(finalI));
+                                score2.setText(String.valueOf(finalI1));
 
                             }
+                        });
 
+                    }
 
-
-                        }
-                    });
                 }
-
 
             }
         });
-
-
-
 
     }
 }

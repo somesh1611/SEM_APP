@@ -7,11 +7,30 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="MY TOURNAMENTS"
+        android:textColor="#9966cc"
+        android:textSize="30sp"
+        android:textStyle="bold">
+
+    </TextView>
+
     <ListView
         android:id="@+id/my_tournaments_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
-
+        android:layout_marginTop="100dp">
     </ListView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="100dp"
+        android:background="?android:attr/listDivider">
+
+    </View>
 </FrameLayout>

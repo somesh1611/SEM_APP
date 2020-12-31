@@ -3,7 +3,6 @@ package com.example.sem_app.ui.MyProfile;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +13,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -49,17 +48,8 @@ public class MyProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        myProfileViewModel =
-                new ViewModelProvider(this).get(MyProfileViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_my_profile, container, false);
-       /* final TextView textView = root.findViewById(R.id.text_gallery);
-        myProfileViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        }); */
 
+        View root = inflater.inflate(R.layout.fragment_my_profile, container, false);
         profile_name=root.findViewById(R.id.profile_name_text);
         profile_mail=root.findViewById(R.id.mail_text);
         profile_year=root.findViewById(R.id.year_text);
@@ -67,41 +57,9 @@ public class MyProfileFragment extends Fragment {
         fab_profile=root.findViewById(R.id.fab_profile_edit);
 
 
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseAuth= FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
 
-        String Id = firebaseUser.getUid();
 
-
-        DocumentReference acc_ref=firebaseFirestore.collection("Users").document(Id);
-        acc_ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists())
-                {
-                    String name=documentSnapshot.getString("Name");
-                    String mail=documentSnapshot.getString("Email");
-                    String year=documentSnapshot.getString("Year");
-                    String branch=documentSnapshot.getString("Branch");
-
-
-                    profile_name.setText(name);
-                    profile_mail.setText(mail);
-                    profile_year.setText(year);
-                    profile_branch.setText(branch);
-                }else{
-                    Log.d(TAG, "document does not exist!");
-                }
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "Failed to read data!");
-            }
-        });
 
         fab_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,6 +111,24 @@ public class MyProfileFragment extends Fragment {
         });
         return root;
     }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        myProfileViewModel = new ViewModelProvider(this).get(MyProfileViewModel.class);
+        myProfileViewModel.getDetails().observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                profile_name.setText(stringObjectHashMap.get("Name").toString());
+                profile_mail.setText(stringObjectHashMap.get("Email").toString());
+                profile_branch.setText(stringObjectHashMap.get("Branch").toString());
+                profile_year.setText(stringObjectHashMap.get("Year").toString());
+            }
+        });
+
+
+    }
+
     public void update()
     {
 
@@ -225,8 +201,8 @@ public class MyProfileFragment extends Fragment {
 
 
 
-              //  firebaseFirestore = FirebaseFirestore.getInstance();
-               // firebaseAuth= FirebaseAuth.getInstance();
+               firebaseFirestore = FirebaseFirestore.getInstance();
+                firebaseAuth= FirebaseAuth.getInstance();
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
 
@@ -237,7 +213,18 @@ public class MyProfileFragment extends Fragment {
                 acc_ref1.update(user_update_info).addOnSuccessListener(new OnSuccessListener() {
                     @Override
                     public void onSuccess(Object o) {
-                        getFragmentManager().beginTransaction().detach(MyProfileFragment.this).attach(MyProfileFragment.this).commit();
+                        myProfileViewModel.getDetails().observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+                            @Override
+                            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+
+                                profile_name.setText(stringObjectHashMap.get("Name").toString());
+                                profile_mail.setText(stringObjectHashMap.get("Email").toString());
+                                profile_branch.setText(stringObjectHashMap.get("Branch").toString());
+                                profile_year.setText(stringObjectHashMap.get("Year").toString());
+
+                            }
+                        });
+                       // getFragmentManager().beginTransaction().detach(MyProfileFragment.this).attach(MyProfileFragment.this).commit();
                         Toast.makeText(getActivity(),"Profile Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 });

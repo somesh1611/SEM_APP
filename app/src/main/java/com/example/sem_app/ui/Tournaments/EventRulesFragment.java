@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,7 +43,7 @@ import java.util.Map;
 
 
 public class EventRulesFragment extends Fragment {
-    String tournamentname, sportname, TAG;
+    String tournamentid, sportname, TAG;
     TextView tname, sname,firstIn,secondIn;
     ListView listView;
     FloatingActionButton fab_rule;
@@ -54,9 +56,11 @@ public class EventRulesFragment extends Fragment {
     Boolean isAdmin;
     private EditText addNewRule;
 
+    EventRulesViewModel eventRulesViewModel;
 
-    public EventRulesFragment(String tn, String sn,Boolean a) {
-        tournamentname = tn;
+
+    public EventRulesFragment(String tid, String sn,Boolean a) {
+        tournamentid = tid;
         sportname = sn;
         isAdmin=a;
 
@@ -81,10 +85,6 @@ public class EventRulesFragment extends Fragment {
             fab_rule.setVisibility(View.VISIBLE);
         }
 
-        tname.setText(tournamentname);
-        sname.setText(sportname);
-
-
 
         adapter = new EventRules_list_adapter(getActivity(),rules);
         adapter.notifyDataSetChanged();
@@ -108,57 +108,29 @@ public class EventRulesFragment extends Fragment {
                 }
                 for (Object i : allusers) {
 
-                    rules.clear();
-                    String basic_rule="All Official Rules of "+sportname+" are Applicable.";
-
-                    rules.add(basic_rule);
-
-                    CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                    Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    FirebaseFirestore.getInstance().collection(sportname).document(tournamentid)
+                            .collection("rules")
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            rules.clear();
+                            String basic_rule="All Official Rules of "+sportname+" are Applicable.";
+
+                            rules.add(basic_rule);
 
                             if (task.isSuccessful()) {
 
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                    id = document.getId();
-                                    CollectionReference ruleref = firebaseFirestore.collection(sportname).document(id).collection("rules");
-                                    ruleref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                            if (task.isSuccessful()) {
-
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                    Map map = document.getData();
-                                                    rules.add(map.get("Rule"));
-
-
-                                                }
-                                                                           //  ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                                                                           // android.R.layout.simple_list_item_1, participant);
-                                                adapter.notifyDataSetChanged();
-                                                                           // listView.setAdapter(adapter);
-                                            } else {
-                                                Log.d(TAG, "error!");
-                                            }
-
-                                        }
-                                    });
-
-
+                                    rules.add(document.get("Rule").toString());
                                 }
-                            }
-
-
+                                adapter.notifyDataSetChanged();
+                                }
                         }
                     });
 
-
-                                          }
+                }
             }
         });
 
@@ -180,21 +152,8 @@ public class EventRulesFragment extends Fragment {
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
                                 String current_rule = (String) listView.getItemAtPosition(position);
-
-                                CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                                String Id = document.getId();
-                                                CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(Id).collection("rules");
+                             CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("rules");
                                                 Query query1 = ruleref1.whereEqualTo("Rule", current_rule);
                                                 query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                     @Override
@@ -204,25 +163,21 @@ public class EventRulesFragment extends Fragment {
                                                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                                 String rule_id = document.getId();
-                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(Id).collection("rules").document(rule_id);
+                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection("rules").document(rule_id);
                                                                 docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
                                                                     public void onSuccess(Void aVoid) {
                                                                         rules.remove(listView.getItemAtPosition(position));
                                                                         adapter.notifyDataSetChanged();
                                                                         Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
-
-
                                                                     }
                                                                 });
 
                                                             }
                                                         }
 
-                                                    }
-                                                });
-                                            }
-                                        }
+
+
                                     }
                                 });
 
@@ -255,7 +210,7 @@ public class EventRulesFragment extends Fragment {
 
         ////////////////////////////////////////////////////////////////////////////////////////////
 
-        fab_rule.setOnClickListener(new View.OnClickListener() {
+       fab_rule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -289,7 +244,7 @@ public class EventRulesFragment extends Fragment {
                         newbuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
+                                DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
 
                                 String r = addNewRule.getText().toString();
                                 Map<String, Object> newRule = new HashMap<>();
@@ -338,5 +293,22 @@ public class EventRulesFragment extends Fragment {
             }
         });
         return root;
+    }
+
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        eventRulesViewModel = new ViewModelProvider(this).get(EventRulesViewModel.class);
+        sname.setText(sportname);
+        eventRulesViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(!stringObjectHashMap.isEmpty()) {
+                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
+            }
+        });
+
     }
 }

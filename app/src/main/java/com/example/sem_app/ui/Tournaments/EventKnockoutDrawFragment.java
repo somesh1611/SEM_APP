@@ -10,20 +10,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +35,7 @@ import java.util.Random;
  * create an instance of this fragment.
  */
 public class EventKnockoutDrawFragment extends Fragment {
-    String tournamentname, sportname, TAG;
+    String tournamentid, sportname, TAG;
     Boolean isAdmin;
     ArrayList participant=new ArrayList();
     ArrayList participant_id=new ArrayList();
@@ -53,6 +52,7 @@ public class EventKnockoutDrawFragment extends Fragment {
     String id;
     String player1,player2;
     Boolean isSlot,isTeam;
+    EventKnockoutDrawViewModel eventKnockoutDrawViewModel;
     int n;
 
 
@@ -68,9 +68,9 @@ public class EventKnockoutDrawFragment extends Fragment {
     public EventKnockoutDrawFragment() {
         // Required empty public constructor
     }
-    public EventKnockoutDrawFragment(String tn1, String sn1,Boolean b,Boolean c,ArrayList p1,Boolean d) {
+    public EventKnockoutDrawFragment(String tid, String sn1,Boolean b,Boolean c,ArrayList p1,Boolean d) {
 
-        tournamentname = tn1;
+        tournamentid = tid;
         sportname = sn1;
         isAdmin=b;
         isSlot=c;
@@ -79,9 +79,9 @@ public class EventKnockoutDrawFragment extends Fragment {
 
     }
 
-    public EventKnockoutDrawFragment(String tn, String sn,Boolean a,Boolean c,ArrayList p,ArrayList p_id,Boolean d){
+    public EventKnockoutDrawFragment(String tid, String sn,Boolean a,Boolean c,ArrayList p,ArrayList p_id,Boolean d){
 
-        tournamentname = tn;
+        tournamentid = tid;
         sportname = sn;
         isAdmin=a;
         isSlot=c;
@@ -126,8 +126,8 @@ public class EventKnockoutDrawFragment extends Fragment {
 
         tname = root.findViewById(R.id.tournament_name);
         sname = root.findViewById(R.id.sport_name);
-        tname.setText(tournamentname);
-        sname.setText(sportname);
+      // tname.setText(tournamentname);
+       // sname.setText(sportname);
         b1 = root.findViewById(R.id.round1_button);
         b2 = root.findViewById(R.id.round2_button);
         b3 = root.findViewById(R.id.round3_button);
@@ -254,33 +254,18 @@ public class EventKnockoutDrawFragment extends Fragment {
            var=count;
         }else {
 
-
-            players_draw = DrawMaker(participant_id);
-
             firebaseAuth = FirebaseAuth.getInstance();
             FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-
             String ID = firebaseUser.getUid();
             firebaseFirestore = FirebaseFirestore.getInstance();
 
-            CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-            Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    if (task.isSuccessful()) {
-
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                            id = document.getId();
-                        }
+            players_draw = DrawMaker(participant_id);
 
                         for (Object d : players_draw) {
                             String p = d.toString();
 
-                            DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
+                            DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
                             String[] pp = p.split(",");
                             Map<String, Object> draw = new HashMap<>();
                             draw.put("Player1", pp[0]);
@@ -302,57 +287,20 @@ public class EventKnockoutDrawFragment extends Fragment {
                                 }
                             });
                         }
-                    }
 
-                }
-            });
         }
 
 
 
 
-      /*  for(Object d:players_draw)
-        {
-            String p=d.toString();
 
-            DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
-            String[]pp=p.split(",");
-            Map<String, Object> draw = new HashMap<>();
-            draw.put("Player1", pp[0]);
-            draw.put("Player2", pp[1]);
-            draw.put("Match Number",m);
-            m=m+1;
-
-            doc.collection("Round1").add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentReference> task) {
-
-                    if (task.isSuccessful()) {
-
-                        Toast.makeText(getActivity(), "Round 1 Draws Listed!", Toast.LENGTH_SHORT).show();
-                    } else {
-
-                        Log.d(TAG, "error!");
-                    }
-
-                }
-            });
-
-            ///////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////
-
-
-       /* }*/
 
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                String round="Round1";
-                EventRoundOneFragment fragment=new EventRoundOneFragment(tournamentname,sportname,round,isAdmin,isSlot,isTeam);
+                EventRoundOneFragment fragment=new EventRoundOneFragment(tournamentid,sportname,round,isAdmin,isSlot,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -365,7 +313,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round2";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentid,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -377,7 +325,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round3";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentid,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -389,7 +337,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round4";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentid,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -401,7 +349,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round5";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentid,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -413,7 +361,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round6";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentid,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -425,7 +373,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                 String round="Round7";
-                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentname,sportname,round,isAdmin,isTeam);
+                EventRoundTwoFragment fragment=new EventRoundTwoFragment(tournamentid,sportname,round,isAdmin,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -488,5 +436,21 @@ public class EventKnockoutDrawFragment extends Fragment {
         }
 
         return returner1;
+    }
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        eventKnockoutDrawViewModel= new ViewModelProvider(this).get(EventKnockoutDrawViewModel.class);
+        sname.setText(sportname);
+        eventKnockoutDrawViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(!stringObjectHashMap.isEmpty()) {
+                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
+            }
+        });
+
     }
 }

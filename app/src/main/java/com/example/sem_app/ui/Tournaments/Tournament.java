@@ -8,6 +8,8 @@ public class Tournament {
     String start;
     String end;
     String sports;
+    String mName;
+    String mNumber;
 
     public Tournament() {
 
@@ -31,20 +33,11 @@ public class Tournament {
         this.mNumber = mNumber;
     }
 
-    String mName;
-
-    public String getmName() {
-
-        return mName;
-    }
+    public String getmName() { return mName; }
 
     public void setmName(String mName) {
         this.mName = mName;
     }
-
-    String mNumber;
-
-
 
     public String getName() {
         return name;

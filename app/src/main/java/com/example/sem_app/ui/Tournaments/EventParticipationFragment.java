@@ -1,7 +1,6 @@
 package com.example.sem_app.ui.Tournaments;
 
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +15,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,7 +45,7 @@ import java.util.Map;
 
 public class EventParticipationFragment extends Fragment {
 
-    String tournamentname, sportname, TAG;
+    String tournamentid, sportname, TAG;
     TextView tname, sname;
     ListView listView;
     Button join;
@@ -61,12 +61,13 @@ public class EventParticipationFragment extends Fragment {
     int type;
     String sy,sb, sy1,sb1;
     Boolean isAdmin,isTeam;
+    EventParticipationViewModel eventParticipationViewModel;
 
 
 
-    public EventParticipationFragment(String tn, String sn,Boolean a,Boolean b) {
+    public EventParticipationFragment(String tid, String sn,Boolean a,Boolean b) {
 
-        tournamentname = tn;
+        tournamentid = tid;
         sportname = sn;
         isAdmin=a;
         isTeam=b;
@@ -88,8 +89,8 @@ public class EventParticipationFragment extends Fragment {
 
 
 
-        tname.setText(tournamentname);
-        sname.setText(sportname);
+       // tname.setText(tournamentname);
+       // sname.setText(sportname);
 
         adapter = new EventParticipants_list_adapter(getActivity(),
                  participant);
@@ -118,34 +119,23 @@ public class EventParticipationFragment extends Fragment {
                 }*/
 
                 for (Object i : allusers) {
-                    participant.clear();
-                    participant_id.clear();
-                    CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                    Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+
+                    CollectionReference partref = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants");
+                    partref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            participant.clear();
+                            participant_id.clear();
 
                             if (task.isSuccessful()) {
 
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-
-                                    id = document.getId();
-
-                                    CollectionReference partref = firebaseFirestore.collection(sportname).document(id).collection("participants");
-                                    partref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                            if (task.isSuccessful()) {
-
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                    Map map = document.getData();
-                                                    String n= (String) map.get("Name");
-                                                    String b= (String) map.get("Branch");
-                                                    String y= (String) map.get("Year");
+                                    Map map = document.getData();
+                                    String n= (String) map.get("Name");
+                                    String b= (String) map.get("Branch");
+                                    String y= (String) map.get("Year");
 
 
                                                     switch (y){
@@ -194,36 +184,17 @@ public class EventParticipationFragment extends Fragment {
                                                     participant.add(n+":"+sy+" "+sb);
                                                     participant_id.add(map.get("uid"));
 
-                                                }
-                                                //  ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
-                                                // android.R.layout.simple_list_item_1, participant);
+                                }
+
                                                 adapter.notifyDataSetChanged();
-                                                // listView.setAdapter(adapter);
+
                                             } else {
                                                 Log.d(TAG, "error!");
                                             }
 
-                                        }
-                                    });
-
-                                }
-
-
-                            } else {
-
-                                Log.d(TAG, "invalid");
-
-
-                            }
                         }
                     });
-
-
-                    ////////////////////////////////////////////////////////////////////
-
                 }
-
-
             }
         });
 
@@ -234,7 +205,7 @@ public class EventParticipationFragment extends Fragment {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+      listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(isAdmin) {
@@ -250,71 +221,41 @@ public class EventParticipationFragment extends Fragment {
 
                                // String current_part = (String) listView.getItemAtPosition(position);
                                 String pid= (String) participant_id.get(position);
+       CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants");
+             Query query1 = ruleref1.whereEqualTo("uid", pid);
+             query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+               @Override
+                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
 
+                      for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                                String Id = document.getId();
-                                                CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(Id).collection("participants");
-                                                Query query1 = ruleref1.whereEqualTo("uid", pid);
-                                                query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                        if (task.isSuccessful()) {
-
-                                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                String part_id = document.getId();
-                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(Id).collection("participants").document(part_id);
-                                                                docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
-                                                                        participant_id.remove(participant_id.get(position));
-                                                                        participant.remove(listView.getItemAtPosition(position));
-
-
-                                                                        adapter.notifyDataSetChanged();
-                                                                        Toast.makeText(getActivity(), "Removed", Toast.LENGTH_SHORT).show();
-
+                               String part_id = document.getId();
+                                DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants").document(part_id);
+                              docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                     @Override
+                                    public void onSuccess(Void aVoid) {
+                                    participant_id.remove(participant_id.get(position));
+                                       participant.remove(listView.getItemAtPosition(position));
+                                       adapter.notifyDataSetChanged();
+                        Toast.makeText(getActivity(), "Removed", Toast.LENGTH_SHORT).show();
 
                                                                     }
                                                                 });
-
-                                                            }
-                                                        }
-
-                                                    }
-                                                });
-                                            }
+                                     }
                                         }
                                     }
                                 });
-
-                                /////////////////////////////////////////////////////////////////////////////////////////
-
 
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-
                             }
                         });
 
-
                         builder.create();
                         builder.show();
-
-
 
                 }
 
@@ -325,20 +266,8 @@ public class EventParticipationFragment extends Fragment {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if(isAdmin)
         {
-            CollectionReference cref = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-            Query query = cref.whereEqualTo("Tournament Name", tournamentname);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    if (task.isSuccessful()) {
-
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                             tid=document.getId();
-
-                        }
-                        CollectionReference dref = firebaseFirestore.collection(sportname).document(tid).collection("Round1");
+                        CollectionReference dref = firebaseFirestore.collection(sportname).document(tournamentid).collection("Round1");
                         dref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -361,67 +290,31 @@ public class EventParticipationFragment extends Fragment {
                                 }
                         });
 
-                    }
-
-
-                }
-            });
 
         }
         else{
             ///////////////////////////////////////////////////////////////////////////////////////////////
-            CollectionReference col1 = firebaseFirestore.collection("Users");
-            col1.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                                                allusers1.clear();
+            CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection("Round1");
 
-                                                for (DocumentSnapshot Snapshot : value) {
+            drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                                                    allusers1.add(Snapshot.getId());
+                    if (task.isSuccessful()) {
+                        if(!task.getResult().isEmpty())
+                        {
 
-                                                }
+                            fab_slot_view.setVisibility(View.VISIBLE);
 
-                                                for (Object i : allusers1) {
-                                                    CollectionReference c1 = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                                                    Query query = c1.whereEqualTo("Tournament Name", tournamentname);
-                                                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        }else {
 
-                                                            if (task.isSuccessful()) {
-
-                                                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                    tid1 = document.getId();
-
-                                                                    CollectionReference drawref = firebaseFirestore.collection(sportname).document(tid1).collection("Round1");
-
-                                                                    drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                        @Override
-                                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                                            if (task.isSuccessful()) {
-                                                                                if(!task.getResult().isEmpty())
-                                                                                {
-
-                                                                                    fab_slot_view.setVisibility(View.VISIBLE);
-
-                                                                                }else {
-
-                                                                                   join.setVisibility(View.VISIBLE);
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    });
-                                                                }
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        });
+                            join.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            });
         }
+
         ////////////////////////////////////////////////////////////////////////////////////////
         join.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -498,7 +391,7 @@ public class EventParticipationFragment extends Fragment {
                                 user.put("Branch", branch);
                                 user.put("uid",ID);
 
-                                DocumentReference doc = firebaseFirestore.collection(sportname).document(id);
+                                DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
                                 doc.collection("participants").add(user).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentReference> task) {
@@ -528,7 +421,7 @@ public class EventParticipationFragment extends Fragment {
         //////////////////////////////////////////////////////////////////////////////////////////
 
 
-        fab_slot.setOnClickListener(new View.OnClickListener() {
+        /* fab_slot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -570,7 +463,7 @@ public class EventParticipationFragment extends Fragment {
                                         switch (type) {
                                             case 1:
                                                 Boolean is_slot=false;
-                                                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot, participant, participant_id,isTeam);
+                                                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentid, sportname, isAdmin,is_slot, participant, participant_id,isTeam);
                                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                                 transaction.replace(R.id.nav_host_fragment, fragment);
                                                 transaction.addToBackStack("back");
@@ -605,14 +498,14 @@ public class EventParticipationFragment extends Fragment {
             }
 
 
-        });
+        });*/
 
         fab_slot_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Boolean is_slot=true;
-                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentname, sportname, isAdmin,is_slot,participant_id,isTeam);
+                EventKnockoutDrawFragment fragment = new EventKnockoutDrawFragment(tournamentid, sportname, isAdmin,is_slot,participant_id,isTeam);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment, fragment);
                 transaction.addToBackStack("back");
@@ -621,6 +514,22 @@ public class EventParticipationFragment extends Fragment {
             }
         });
         return root;
+    }
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        eventParticipationViewModel= new ViewModelProvider(this).get(EventParticipationViewModel.class);
+        sname.setText(sportname);
+        eventParticipationViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(!stringObjectHashMap.isEmpty()) {
+                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
+            }
+        });
+
     }
 
 }

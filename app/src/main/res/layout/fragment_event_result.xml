@@ -9,7 +9,6 @@
     <!-- TODO: Update blank fragment layout -->
     <RelativeLayout
         android:orientation="vertical"
-        tools:context=".ui.main.MainFragment"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 

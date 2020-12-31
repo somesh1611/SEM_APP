@@ -15,17 +15,18 @@ public class Tournament_list_adapter extends ArrayAdapter<String> {
     private final Activity context;
     private final ArrayList maintitle;
     private final ArrayList subtitle;
+    private final ArrayList tid;
 
 
 
-    public Tournament_list_adapter(Activity context, ArrayList maintitle, ArrayList subtitle) {
-        super(context,R.layout.tournament_list_item,maintitle);
+    public Tournament_list_adapter(Activity context, ArrayList maintitle, ArrayList subtitle,ArrayList id) {
+        super(context,R.layout.tournament_list_item,id);
 
 
         this.context = context;
         this.maintitle = maintitle;
-
         this.subtitle = subtitle;
+        this.tid = id;
 
     }
     public View getView(int position, View view, ViewGroup parent) {
@@ -43,4 +44,5 @@ public class Tournament_list_adapter extends ArrayAdapter<String> {
         return rowView;
 
     };
+
 }

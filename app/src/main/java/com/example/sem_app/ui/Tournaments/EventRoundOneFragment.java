@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,15 +24,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,7 +39,7 @@ import java.util.Map;
  */
 public class EventRoundOneFragment extends Fragment {
 
-    String tournamentname, sportname,TAG,roundname,mround;
+    String tournamentid, sportname,TAG,roundname,mround;
     Boolean isAdmin,isSlot,isTeam;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
@@ -52,6 +51,7 @@ public class EventRoundOneFragment extends Fragment {
     TextView tname, sname;
     String id;
     int n;
+    EventRoundOneViewModel eventRoundOneViewModel;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -66,9 +66,9 @@ public class EventRoundOneFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public EventRoundOneFragment(String tn, String sn,String r, Boolean a,Boolean b,Boolean c){
+    public EventRoundOneFragment(String tid, String sn,String r, Boolean a,Boolean b,Boolean c){
 
-        tournamentname = tn;
+        tournamentid = tid;
         sportname = sn;
         roundname=r;
         isAdmin=a;
@@ -115,10 +115,10 @@ public class EventRoundOneFragment extends Fragment {
         drawlist=root.findViewById(R.id.drawlist);
 
 
-        tname.setText(tournamentname);
-        sname.setText(sportname);
+       // tname.setText(tournamentname);
+        //sname.setText(sportname);
 
-        adapter=new Draw_list_adapter(getActivity(),draw,tournamentname,sportname,roundname,isTeam);
+        adapter=new Draw_list_adapter(getActivity(),draw,tournamentid,sportname,roundname,isTeam);
         adapter.notifyDataSetChanged();
         drawlist.setAdapter(adapter);
 
@@ -132,106 +132,62 @@ public class EventRoundOneFragment extends Fragment {
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-        CollectionReference colref = firebaseFirestore.collection("Users");
-        colref.addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+        CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+        drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                allusers.clear();
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                draw.clear();
 
-                for (DocumentSnapshot Snapshot : value) {
+                if (task.isSuccessful()) {
 
-                    allusers.add(Snapshot.getId());
+                    for (QueryDocumentSnapshot document : task.getResult()) {
 
-                }
+                        Map map = document.getData();
+                        String p1= (String) map.get("Player1");
 
-                for (Object i : allusers) {
-                    CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                    Query query = collref.whereEqualTo("Tournament Name", tournamentname);
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            draw.clear();
+                        String p2= (String) map.get("Player2");
+                        draw.add(p1+","+p2);
 
-                            if (task.isSuccessful()) {
+                    }
+                    adapter.notifyDataSetChanged();
+                    n=(draw.size())*2;
+                    Log.d(TAG,"de"+n);
 
-                                for (QueryDocumentSnapshot document : task.getResult()) {
+                    if(n>0&&n<=2)
+                    {
+                        round_name.setText("Final");
+                        mround="Final";
 
+                    }
+                    else if(n>2&&n<=4)
+                    {
+                        round_name.setText("Semi-Final");
+                        mround="Semi-Final";
+                    }
+                    else if(n>4&&n<=8)
+                    {
+                        round_name.setText("Quarter-Final");
+                        mround="Quarter-Final";
+                    }
+                    else {
+                        round_name.setText(roundname);
+                        mround=roundname;
+                    }
 
-                                    id = document.getId();
-
-                                    CollectionReference drawref = firebaseFirestore.collection(sportname).document(id).collection(roundname);
-                                    drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                            if (task.isSuccessful()) {
-
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                    Map map = document.getData();
-                                                    String p1= (String) map.get("Player1");
-
-                                                    String p2= (String) map.get("Player2");
-                                                    draw.add(p1+","+p2);
-                                                    //////////////////////////////////////////////////////////////////////////////////////////
-
-                                                }
-                                                adapter.notifyDataSetChanged();
-                                                n=(draw.size())*2;
-                                                Log.d(TAG,"de"+n);
-
-                                                if(n>0&&n<=2)
-                                                {
-                                                    round_name.setText("Final");
-                                                    mround="Final";
-
-                                                }
-                                                else if(n>2&&n<=4)
-                                                {
-                                                    round_name.setText("Semi-Final");
-                                                    mround="Semi-Final";
-                                                }
-                                                else if(n>4&&n<=8)
-                                                {
-                                                    round_name.setText("Quarter-Final");
-                                                    mround="Quarter-Final";
-                                                }
-                                                else {
-                                                    round_name.setText(roundname);
-                                                    mround=roundname;
-                                                }
-
-
-                                            } else {
-                                                Toast.makeText(getActivity(),"Draws Yet to be Displayed!",Toast.LENGTH_SHORT).show();
-
-                                            }
-
-                                        }
-                                    });
-
-                                }
-
-
-                            } else {
-
-                                Log.d(TAG, "invalid");
-
-
-                            }
-                        }
-
-                    });
+                } else {
+                    Toast.makeText(getActivity(),"Draws Yet to be Displayed!",Toast.LENGTH_SHORT).show();
 
                 }
+
             }
         });
 
-        drawlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       drawlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentname,sportname,mround,roundname,isAdmin,position,isTeam);
+                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -240,6 +196,23 @@ public class EventRoundOneFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        eventRoundOneViewModel= new ViewModelProvider(this).get(EventRoundOneViewModel.class);
+        sname.setText(sportname);
+        eventRoundOneViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(!stringObjectHashMap.isEmpty()) {
+                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
+            }
+        });
+
     }
 
 }

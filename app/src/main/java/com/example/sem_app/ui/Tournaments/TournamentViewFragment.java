@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,30 +14,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,15 +36,10 @@ import java.util.Map;
 
 public class TournamentViewFragment extends Fragment implements DatePickerDialog.OnDateSetListener {
     TextView Tname,Thost,Tstart,Tend,TMname,TMnumber;
-    FirebaseFirestore firebaseFirestore;
-    FirebaseAuth firebaseAuth;
     private String TAG;
     public String documentid="";
-    private String tournamentname;
-    String selectsports;
+    private String tournamentid;
     Button button;
-    Map map;
-    ArrayList allusers = new ArrayList();
     ArrayList aspect = new ArrayList();
     Boolean isAdmin;
     FloatingActionButton fab,fab1,fab2;
@@ -64,8 +48,8 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
     ImageButton startPickDate,endPickDate;
     TextView startDateDisplay,endDateDisplay;
     boolean startorend1;
-    String id;
-    String id1;
+
+    TournamentViewViewModel tournamentViewViewModel;
 
 
     public TournamentViewFragment()
@@ -74,38 +58,11 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
     }
 
 
-    public TournamentViewFragment(Object tname,boolean a) {
+    public TournamentViewFragment(Object tid,boolean a) {
 
-        tournamentname=tname.toString();
+        tournamentid=tid.toString();
         isAdmin=a;
     }
-
-   /* /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TournamentViewFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-  /*  public static TournamentViewFragment newInstance(String param1, String param2) {
-        TournamentViewFragment fragment = new TournamentViewFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    } */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,206 +77,13 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         TMnumber = root.findViewById(R.id.manager_phone_text);
         button = root.findViewById(R.id.see_event_button);
 
-        firebaseFirestore=FirebaseFirestore.getInstance();
-        firebaseAuth= FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String ID = firebaseUser.getUid();
-
-        CollectionReference colref=firebaseFirestore.collection("Users");
-        colref.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                allusers.clear();
-
-                for(DocumentSnapshot Snapshot:value)
-                {
-
-                    allusers.add(Snapshot.getId());
-
-                }
-              /*  if(allusers.contains(ID))
-                {
-                    allusers.remove(ID);
-                }*/
-
-                for(Object i:allusers) {
-
-                   CollectionReference collref = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                    Query query=collref.whereEqualTo("Tournament Name", tournamentname);
-                    
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                    map=document.getData();
-                                    String name = map.get("Tournament Name").toString();
-
-                                    Tname.setText(name);
-
-                                }
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-                        }
-                    });
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                    map=document.getData();
-
-                                    String mname = map.get("Tournament Manager Name").toString();
-
-                                    TMname.setText(mname);
-
-                                }
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-                        }
-
-
-                    });
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                    map=document.getData();
-
-                                    String mnumber = map.get("Tournament Manager Phone Number").toString();
-
-                                    TMnumber.setText(mnumber);
-
-                                }
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-                        }
-
-
-                    });
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                    map=document.getData();
-
-                                    String host = map.get("Tournament Host").toString();
-
-                                    Thost.setText(host);
-
-                                }
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-                        }
-
-
-                    });
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                    map=document.getData();
-
-                                    String sdate = map.get("Starting Date").toString();
-
-                                    Tstart.setText(sdate);
-                                }
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-                        }
-
-
-                    });
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                    map=document.getData();
-
-                                    String edate = map.get("Ending Date").toString();
-
-                                    Tend.setText(edate);
-
-                                }
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-                        }
-
-
-                    });
-
-
-
-                    ////////////////////////////////////////////////////////////////////
-
-                }
-
-
-            }
-        });
-
-
-
         //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentname,isAdmin);
+                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentid,isAdmin);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -329,6 +93,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         });
 
         /////////////////////////////////////////////////////////////////////////////////////////
+
 
         fab = root.findViewById(R.id.fab_menu);
         fab1 = root.findViewById(R.id.fab_edit);
@@ -356,35 +121,17 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
             }
         });
 
-
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getActivity(),"Delete",Toast.LENGTH_SHORT).show();
                 new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Delete This Tournament")
                         .setMessage("Are you sure?")
                         .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-                                CollectionReference collref2 = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                                Query query2 = collref2.whereEqualTo("Tournament Name", tournamentname);
-                                query2.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-
-                                        if (task.isSuccessful()) {
-
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                                id1=document.getId();
-
-
-                                            }
-                                            DocumentReference doc_ref=firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments").document(id1);
-                                            doc_ref.delete().addOnSuccessListener(new OnSuccessListener() {
+                                FirebaseFirestore.getInstance().collection("Sports Tournaments").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                    .collection("My Tournaments").document(tournamentid)
+                                            .delete().addOnSuccessListener(new OnSuccessListener() {
                                                 @Override
                                                 public void onSuccess(Object o) {
                                                    // getFragmentManager().beginTransaction().detach(TournamentViewFragment.this).attach(TournamentViewFragment.this).commit();
@@ -397,18 +144,6 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                                                 }
                                             });
 
-
-                                        } else {
-
-                                            Log.d(TAG,"invalid");
-
-
-                                        }
-
-
-
-                                    }
-                                });
                             }
                         }).setNegativeButton("no", null).show();
             }
@@ -417,7 +152,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getActivity(),"Edit",Toast.LENGTH_SHORT).show();
+
                 AlertDialog.Builder builder1=new AlertDialog.Builder(getActivity());
                 builder1.setTitle("Select Aspects to be Updated");
                 aspect.clear();
@@ -460,13 +195,28 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
             }
         });
 
-
-
-
-
-
-
         return root;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        tournamentViewViewModel = new ViewModelProvider(this).get(TournamentViewViewModel.class);
+        tournamentViewViewModel.getTournamentDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                    if(!stringObjectHashMap.isEmpty()) {
+                        Tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+                        Thost.setText(stringObjectHashMap.get("Tournament Host").toString());
+                        Tstart.setText(stringObjectHashMap.get("Start Date").toString());
+                        Tend.setText(stringObjectHashMap.get("End Date").toString());
+                        TMname.setText(stringObjectHashMap.get("Manager Name").toString());
+                        TMnumber.setText(stringObjectHashMap.get("Manager Phone").toString());
+                    }
+
+            }
+        });
+
     }
 
     private void showFABMenu(){
@@ -474,7 +224,6 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_64));
 
         fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_128));
-
 
     }
 
@@ -613,62 +362,29 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                    tupdate_info.put("Ending Date",tued);
                 }
 
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-                String ID = firebaseUser.getUid();
-
-               /* DocumentReference acc_ref1=firebaseFirestore.collection("Users").document(ID);
-                acc_ref1.update(user_update_info).addOnSuccessListener(new OnSuccessListener() {
-                    @Override
-                    public void onSuccess(Object o) {
-                        getFragmentManager().beginTransaction().detach(MyProfileFragment.this).attach(MyProfileFragment.this).commit();
-                        Toast.makeText(getActivity(),"Profile Updated Successfully", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-
-
-                    CollectionReference collref1 = firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments");
-                    Query query1 = collref1.whereEqualTo("Tournament Name", tournamentname);
-                    query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-
-                            if (task.isSuccessful()) {
-
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                                    id=document.getId();
-
-
-                                }
-                                DocumentReference doc_ref=firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments").document(id);
-                                doc_ref.update(tupdate_info).addOnSuccessListener(new OnSuccessListener() {
-                                    @Override
-                                    public void onSuccess(Object o) {
-                                        getFragmentManager().beginTransaction().detach(TournamentViewFragment.this).attach(TournamentViewFragment.this).commit();
-                                        Toast.makeText(getActivity(),"Tournament Updated Successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-
-                            } else {
-
-                                Log.d(TAG,"invalid");
-
-
-                            }
-
-
-
-                        }
-                    });
-
+       FirebaseFirestore.getInstance().collection("Sports Tournaments").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+       .collection("My Tournaments").document(tournamentid).update(tupdate_info).addOnSuccessListener(new OnSuccessListener() {
+                   @Override
+                   public void onSuccess(Object o) {
+                      tournamentViewViewModel.getTournamentDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+                      @Override
+                      public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                       Tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+                       Thost.setText(stringObjectHashMap.get("Tournament Host").toString());
+                       Tstart.setText(stringObjectHashMap.get("Start Date").toString());
+                       Tend.setText(stringObjectHashMap.get("End Date").toString());
+                       TMname.setText(stringObjectHashMap.get("Manager Name").toString());
+                       TMnumber.setText(stringObjectHashMap.get("Manager Phone").toString());
+                     }
+                  });
+                   closeFABMenu();
+                  Toast.makeText(getActivity(),"Tournament Updated Successfully", Toast.LENGTH_SHORT).show();
+                  }
+              });
 
             }
         });
-
 
         builder.create();
         builder.show();
@@ -686,6 +402,5 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         }
 
     }
-
 
 }

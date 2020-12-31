@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,9 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -36,7 +33,7 @@ public class Draw_list_adapter extends ArrayAdapter {
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
     ArrayList allusers1=new ArrayList();
-    String tournamentname,sportname,roundname;
+    String tournamentid,sportname,roundname;
     String sy,sb,sy1,sb1;
     String TAG,id;
     Boolean isTeam;
@@ -51,13 +48,13 @@ public class Draw_list_adapter extends ArrayAdapter {
 
 
 
-    public Draw_list_adapter(@NonNull Activity context, ArrayList p1,String t,String s,String r,Boolean c) {
+    public Draw_list_adapter(@NonNull Activity context, ArrayList p1,String tid,String s,String r,Boolean c) {
         super(context, R.layout.draw_list_item,p1);
 
         this.context=context;
 
         this.d =p1;
-        this.tournamentname=t;
+        this.tournamentid=tid;
         this.sportname=s;
         this.roundname=r;
         this.isTeam=c;
@@ -260,77 +257,37 @@ public class Draw_list_adapter extends ArrayAdapter {
         });
         }
       //////////////////////////////////////////////////////////////////////////////////////////////
+        CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+      Query q2=drawref.whereEqualTo("Player1",p1[0]);
+      q2.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+          @Override
+          public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-        CollectionReference colref1 = firebaseFirestore.collection("Users");
-        colref1.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                                            allusers1.clear();
+              if (task.isSuccessful()) {
+                  for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                            for (DocumentSnapshot Snapshot : value) {
-
-                                                allusers1.add(Snapshot.getId());
-
-                                            }
-
-                                            for (Object i : allusers1) {
-                                                CollectionReference collref1 = firebaseFirestore.collection("Sports Tournaments").document(i.toString()).collection("My Tournaments");
-                                                Query query = collref1.whereEqualTo("Tournament Name", tournamentname);
-                                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                        if (task.isSuccessful()) {
-
-                                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                id = document.getId();
-
-                                                               CollectionReference drawref = firebaseFirestore.collection(sportname).document(id).collection(roundname);
-                                                               Query q2=drawref.whereEqualTo("Player1",p1[0]);
-                                                                q2.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                    @Override
-                                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                                                        if (task.isSuccessful()) {
-                                                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                                                Map map = document.getData();
-                                                                                if (map.containsKey("Winner")) {
-                                                                                    String w = map.get("Winner").toString();
-                                                                                    String s1 = map.get("Score1").toString();
-                                                                                    String s2 = map.get("Score2").toString();
+                      Map map = document.getData();
+                      if (map.containsKey("Winner")) {
+                          String w = map.get("Winner").toString();
+                          String s1 = map.get("Score1").toString();
+                          String s2 = map.get("Score2").toString();
 
 
-                                                                                    if (w.contentEquals(p1[0])) {
-                                                                                        player1.setTextColor(Color.GREEN);
-                                                                                        score1.setTextColor(Color.GREEN);
-                                                                                    } else {
-                                                                                        player2.setTextColor(Color.GREEN);
-                                                                                        score2.setTextColor(Color.GREEN);
-                                                                                    }
-                                                                                    score1.setText(s1);
-                                                                                    score2.setText(s2);
+                          if (w.contentEquals(p1[0])) {
+                              player1.setTextColor(Color.GREEN);
+                              score1.setTextColor(Color.GREEN);
+                          } else {
+                              player2.setTextColor(Color.GREEN);
+                              score2.setTextColor(Color.GREEN);
+                          }
+                          score1.setText(s1);
+                          score2.setText(s2);
 
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                });
-
-
-                                                            }
-
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    });
-
-
-                                    //////////////////////////////////////////////////////////////////////////////////////////
-
+                      }
+                  }
+              }
+          }
+      });
 
         return rowView;
 

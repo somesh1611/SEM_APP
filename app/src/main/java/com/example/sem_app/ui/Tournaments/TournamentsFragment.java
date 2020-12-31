@@ -33,43 +33,23 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TournamentsFragment extends Fragment implements DatePickerDialog.OnDateSetListener {
 
     public static final String TAG = "TAG";
-
     private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
     EditText newTournamentName,newTournamentHost,newTournamentStartDate,newTournamentEndDate,tournamentManagerName1,tournamentManagerNumber1;
     private TextView startDateDisplay;
     private TextView endDateDisplay;
     private ImageButton startPickDate;
     private ImageButton endPickDate;
-    private Calendar startDate;
-    private Calendar endDate;
-    static final int DATE_DIALOG_ID = 0;
-    private TextView activeDateDisplay;
-    private Calendar activeDate;
-    TextView userName;
-    private TextView userMail;
-    private String creator;
-    private String tournamentNumber;
-    public int count;
     private boolean startorend;
-
-
-    //Boolean[]checkedSports;
     ArrayList<String> userSports=new ArrayList<String>();
-
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
-
-
     Button b1,b2;
-
     private TournamentsViewModel tournamentsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -175,8 +155,6 @@ public class TournamentsFragment extends Fragment implements DatePickerDialog.On
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
                 transaction.commit();
-
-
             }
         });
         b2.setOnClickListener(new View.OnClickListener() {
@@ -187,8 +165,6 @@ public class TournamentsFragment extends Fragment implements DatePickerDialog.On
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
                 transaction.commit();
-
-
             }
         });
         return root;
