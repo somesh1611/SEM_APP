@@ -20,7 +20,6 @@ import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -49,7 +48,7 @@ public class EventKnockoutDrawFragment extends Fragment {
     FirebaseFirestore firebaseFirestore;
     ArrayList<Integer> arrayList = new ArrayList<Integer>();
     ArrayList players_draw=new ArrayList();
-    String id;
+    String docid1;
     String player1,player2;
     Boolean isSlot,isTeam;
     EventKnockoutDrawViewModel eventKnockoutDrawViewModel;
@@ -254,13 +253,11 @@ public class EventKnockoutDrawFragment extends Fragment {
            var=count;
         }else {
 
-            firebaseAuth = FirebaseAuth.getInstance();
-            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-            String ID = firebaseUser.getUid();
+
             firebaseFirestore = FirebaseFirestore.getInstance();
 
 
-            players_draw = DrawMaker(participant_id);
+            /*players_draw = DrawMaker(participant_id);
 
                         for (Object d : players_draw) {
                             String p = d.toString();
@@ -286,7 +283,52 @@ public class EventKnockoutDrawFragment extends Fragment {
 
                                 }
                             });
+                        }*/
+
+            players_draw = DrawMaker(participant);
+
+            for (Object d : players_draw) {
+                String p = d.toString();
+
+                DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
+                String[] pp = p.split(",");
+                Map<String, Object> draw = new HashMap<>();
+                if(isTeam)
+                {
+                    String[]p1=pp[0].split(":");
+                    draw.put("Player1", p1[1]);
+                    if(!pp[1].contentEquals("BYE"))
+                    {
+                        String[]p2=pp[1].split(":");
+                        draw.put("Player2", p2[1]);
+                    }else {
+                        draw.put("Player2", pp[1]);
+                    }
+
+
+
+                }else {
+
+                    draw.put("Player1", pp[0]);
+                    draw.put("Player2", pp[1]);
+                }
+
+
+                doc.collection("Round1").add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+
+                        if (task.isSuccessful()) {
+
+                            Toast.makeText(getActivity(), "Round 1 Draws Listed!", Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            Log.d(TAG, "error!");
                         }
+
+                    }
+                });
+            }
 
         }
 
@@ -453,4 +495,5 @@ public class EventKnockoutDrawFragment extends Fragment {
         });
 
     }
+
 }

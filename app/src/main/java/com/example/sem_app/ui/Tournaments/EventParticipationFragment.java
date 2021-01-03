@@ -1,6 +1,7 @@
 package com.example.sem_app.ui.Tournaments;
 
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -421,7 +423,7 @@ public class EventParticipationFragment extends Fragment {
         //////////////////////////////////////////////////////////////////////////////////////////
 
 
-        /* fab_slot.setOnClickListener(new View.OnClickListener() {
+         fab_slot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -498,7 +500,7 @@ public class EventParticipationFragment extends Fragment {
             }
 
 
-        });*/
+        });
 
         fab_slot_view.setOnClickListener(new View.OnClickListener() {
             @Override

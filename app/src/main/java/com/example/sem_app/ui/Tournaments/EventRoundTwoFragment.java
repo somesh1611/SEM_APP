@@ -23,7 +23,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -156,9 +155,7 @@ public class EventRoundTwoFragment extends Fragment {
 
 
         firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseAuth= FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String Id = firebaseUser.getUid();
+
 
 
 
@@ -192,9 +189,10 @@ public class EventRoundTwoFragment extends Fragment {
                         dref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                draw.clear();
 
                                 if (task.isSuccessful()) {
-                                    draw.clear();
+
 
                                     if (!task.getResult().isEmpty()) {
 
@@ -206,8 +204,6 @@ public class EventRoundTwoFragment extends Fragment {
                                             String p1= (String) map.get("Player1");
                                             String p2= (String) map.get("Player2");
                                             draw.add(p1+","+p2);
-
-                                                                               //////////////////////////////////////////////////////////////////////////////////////////
 
                                         }
                                         adapter.notifyDataSetChanged();
@@ -309,7 +305,7 @@ public class EventRoundTwoFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam);
+                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam,isSlot);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

@@ -34,6 +34,8 @@ public class MyTournamentsFragment extends Fragment {
     ArrayList<String> my_tournaments_name =new ArrayList<>();
     ArrayList<String> my_tournaments_host =new ArrayList<>();
     ArrayList<String> my_tournaments_id =new ArrayList<>();
+    ArrayList<String> my_tournaments_edate =new ArrayList<>();
+    ArrayList<String> my_tournaments_sdate =new ArrayList<>();
     Boolean admin=true;
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
@@ -101,10 +103,14 @@ public class MyTournamentsFragment extends Fragment {
                         my_tournaments_name.clear();
                         my_tournaments_host.clear();
                         my_tournaments_id.clear();
+                        my_tournaments_edate.clear();
+                        my_tournaments_sdate.clear();
                         for(DocumentSnapshot Snapshot:value)
                         {
                             String tname = Snapshot.getString("Tournament Name");
                             String thost = Snapshot.getString("Tournament Host");
+                            String tend = Snapshot.getString("Ending Date");
+                            String tstart = Snapshot.getString("Starting Date");
                             String id = Snapshot.getId();
 
                             //String tsdate=(Snapshot.getString("Starting Date"));
@@ -112,13 +118,15 @@ public class MyTournamentsFragment extends Fragment {
                             my_tournaments_name.add(tname);
                             my_tournaments_host.add(thost);
                             my_tournaments_id.add(id);
+                            my_tournaments_edate.add(tend);
+                            my_tournaments_sdate.add(tstart);
 
                             //my_tournaments.add(Snapshot.getString("Starting Date"));
 
                         }
                        // Log.d(TAG, "document"+ my_tournaments.size());
                         ArrayAdapter<String> adapter = new Tournament_list_adapter(getActivity(),
-                                my_tournaments_name,my_tournaments_host, my_tournaments_id);
+                                my_tournaments_name,my_tournaments_host, my_tournaments_id,my_tournaments_edate,my_tournaments_sdate);
 
                         adapter.notifyDataSetChanged();
                         listView.setAdapter(adapter);

@@ -2,7 +2,6 @@ package com.example.sem_app.ui.Tournaments;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +12,9 @@ import androidx.annotation.NonNull;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -35,7 +30,7 @@ public class Draw_list_adapter extends ArrayAdapter {
     ArrayList allusers1=new ArrayList();
     String tournamentid,sportname,roundname;
     String sy,sb,sy1,sb1;
-    String TAG,id;
+    String TAG,docid1;
     Boolean isTeam;
 
     private final ArrayList d;
@@ -92,17 +87,11 @@ public class Draw_list_adapter extends ArrayAdapter {
                player2Label.setText("Team 2:");
            }
 
+           player1.setText(p1[0]);
+           player2.setText(p1[1]);
 
 
-
-
-
-
-
-
-
-
-     firebaseFirestore = FirebaseFirestore.getInstance();
+    /* firebaseFirestore = FirebaseFirestore.getInstance();
 
         DocumentReference acc_ref1=firebaseFirestore.collection("Users").document(p1[0]);
         DocumentReference acc_ref2=firebaseFirestore.collection("Users").document(p1[1]);
@@ -255,9 +244,10 @@ public class Draw_list_adapter extends ArrayAdapter {
 
             }
         });
-        }
+        }*/
       //////////////////////////////////////////////////////////////////////////////////////////////
-        CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+        firebaseFirestore = FirebaseFirestore.getInstance();
+       CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
       Query q2=drawref.whereEqualTo("Player1",p1[0]);
       q2.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
           @Override
@@ -292,4 +282,5 @@ public class Draw_list_adapter extends ArrayAdapter {
         return rowView;
 
     }
+
 }

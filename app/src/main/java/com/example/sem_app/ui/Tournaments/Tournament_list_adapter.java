@@ -16,17 +16,20 @@ public class Tournament_list_adapter extends ArrayAdapter<String> {
     private final ArrayList maintitle;
     private final ArrayList subtitle;
     private final ArrayList tid;
+    private final ArrayList edate;
+    private final ArrayList sdate;
 
 
 
-    public Tournament_list_adapter(Activity context, ArrayList maintitle, ArrayList subtitle,ArrayList id) {
+    public Tournament_list_adapter(Activity context, ArrayList maintitle, ArrayList subtitle,ArrayList id,ArrayList date1,ArrayList date2) {
         super(context,R.layout.tournament_list_item,id);
-
 
         this.context = context;
         this.maintitle = maintitle;
         this.subtitle = subtitle;
         this.tid = id;
+        this.edate = date1;
+        this.sdate = date2;
 
     }
     public View getView(int position, View view, ViewGroup parent) {
@@ -37,12 +40,15 @@ public class Tournament_list_adapter extends ArrayAdapter<String> {
 
         TextView subtitleText = (TextView) rowView.findViewById(R.id.subtitle);
 
-        titleText.setText(maintitle.get(position).toString());
+        TextView status = rowView.findViewById(R.id.status_textview);
 
+        titleText.setText(maintitle.get(position).toString());
         subtitleText.setText(subtitle.get(position).toString());
 
         return rowView;
 
-    };
+    }
+
+
 
 }

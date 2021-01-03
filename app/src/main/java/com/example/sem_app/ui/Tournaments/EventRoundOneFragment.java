@@ -187,7 +187,7 @@ public class EventRoundOneFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam);
+                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam,isSlot);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

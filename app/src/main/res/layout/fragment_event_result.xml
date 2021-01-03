@@ -325,5 +325,18 @@
 
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/add_bye_result"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:srcCompat="@drawable/ic_baseline_done_24"
+        android:backgroundTint="#ff69b4"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
 
 </FrameLayout>

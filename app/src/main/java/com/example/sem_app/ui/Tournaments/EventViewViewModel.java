@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -113,82 +112,15 @@ public class EventViewViewModel extends ViewModel {
                                         Map map = document.getData();
                                         if (map.containsKey("Winner")) {
                                             String w = map.get("Winner").toString();
-                                           FirebaseFirestore.getInstance().collection("Users").document(w)
-                                                   .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                               @Override
-                                               public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                                   if (documentSnapshot.exists()) {
-                                                       String name = documentSnapshot.getString("Name");
-                                                       String wyear = documentSnapshot.getString("Year");
-                                                       String wbranch = documentSnapshot.getString("Branch");
-
-                                                       switch (wyear) {
-                                                           case "First Year":
-                                                               wsy1[0] = "FE";
-                                                               break;
-                                                           case "Second Year":
-                                                               wsy1[0] = "SE";
-                                                               break;
-                                                           case "Third Year":
-                                                               wsy1[0] = "TE";
-                                                               break;
-                                                           case "Fourth Year":
-                                                               wsy1[0] = "BE";
-                                                               break;
-                                                           default:
-                                                               break;
-                                                       }
-
-                                                       switch (wbranch) {
-
-                                                           case "Computer Engineering":
-                                                               wsb1[0] = "COMP";
-                                                               break;
-                                                           case "IT Engineering":
-                                                               wsb1[0] = "IT";
-                                                               break;
-                                                           case "ENTC Engineering":
-                                                               wsb1[0] = "ENTC";
-                                                               break;
-                                                           case "Civil Engineering":
-                                                               wsb1[0] = "CIVIL";
-                                                               break;
-                                                           case "Mechanical Engineering":
-                                                               wsb1[0] = "MECH";
-                                                               break;
-                                                           case "Electrical Engineering":
-                                                               wsb1[0] = "ELE";
-                                                               break;
-                                                           case "Printing Engineering":
-                                                               wsb1[0] = "PRINTING";
-                                                               break;
-                                                           default:
-                                                               break;
-                                                       }
-
-                                                       if(isTeam) {
-                                                           winner[0] ="Winner : " + wsy1[0] + " " + wsb1[0];
-                                                           eventWinner.setValue(winner[0]);
-                                                       }else {
-                                                           winner[0] ="Winner : " + name + " " + "("+ wsy1[0] + " " + wsb1[0] +")";
-                                                           eventWinner.setValue(winner[0]);
-                                                       }
-                                                   }
-
-                                               }
-                                           });
+                                            eventWinner.setValue(w);
                                         }
                                     }
                                 }
-
                             }
                         });
 
-
                     }
                 }
-
 
             }
         });

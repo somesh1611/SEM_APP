@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,29 +20,20 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EventResultFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class EventResultFragment extends Fragment {
 
     TextView tname, sname,rname,match,score1,score2,team1,team2,team01,team02,tie,iteam1,iteam2;
@@ -51,39 +41,28 @@ public class EventResultFragment extends Fragment {
     TextView steam1,steam2,set1,set2,set3,set4,set5;
     EditText t1s1,t1s2,t1s3,t1s4,t1s5,t2s1,t2s2,t2s3,t2s4,t2s5;
     EditText score01,score02;
-    FloatingActionButton add_score;
-    ArrayList allusers = new ArrayList();
+    FloatingActionButton add_score,add_bye_result;
     String tournamentid,sportname,roundname,pos,mroundname;
-    String s1,id,docid,tid,sid;
-    String docid1,id1;
-    String docid2,id2;
+    String s1,id,docid;
+    String docid1;
+    String docid2;
     String sdocid;
     String s1t1,s2t1,s3t1,s4t1,s5t1,s1t2,s2t2,s3t2,s4t2,s5t2;
     int type,stype;
     Boolean fwin,ftie;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firebaseFirestore;
-    ArrayList ws1=new ArrayList();
-    ArrayList ws2=new ArrayList();
     String sy,sb,sy1,sb1;
     String TAG;
-    Boolean isAdmin,isTeam;
+    String[]p1;
+    Boolean isAdmin,isTeam,isSlot;
 
     EventResultViewModel eventResultViewModel;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public EventResultFragment() {
         // Required empty public constructor
     }
-    public EventResultFragment(String s,String tid,String sn,String mrn,String rn,Boolean a,int p,Boolean b) {
+    public EventResultFragment(String s,String tid,String sn,String mrn,String rn,Boolean a,int p,Boolean b,Boolean c) {
 
         s1=s;
         tournamentid = tid;
@@ -93,35 +72,11 @@ public class EventResultFragment extends Fragment {
         isAdmin=a;
         pos=String.valueOf(p+1);
         isTeam=b;
+        isSlot=c;
 
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EventResultFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EventResultFragment newInstance(String param1, String param2) {
-        EventResultFragment fragment = new EventResultFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,6 +94,7 @@ public class EventResultFragment extends Fragment {
         iteam1=root.findViewById(R.id.team1_1_text);
         iteam2=root.findViewById(R.id.team2_1_text);
         add_score = root.findViewById(R.id.add_score);
+        add_bye_result = root.findViewById(R.id.add_bye_result);
         ws1t1 = root.findViewById(R.id.set1_1);
         ws2t1 = root.findViewById(R.id.set1_2);
         ws3t1 = root.findViewById(R.id.set1_3);
@@ -151,346 +107,62 @@ public class EventResultFragment extends Fragment {
         ws5t2 = root.findViewById(R.id.set2_5);
         tie=root.findViewById(R.id.tie_breaker_text);
 
-
-       // tname.setText(tournamentname);
-      //  sname.setText(sportname);
-        rname.setText(mroundname);
-        match.setText("Match "+pos);
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        String[]p1=s1.split(",");
+        String[]m=s1.split(",");
 
 
-        /*if(isAdmin||!p1[1].contentEquals("BYE"))
-        {
-            add_score.setVisibility(View.VISIBLE);
-        }*/
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        if (isAdmin) {
+           /* add_score.setVisibility(View.VISIBLE);
+            if(m[1].contentEquals("BYE"))
+            {
 
-        DocumentReference acc_ref1=firebaseFirestore.collection("Users").document(p1[0]);
-        DocumentReference acc_ref2=firebaseFirestore.collection("Users").document(p1[1]);
-        acc_ref1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists())
-                {
-                    String name=documentSnapshot.getString("Name");
-                    String year=documentSnapshot.getString("Year");
-                    String branch=documentSnapshot.getString("Branch");
+                    add_score.setVisibility(View.GONE);
+                    add_bye_result.setVisibility(View.VISIBLE);
 
-                    switch (year){
-                        case "First Year":
-                            sy1="FE";
-                            break;
-                        case "Second Year":
-                            sy1="SE";
-                            break;
-                        case "Third Year":
-                            sy1="TE";
-                            break;
-                        case "Fourth Year":
-                            sy1="BE";
-                            break;
-                        default:
-                            break;
-                    }
 
-                    switch (branch){
-                        case "Computer Engineering":
-                            sb1="COMP";
-                            break;
-                        case "IT Engineering":
-                            sb1="IT";
-                            break;
-                        case "ENTC Engineering":
-                            sb1="ENTC";
-                            break;
-                        case "Civil Engineering":
-                            sb1="CIVIL";
-                            break;
-                        case "Mechanical Engineering":
-                            sb1="MECH";
-                            break;
-                        case "Electrical Engineering":
-                            sb1="ELE";
-                            break;
-                        case "Printing Engineering":
-                            sb1="PRINTING";
-                            break;
-                        default:
-                            break;
-                    }
-                    if(isTeam) {
-                        team1.setText(sy1 + " " + sb1);
-                    }else{
-                        team1.setText(name);
-                        iteam1.setText(sy1 + " " + sb1);
+            } */
+            firebaseFirestore = FirebaseFirestore.getInstance();
+            CollectionReference dref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+            Query qx = dref.whereEqualTo("Player1",m[0]);
+            qx.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    if (task.isSuccessful()) {
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Map map = document.getData();
+                           if(!map.containsKey("Winner"))
+                           {
+                               if(m[1].contentEquals("BYE"))
+                               {
+                                   add_bye_result.setVisibility(View.VISIBLE);
+                               }
+                               else{
+                               add_score.setVisibility(View.VISIBLE);
+                           }
+                           }
+
+                        }
+
                     }
 
 
-
-                }else{
-                    Log.d(TAG, "document does not exist!");
                 }
+            });
+            ///////////////////////////////////////////////////////////////////////////////////
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "Failed to read data!");
-            }
-        });
-
-        if(p1[1].contentEquals("BYE"))
-        {
-            team2.setText(p1[1]);
-
-            ///////////////////////////////////////////////////////////////////////////////////////
-
-            if(isAdmin) {
-                firebaseAuth = FirebaseAuth.getInstance();
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                String Id = firebaseUser.getUid();
-
-
-                                CollectionReference scolref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
-
-                                Query q = scolref1.whereEqualTo("Player1", p1[0]);
-                                q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                        if (task.isSuccessful()) {
-
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                docid1 = document.getId();
-                                            }
-                                            DocumentReference doref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(docid1);
-                                            Map<String, Object> score = new HashMap<>();
-                                            score.put("Score1", "+");
-                                            score.put("Score2", "-");
-                                            score.put("Winner", p1[0]);
-
-                                            doref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    //  Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
-                                                    add_score.setVisibility(View.GONE);
-                                                    team1.setTextColor(Color.GREEN);
-                                                    score1.setText("+");
-                                                    score2.setText("-");
-                                                }
-                                            });
-                                        }
-
-
-                                    }
-                                });
-
-            }
-            //////////////////////////////////////////////////////////////////////////////////////
-        }else
-        { acc_ref2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists())
-                {
-                    String name=documentSnapshot.getString("Name");
-                    String year=documentSnapshot.getString("Year");
-                    String branch=documentSnapshot.getString("Branch");
-
-                    switch (year){
-                        case "First Year":
-                            sy1="FE";
-                            break;
-                        case "Second Year":
-                            sy1="SE";
-                            break;
-                        case "Third Year":
-                            sy1="TE";
-                            break;
-                        case "Fourth Year":
-                            sy1="BE";
-                            break;
-                        default:
-                            break;
-                    }
-
-                    switch (branch){
-                        case "Computer Engineering":
-                            sb1="COMP";
-                            break;
-                        case "IT Engineering":
-                            sb1="IT";
-                            break;
-                        case "ENTC Engineering":
-                            sb1="ENTC";
-                            break;
-                        case "Civil Engineering":
-                            sb1="CIVIL";
-                            break;
-                        case "Mechanical Engineering":
-                            sb1="MECH";
-                            break;
-                        case "Electrical Engineering":
-                            sb1="ELE";
-                            break;
-                        case "Printing Engineering":
-                            sb1="PRINTING";
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if(isTeam) {
-                        team2.setText(sy1 + " " + sb1);
-                    }else{
-                        team2.setText(name);
-                        iteam2.setText(sy1 + " " + sb1);
-                    }
-
-
-
-
-                }else{
-                    Log.d(TAG, "document does not exist!");
-                }
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "Failed to read data!");
-
-            }
-        });
         }
-        ///////////////////////////////////////////////////////////////////////////////////////////
-           CollectionReference partref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
-        Query q1=partref.whereEqualTo("Player1",p1[0]);
-        q1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+ ///////////////////////////////////////////////////////////////////////////////////////////
+
+        add_bye_result.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Map map = document.getData();
-                        if(map.containsKey("Tie"))
-                        {
-                            String t1 = map.get("Tie").toString();
-                            String tx1 = map.get("Score1").toString();
-                            String tx2 = map.get("Score2").toString();
-                            tie.setTextColor(Color.GREEN);
-                            tie.setText(t1);
+            public void onClick(View v) {
+                setByeResult(m[0]);
 
-                            score1.setText(tx1);
-                            score2.setText(tx2);
-                        }
-                        else if(map.containsKey("Winner"))
-                        {
-                            String x1 = map.get("Score1").toString();
-                            String x2 = map.get("Score2").toString();
-                            String w1 = map.get("Winner").toString();
-                            if (w1.contentEquals(p1[0])) {
-                                team1.setTextColor(Color.GREEN);
-                                score1.setTextColor(Color.GREEN);
-                            } else {
-                                team2.setTextColor(Color.GREEN);
-                                score2.setTextColor(Color.GREEN);
-                            }
-
-                            score1.setText(x1);
-                            score2.setText(x2);
-
-                            if(map.containsKey("SET1"))
-                            {
-                                String z1=map.get("SET1").toString();
-                                String[]zz=z1.split("-");
-                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                {
-
-                                    ws1t1.setText(z1);
-                                }else{
-
-                                    ws1t2.setText(z1);
-                                }
-                            }
-                            if(map.containsKey("SET2"))
-                            {
-                                String z2=map.get("SET2").toString();
-                                String[]zz=z2.split("-");
-                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                {
-
-                                    ws2t1.setText(z2);
-
-                                }else{
-
-                                    ws2t2.setText(z2);
-                                }
-                            }
-                            if(map.containsKey("SET3"))
-                            {
-                                String z3=map.get("SET3").toString();
-                                String[]zz=z3.split("-");
-                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                {
-
-                                    ws3t1.setText(z3);
-
-                                }else{
-
-                                    ws3t2.setText(z3);
-
-                                }
-                            }
-                            if(map.containsKey("SET4"))
-                            {
-                                String z4=map.get("SET4").toString();
-                                String[]zz=z4.split("-");
-                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                {
-
-                                    ws4t1.setText(z4);
-                                }else{
-
-                                    ws4t2.setText(z4);
-
-                                }
-                            }
-                            if(map.containsKey("SET5"))
-                            {
-                                String z5=map.get("SET5").toString();
-                                String[]zz=z5.split("-");
-                                if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
-                                {
-                                    ws5t1.setText(z5);
-                                }else{
-                                    ws5t2.setText(z5);
-                                }
-                            }
-
-
-                        }
-                        else{
-                            Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
-                            if(isAdmin)
-                            {
-                                add_score.setVisibility(View.VISIBLE);
-                            }
-                        }
-
-                    }
-
-                }
             }
         });
 
-
-         /*if(isAdmin||!p1[1].contentEquals("BYE"))
-        {
-            add_score.setVisibility(View.VISIBLE);
-        }*/
         add_score.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -952,8 +624,6 @@ public class EventResultFragment extends Fragment {
                                 break;
                         }
 
-
-
                     }
                 });
                 //////////////////////////////////////////////////////////////////////
@@ -968,11 +638,153 @@ public class EventResultFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         eventResultViewModel= new ViewModelProvider(this).get(EventResultViewModel.class);
         sname.setText(sportname);
+        rname.setText(mroundname);
+        match.setText("Match "+pos);
+        p1=s1.split(",");
+        if (isTeam) {
+            team1.setText(p1[0]);
+            team2.setText(p1[1]);
+        } else {
+            String[]ip1=p1[0].split(":");
+            team1.setText(ip1[0]);
+            iteam1.setText(ip1[1]);
+            if(p1[1].contentEquals("BYE"))
+            {
+                team1.setText(p1[1]);
+            }else {
+                String[]ip2=p1[1].split(":");
+                team1.setText(ip2[0]);
+                iteam1.setText(ip2[1]);
+            }
+        }
         eventResultViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
+            }
+        });
+
+
+        eventResultViewModel.getResultDetails(tournamentid,sportname,roundname,p1[0]).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(stringObjectHashMap.isEmpty()) {
+
+                    Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
+                   /* if(p1[1].contentEquals("BYE"))
+                    {
+
+                        if(isAdmin){
+
+                            setByeResult();
+
+                        }
+
+                    }else {
+                        if (isAdmin) {
+                            add_score.setVisibility(View.VISIBLE);
+                        }
+                    }*/
+
+                }else {
+                    if(stringObjectHashMap.containsKey("Tie"))
+                    {
+
+                        tie.setTextColor(Color.GREEN);
+                        tie.setText(stringObjectHashMap.get("Tie").toString());
+
+                        score1.setText(stringObjectHashMap.get("Score1").toString());
+                        score2.setText(stringObjectHashMap.get("Score2").toString());
+
+                    }
+                    else if(stringObjectHashMap.containsKey("Winner"))
+                    {
+                        if (stringObjectHashMap.get("Winner").toString().contentEquals(p1[0])) {
+                            team1.setTextColor(Color.GREEN);
+                            score1.setTextColor(Color.GREEN);
+                        } else {
+                            team2.setTextColor(Color.GREEN);
+                            score2.setTextColor(Color.GREEN);
+                        }
+
+                        score1.setText(stringObjectHashMap.get("Score1").toString());
+                        score2.setText(stringObjectHashMap.get("Score2").toString());
+
+
+                        if(stringObjectHashMap.containsKey("SET1"))
+                        {
+                            String z1=stringObjectHashMap.get("SET1").toString();
+                            String[]zz=z1.split("-");
+                            if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                            {
+
+                                ws1t1.setText(z1);
+                            }else{
+
+                                ws1t2.setText(z1);
+                            }
+                        }
+                        if(stringObjectHashMap.containsKey("SET2"))
+                        {
+                            String z2=stringObjectHashMap.get("SET2").toString();
+                            String[]zz=z2.split("-");
+                            if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                            {
+
+                                ws2t1.setText(z2);
+
+                            }else{
+
+                                ws2t2.setText(z2);
+                            }
+                        }
+                        if(stringObjectHashMap.containsKey("SET3"))
+                        {
+                            String z3=stringObjectHashMap.get("SET3").toString();
+                            String[]zz=z3.split("-");
+                            if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                            {
+
+                                ws3t1.setText(z3);
+
+                            }else{
+
+                                ws3t2.setText(z3);
+
+                            }
+                        }
+                        if(stringObjectHashMap.containsKey("SET4"))
+                        {
+                            String z4=stringObjectHashMap.get("SET4").toString();
+                            String[]zz=z4.split("-");
+                            if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                            {
+
+                                ws4t1.setText(z4);
+                            }else{
+
+                                ws4t2.setText(z4);
+
+                            }
+                        }
+                        if(stringObjectHashMap.containsKey("SET5"))
+                        {
+                            String z5=stringObjectHashMap.get("SET5").toString();
+                            String[]zz=z5.split("-");
+                            if(Integer.valueOf(zz[0])>Integer.valueOf(zz[1]))
+                            {
+                                ws5t1.setText(z5);
+                            }else{
+                                ws5t2.setText(z5);
+                            }
+                        }
+                        ////////////////////////////////////////////////////////////
+
+                    }
 
                 }
 
@@ -1103,6 +915,47 @@ public class EventResultFragment extends Fragment {
                     }
 
                 }
+
+            }
+        });
+
+    }
+
+    public void setByeResult(String p1)
+    {
+        firebaseFirestore=FirebaseFirestore.getInstance();
+
+        CollectionReference scolref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+
+        Query q = scolref1.whereEqualTo("Player1", p1);
+        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                        docid1 = document.getId();
+                    }
+                    DocumentReference doref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname).document(docid1);
+                    Map<String, Object> score = new HashMap<>();
+                    score.put("Score1", "+");
+                    score.put("Score2", "-");
+                    score.put("Winner", p1);
+
+                    doref.update(score).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            add_bye_result.setVisibility(View.GONE);
+                            Toast.makeText(getActivity(), "Score Added Successfully", Toast.LENGTH_SHORT).show();
+                            team1.setTextColor(Color.GREEN);
+                            score1.setText("+");
+                            score2.setText("-");
+                        }
+                    });
+                }
+
 
             }
         });
