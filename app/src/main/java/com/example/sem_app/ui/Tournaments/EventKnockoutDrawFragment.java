@@ -256,35 +256,6 @@ public class EventKnockoutDrawFragment extends Fragment {
 
             firebaseFirestore = FirebaseFirestore.getInstance();
 
-
-            /*players_draw = DrawMaker(participant_id);
-
-                        for (Object d : players_draw) {
-                            String p = d.toString();
-
-                            DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
-                            String[] pp = p.split(",");
-                            Map<String, Object> draw = new HashMap<>();
-                            draw.put("Player1", pp[0]);
-                            draw.put("Player2", pp[1]);
-
-
-                            doc.collection("Round1").add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-
-                                    if (task.isSuccessful()) {
-
-                                        Toast.makeText(getActivity(), "Round 1 Draws Listed!", Toast.LENGTH_SHORT).show();
-                                    } else {
-
-                                        Log.d(TAG, "error!");
-                                    }
-
-                                }
-                            });
-                        }*/
-
             players_draw = DrawMaker(participant);
 
             for (Object d : players_draw) {
@@ -304,8 +275,6 @@ public class EventKnockoutDrawFragment extends Fragment {
                     }else {
                         draw.put("Player2", pp[1]);
                     }
-
-
 
                 }else {
 
@@ -331,11 +300,6 @@ public class EventKnockoutDrawFragment extends Fragment {
             }
 
         }
-
-
-
-
-
 
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -423,13 +387,6 @@ public class EventKnockoutDrawFragment extends Fragment {
             }
         });
 
-        /////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
         return root;
     }
 
@@ -488,7 +445,6 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
-
                 }
 
             }

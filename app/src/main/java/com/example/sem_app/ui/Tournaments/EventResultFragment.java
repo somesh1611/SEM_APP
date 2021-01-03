@@ -111,15 +111,7 @@ public class EventResultFragment extends Fragment {
 
 
         if (isAdmin) {
-           /* add_score.setVisibility(View.VISIBLE);
-            if(m[1].contentEquals("BYE"))
-            {
 
-                    add_score.setVisibility(View.GONE);
-                    add_bye_result.setVisibility(View.VISIBLE);
-
-
-            } */
             firebaseFirestore = FirebaseFirestore.getInstance();
             CollectionReference dref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
             Query qx = dref.whereEqualTo("Player1",m[0]);
@@ -151,6 +143,26 @@ public class EventResultFragment extends Fragment {
             });
             ///////////////////////////////////////////////////////////////////////////////////
 
+        }else {
+            firebaseFirestore = FirebaseFirestore.getInstance();
+            CollectionReference dref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
+            Query qx = dref.whereEqualTo("Player1",m[0]);
+            qx.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    if (task.isSuccessful()) {
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Map map = document.getData();
+                            if (!map.containsKey("Winner")) {
+                                Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+                    }
+                }
+            });
         }
 
  ///////////////////////////////////////////////////////////////////////////////////////////
@@ -674,21 +686,7 @@ public class EventResultFragment extends Fragment {
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(stringObjectHashMap.isEmpty()) {
 
-                    Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
-                   /* if(p1[1].contentEquals("BYE"))
-                    {
-
-                        if(isAdmin){
-
-                            setByeResult();
-
-                        }
-
-                    }else {
-                        if (isAdmin) {
-                            add_score.setVisibility(View.VISIBLE);
-                        }
-                    }*/
+                   // Toast.makeText(getActivity(),"Scores yet to be display!",Toast.LENGTH_SHORT).show();
 
                 }else {
                     if(stringObjectHashMap.containsKey("Tie"))

@@ -115,9 +115,6 @@ public class EventRoundOneFragment extends Fragment {
         drawlist=root.findViewById(R.id.drawlist);
 
 
-       // tname.setText(tournamentname);
-        //sname.setText(sportname);
-
         adapter=new Draw_list_adapter(getActivity(),draw,tournamentid,sportname,roundname,isTeam);
         adapter.notifyDataSetChanged();
         drawlist.setAdapter(adapter);
@@ -125,7 +122,6 @@ public class EventRoundOneFragment extends Fragment {
 
         firebaseAuth= FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
 
         String ID = firebaseUser.getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
