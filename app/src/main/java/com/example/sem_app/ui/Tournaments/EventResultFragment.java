@@ -662,11 +662,12 @@ public class EventResultFragment extends Fragment {
             iteam1.setText(ip1[1]);
             if(p1[1].contentEquals("BYE"))
             {
-                team1.setText(p1[1]);
+
+                team2.setText(p1[1]);
             }else {
                 String[]ip2=p1[1].split(":");
-                team1.setText(ip2[0]);
-                iteam1.setText(ip2[1]);
+                team2.setText(ip2[0]);
+                iteam2.setText(ip2[1]);
             }
         }
         eventResultViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {

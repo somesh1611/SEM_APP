@@ -107,7 +107,7 @@ public class EventViewFragment extends Fragment {
                 {
                     wname.setVisibility(View.VISIBLE);
                     wname.setTextColor(getResources().getColor(R.color.color_pink));
-                    wname.setText("WINNER: "+s);
+                    wname.setText("WINNER - "+s);
                 }
             }
         });

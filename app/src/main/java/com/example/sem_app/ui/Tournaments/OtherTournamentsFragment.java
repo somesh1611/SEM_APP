@@ -22,7 +22,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class OtherTournamentsFragment extends Fragment {
@@ -31,13 +35,20 @@ public class OtherTournamentsFragment extends Fragment {
     ArrayList<String> other_tournaments_name =new ArrayList<>();
     ArrayList<String> getOther_tournaments_host=new ArrayList<>();
     ArrayList<String> getOther_tournaments_id=new ArrayList<>();
-    ArrayList<String> getOther_tournaments_edate=new ArrayList<>();
-    ArrayList<String> getOther_tournaments_sdate=new ArrayList<>();
+    ArrayList<String> getOther_tournaments_status=new ArrayList<>();
     ArrayList allusers = new ArrayList();
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     private String TAG;
     Boolean admin=false;
+
+
+    Date start = null;
+    Date end = null;
+    Date datePreviousDate = null;
+    Date current = null;
+    int MILLIS_IN_DAY;
+    SimpleDateFormat dateFormat;
 
 
 
@@ -54,6 +65,24 @@ public class OtherTournamentsFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_other_tournaments, container, false);
         listView = root.findViewById(R.id.other_tournaments_list);
+
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int year = calendar.get(Calendar.YEAR);
+
+        String today = day+"/"+month+"/"+year;
+
+        MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
+
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            current = dateFormat.parse(today);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -69,8 +98,7 @@ public class OtherTournamentsFragment extends Fragment {
                other_tournaments_name.clear();
                getOther_tournaments_host.clear();
                getOther_tournaments_id.clear();
-               getOther_tournaments_edate.clear();
-               getOther_tournaments_sdate.clear();
+               getOther_tournaments_status.clear();
                 for(DocumentSnapshot Snapshot:value)
                 {
 
@@ -97,22 +125,58 @@ public class OtherTournamentsFragment extends Fragment {
                                         String tstart = Snapshot.getString("Starting Date");
                                         String id = Snapshot.getId();
 
+                                        try
+                                        {
+                                            start = dateFormat.parse(tstart);
+                                        }
+                                        catch(Exception e)
+                                        {
+                                            e.printStackTrace();
+                                        }
 
-                                        //  String tsdate=(Snapshot.getString("Starting Date"));
+                                        try
+                                        {
+                                            end = dateFormat.parse(tend);
+                                        }
+                                        catch(Exception e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+
+                                        String previousDate = dateFormat.format(start.getTime() - MILLIS_IN_DAY);
+
+                                        try
+                                        {
+                                            datePreviousDate = dateFormat.parse(previousDate);
+
+                                        }
+                                        catch(Exception e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+
+                                        if(current.after(end))
+                                        {
+                                            getOther_tournaments_status.add("Over");
+
+                                        }
+                                        else if(current.after(datePreviousDate))
+                                        {
+                                            getOther_tournaments_status.add("Live");
+
+                                        }else {
+                                            getOther_tournaments_status.add("Upcoming");
+
+                                        }
 
                                         other_tournaments_name.add(tname);
                                         getOther_tournaments_host.add(thost);
                                         getOther_tournaments_id.add(id);
-                                        getOther_tournaments_edate.add(tend);
-                                        getOther_tournaments_sdate.add(tstart);
-                                        //other_tournaments.add(Snapshot.getString("Tournament Name"));
-
-                                        //my_tournaments.add(Snapshot.getString("Starting Date"));
 
                                     }
                                   //  Log.d(TAG, "document" + other_tournaments.size());
                                     ArrayAdapter<String> adapter = new Tournament_list_adapter(getActivity(),
-                                            other_tournaments_name, getOther_tournaments_host,getOther_tournaments_id,getOther_tournaments_edate,getOther_tournaments_sdate);
+                                            other_tournaments_name, getOther_tournaments_host,getOther_tournaments_id,getOther_tournaments_status);
                                     adapter.notifyDataSetChanged();
                                     listView.setAdapter(adapter);
 

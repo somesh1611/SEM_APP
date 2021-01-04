@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -24,12 +25,20 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sem_app.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,12 +51,22 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
     Button button;
     ArrayList aspect = new ArrayList();
     Boolean isAdmin;
+
     FloatingActionButton fab,fab1,fab2;
+    FirebaseFirestore firebaseFirestore;
+    FirebaseAuth firebaseAuth;
     Boolean isFABOpen=false;
     EditText tNameEdit,tHostEdit,tStartEdit,tEndEdit,tMEdit,tMNEdit;
     ImageButton startPickDate,endPickDate;
     TextView startDateDisplay,endDateDisplay;
     boolean startorend1;
+
+    Date start = null;
+    Date end = null;
+    Date datePreviousDate = null;
+    Date current = null;
+    int MILLIS_IN_DAY;
+    SimpleDateFormat dateFormat;
 
     TournamentViewViewModel tournamentViewViewModel;
 
@@ -62,6 +81,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
 
         tournamentid=tid.toString();
         isAdmin=a;
+
     }
 
     @Override
@@ -76,6 +96,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         TMname = root.findViewById(R.id.manager_name_text);
         TMnumber = root.findViewById(R.id.manager_phone_text);
         button = root.findViewById(R.id.see_event_button);
+
 
         //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -99,16 +120,87 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         fab1 = root.findViewById(R.id.fab_edit);
         fab2 = root.findViewById(R.id.fab_delete);
 
-        if(!isAdmin)
+        if(isAdmin)
         {
-            fab.setVisibility(View.GONE);
-            fab1.setVisibility(View.GONE);
-            fab2.setVisibility(View.GONE);
-        }else{
-            fab.setVisibility(View.VISIBLE);
-            fab1.setVisibility(View.VISIBLE);
-            fab2.setVisibility(View.VISIBLE);
+
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int year = calendar.get(Calendar.YEAR);
+
+        String today = day+"/"+month+"/"+year;
+
+        MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
+
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            current = dateFormat.parse(today);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
+        firebaseFirestore=FirebaseFirestore.getInstance();
+        firebaseAuth= FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String ID = firebaseUser.getUid();
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments").document(tournamentid)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+
+                if(task.isSuccessful())
+                {
+                    String tend = task.getResult().getString("Ending Date");
+                    String tstart = task.getResult().getString("Starting Date");
+                    try
+                    {
+                        start = dateFormat.parse(tstart);
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    try
+                    {
+                        end = dateFormat.parse(tend);
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    String previousDate = dateFormat.format(start.getTime() - MILLIS_IN_DAY);
+
+                    try
+                    {
+                        datePreviousDate = dateFormat.parse(previousDate);
+
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    if((!current.after(end))&&(!current.after(datePreviousDate)))
+                    {
+                        fab.setVisibility(View.VISIBLE);
+                        fab1.setVisibility(View.VISIBLE);
+                        fab2.setVisibility(View.VISIBLE);
+
+                    }
+
+                }
+
+            }
+        });
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

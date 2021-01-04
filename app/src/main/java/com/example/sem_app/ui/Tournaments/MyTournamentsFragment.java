@@ -21,7 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,12 +38,19 @@ public class MyTournamentsFragment extends Fragment {
     ArrayList<String> my_tournaments_name =new ArrayList<>();
     ArrayList<String> my_tournaments_host =new ArrayList<>();
     ArrayList<String> my_tournaments_id =new ArrayList<>();
-    ArrayList<String> my_tournaments_edate =new ArrayList<>();
-    ArrayList<String> my_tournaments_sdate =new ArrayList<>();
+    ArrayList<String> my_tournaments_status =new ArrayList<>();
     Boolean admin=true;
+
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     private String TAG;
+
+    Date start = null;
+    Date end = null;
+    Date datePreviousDate = null;
+    Date current = null;
+    int MILLIS_IN_DAY;
+    SimpleDateFormat dateFormat;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -90,10 +101,29 @@ public class MyTournamentsFragment extends Fragment {
 
         listView = root.findViewById(R.id.my_tournaments_list);
 
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int year = calendar.get(Calendar.YEAR);
+
+        String today = day+"/"+month+"/"+year;
+
+         MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
+
+         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            current = dateFormat.parse(today);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String ID = firebaseUser.getUid();
+
+
 
 
         firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments")
@@ -103,8 +133,8 @@ public class MyTournamentsFragment extends Fragment {
                         my_tournaments_name.clear();
                         my_tournaments_host.clear();
                         my_tournaments_id.clear();
-                        my_tournaments_edate.clear();
-                        my_tournaments_sdate.clear();
+                        my_tournaments_status.clear();
+
                         for(DocumentSnapshot Snapshot:value)
                         {
                             String tname = Snapshot.getString("Tournament Name");
@@ -113,20 +143,57 @@ public class MyTournamentsFragment extends Fragment {
                             String tstart = Snapshot.getString("Starting Date");
                             String id = Snapshot.getId();
 
-                            //String tsdate=(Snapshot.getString("Starting Date"));
+                            try
+                            {
+                                start = dateFormat.parse(tstart);
+                            }
+                            catch(Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                            try
+                            {
+                                end = dateFormat.parse(tend);
+                            }
+                            catch(Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                            String previousDate = dateFormat.format(start.getTime() - MILLIS_IN_DAY);
+
+                            try
+                            {
+                                datePreviousDate = dateFormat.parse(previousDate);
+
+                            }
+                            catch(Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                            if(current.after(end))
+                            {
+                                my_tournaments_status.add("Over");
+
+                            }
+                            else if(current.after(datePreviousDate))
+                            {
+                                my_tournaments_status.add("Live");
+
+                            }else {
+                                my_tournaments_status.add("Upcoming");
+                            }
 
                             my_tournaments_name.add(tname);
                             my_tournaments_host.add(thost);
                             my_tournaments_id.add(id);
-                            my_tournaments_edate.add(tend);
-                            my_tournaments_sdate.add(tstart);
-
-                            //my_tournaments.add(Snapshot.getString("Starting Date"));
 
                         }
                        // Log.d(TAG, "document"+ my_tournaments.size());
                         ArrayAdapter<String> adapter = new Tournament_list_adapter(getActivity(),
-                                my_tournaments_name,my_tournaments_host, my_tournaments_id,my_tournaments_edate,my_tournaments_sdate);
+                                my_tournaments_name,my_tournaments_host, my_tournaments_id,my_tournaments_status);
 
                         adapter.notifyDataSetChanged();
                         listView.setAdapter(adapter);
@@ -134,6 +201,8 @@ public class MyTournamentsFragment extends Fragment {
 
                     }
                 });
+
+
 
 
 
