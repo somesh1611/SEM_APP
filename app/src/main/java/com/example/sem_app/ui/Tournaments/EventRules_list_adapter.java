@@ -33,5 +33,7 @@ public class EventRules_list_adapter extends ArrayAdapter<String> {
 
         return rowView;
 
-    };
+    }
+
+
 }

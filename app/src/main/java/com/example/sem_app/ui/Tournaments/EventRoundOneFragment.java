@@ -5,68 +5,39 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sem_app.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EventRoundOneFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class EventRoundOneFragment extends Fragment {
+public class EventRoundOneFragment extends Fragment implements DrawRecyclerAdapter.OnDrawItemClickedListner  {
 
     String tournamentid, sportname,TAG,roundname,mround;
     Boolean isAdmin,isSlot,isTeam;
-    FirebaseAuth firebaseAuth;
-    FirebaseFirestore firebaseFirestore;
-    ArrayList allusers = new ArrayList();
-    ArrayList draw=new ArrayList();
+    ArrayList drawId=new ArrayList();
     TextView round_name;
-    ListView drawlist;
-    ArrayAdapter adapter;
     TextView tname, sname;
-    String id;
     int n;
+    RecyclerView mDrawList;
+    DrawRecyclerAdapter mDrawAdapter;
     EventRoundOneViewModel eventRoundOneViewModel;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public EventRoundOneFragment() {
         // Required empty public constructor
     }
 
-    public EventRoundOneFragment(String tid, String sn,String r, Boolean a,Boolean b,Boolean c){
+    public EventRoundOneFragment(String tid, String sn,String r, Boolean a,Boolean b,Boolean c,int pid){
 
         tournamentid = tid;
         sportname = sn;
@@ -74,33 +45,7 @@ public class EventRoundOneFragment extends Fragment {
         isAdmin=a;
         isSlot=b;
         isTeam=c;
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EventRoundOneFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EventRoundOneFragment newInstance(String param1, String param2) {
-        EventRoundOneFragment fragment = new EventRoundOneFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        n=pid;
     }
 
     @Override
@@ -112,87 +57,36 @@ public class EventRoundOneFragment extends Fragment {
         tname = root.findViewById(R.id.tournament_name);
         sname = root.findViewById(R.id.sport_name);
 
-        drawlist=root.findViewById(R.id.drawlist);
-
-
-        adapter=new Draw_list_adapter(getActivity(),draw,tournamentid,sportname,roundname,isTeam);
-        adapter.notifyDataSetChanged();
-        drawlist.setAdapter(adapter);
-
-
-        firebaseAuth= FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-        String ID = firebaseUser.getUid();
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        mDrawList = root.findViewById(R.id.drawlist);
+        mDrawList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mDrawList.setHasFixedSize(true);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-        CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
-        drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                draw.clear();
-
-                if (task.isSuccessful()) {
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-                        Map map = document.getData();
-                        String p1= (String) map.get("Player1");
-
-                        String p2= (String) map.get("Player2");
-                        draw.add(p1+","+p2);
-
-                    }
-                    adapter.notifyDataSetChanged();
-                    n=(draw.size())*2;
-                    Log.d(TAG,"de"+n);
-
-                    if(n>0&&n<=2)
-                    {
-                        round_name.setText("Final");
-                        mround="Final";
-
-                    }
-                    else if(n>2&&n<=4)
-                    {
-                        round_name.setText("Semi-Final");
-                        mround="Semi-Final";
-                    }
-                    else if(n>4&&n<=8)
-                    {
-                        round_name.setText("Quarter-Final");
-                        mround="Quarter-Final";
-                    }
-                    else {
-                        round_name.setText(roundname);
-                        mround=roundname;
-                    }
-
-                } else {
-                    Toast.makeText(getActivity(),"Draws Yet to be Displayed!",Toast.LENGTH_SHORT).show();
-
-                }
-
-            }
-        });
-
-       drawlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam,isSlot);
-                FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment,fragment);
-                transaction.addToBackStack("back");
-                transaction.commit();
-            }
-        });
+         if(n>0&&n<=2)
+         {
+             round_name.setText("Final");
+             mround="Final";
+         }
+         else if(n>2&&n<=4)
+         {
+             round_name.setText("Semi-Final");
+             mround="Semi-Final";
+         }
+         else if(n>4&&n<=8)
+         {
+             round_name.setText("Quarter-Final");
+             mround="Quarter-Final";
+         }
+         else {
+             round_name.setText(roundname);
+             mround=roundname;
+         }
 
         return root;
     }
+
+
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -208,7 +102,37 @@ public class EventRoundOneFragment extends Fragment {
 
             }
         });
+        mDrawAdapter = new DrawRecyclerAdapter(getContext(),eventRoundOneViewModel.getDrawsList(tournamentid,sportname,roundname).getValue(),this,isTeam);
+        mDrawList.setAdapter(mDrawAdapter);
+        eventRoundOneViewModel.getDrawsList(tournamentid,sportname,roundname).observe(getViewLifecycleOwner(), new Observer<List<Draw>>() {
+            @Override
+            public void onChanged(List<Draw> draws) {
+                if(draws != null)
+                {
+                    mDrawAdapter.setData(draws);
+                }
+                Log.d(TAG,"huehu");
+            }
+
+        });
+
+        eventRoundOneViewModel.getDrawId(tournamentid,sportname,roundname).observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                drawId= (ArrayList) strings;
+            }
+        });
 
     }
 
+    @Override
+    public void OnItemClicked(int position) {
+
+        EventResultFragment fragment = new EventResultFragment(drawId.get(position).toString(), tournamentid, sportname, mround, roundname, isAdmin, position, isTeam, isSlot);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.nav_host_fragment, fragment);
+        transaction.addToBackStack("back");
+        transaction.commit();
+
+    }
 }

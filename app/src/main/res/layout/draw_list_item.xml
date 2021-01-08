@@ -101,5 +101,14 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/player2_label"
+        android:background="?android:attr/listDivider">
+
+    </View>
+
 </RelativeLayout>
 

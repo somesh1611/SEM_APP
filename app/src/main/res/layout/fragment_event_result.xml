@@ -57,7 +57,7 @@
             android:id="@+id/match_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sport_text"
+            android:layout_below="@id/divider"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:text="Match 1"
@@ -67,9 +67,11 @@
         </TextView>
 
         <View
+            android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@id/sport_text"
+            android:layout_marginTop="24dp"
             android:background="?android:attr/listDivider">
 
         </View>

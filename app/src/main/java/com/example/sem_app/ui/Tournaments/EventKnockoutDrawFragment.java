@@ -306,7 +306,7 @@ public class EventKnockoutDrawFragment extends Fragment {
             public void onClick(View v) {
 
                String round="Round1";
-                EventRoundOneFragment fragment=new EventRoundOneFragment(tournamentid,sportname,round,isAdmin,isSlot,isTeam);
+                EventRoundOneFragment fragment=new EventRoundOneFragment(tournamentid,sportname,round,isAdmin,isSlot,isTeam,participant_id.size());
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

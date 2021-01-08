@@ -55,7 +55,6 @@ public class EventRulesFragment extends Fragment {
     String id,ID;
     Boolean isAdmin;
     private EditText addNewRule;
-
     EventRulesViewModel eventRulesViewModel;
 
 
@@ -78,13 +77,6 @@ public class EventRulesFragment extends Fragment {
         sname = root.findViewById(R.id.sport_name);
         fab_rule = root.findViewById(R.id.add_rules);
         listView = root.findViewById(R.id.rules_list);
-        if(!isAdmin)
-        {
-            fab_rule.setVisibility(View.GONE);
-        }else{
-            fab_rule.setVisibility(View.VISIBLE);
-        }
-
 
         adapter = new EventRules_list_adapter(getActivity(),rules);
         adapter.notifyDataSetChanged();
@@ -135,6 +127,33 @@ public class EventRulesFragment extends Fragment {
         });
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+        CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection("Round1");
+
+        drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    if (task.getResult().isEmpty()) {
+
+                        if(isAdmin)
+                        {
+                            fab_rule.setVisibility(View.VISIBLE);
+
+
+                        }
+
+                    }else {
+
+                        listView.isEnabled();
+                    }
+                }
+            }
+        });
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

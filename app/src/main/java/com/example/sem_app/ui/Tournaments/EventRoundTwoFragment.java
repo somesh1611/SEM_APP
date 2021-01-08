@@ -5,9 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sem_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +31,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -39,7 +40,7 @@ import java.util.Random;
  * Use the {@link EventRoundTwoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EventRoundTwoFragment extends Fragment {
+public class EventRoundTwoFragment extends Fragment implements DrawRecyclerAdapter.OnDrawItemClickedListner{
 
     String tournamentid, sportname,TAG,roundname,mround,preround;
     FloatingActionButton make_draw;
@@ -53,11 +54,13 @@ public class EventRoundTwoFragment extends Fragment {
     ArrayList predraw=new ArrayList();
     ArrayList postdraw=new ArrayList();
     TextView round_name;
-    ListView drawlist;
     ArrayAdapter adapter;
     TextView tname, sname;
     String id,id1,id2;
     String bye;
+    ArrayList drawId;
+    RecyclerView mDrawList;
+    DrawRecyclerAdapter mDrawAdapter;
     EventRoundTwoViewModel eventRoundTwoViewModel;
     int n;
 
@@ -81,8 +84,6 @@ public class EventRoundTwoFragment extends Fragment {
         roundname=r;
         isAdmin=a;
         isTeam=c;
-
-
     }
 
     /**
@@ -122,9 +123,20 @@ public class EventRoundTwoFragment extends Fragment {
         sname = root.findViewById(R.id.sport_name);
         make_draw=root.findViewById(R.id.make_draw_fab);
 
-        drawlist=root.findViewById(R.id.drawlist);
+        mDrawList=root.findViewById(R.id.drawlist);
 
-        round_name.setText(roundname);
+        //round_name.setText(roundname);
+
+        mDrawList = root.findViewById(R.id.drawlist);
+        mDrawList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mDrawList.setHasFixedSize(true);
+
+        if(isAdmin)
+        {
+            make_draw.setVisibility(View.VISIBLE);
+        }else {
+            make_draw.setVisibility(View.GONE);
+        }
 
         switch (roundname)
         {
@@ -149,148 +161,62 @@ public class EventRoundTwoFragment extends Fragment {
         }
 
 
-        adapter=new Draw_list_adapter(getActivity(),draw,tournamentid,sportname,roundname,isTeam);
-        adapter.notifyDataSetChanged();
-        drawlist.setAdapter(adapter);
-
-
         firebaseFirestore = FirebaseFirestore.getInstance();
 
 
 
-
-                        CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(preround);
-                        drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                winners.clear();
-                                players1.clear();
-
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                        Map map = document.getData();
-                                        if(map.containsKey("Player1"))
-                                        {
-                                            players1.add(map.get("Player1").toString());
-                                        }
-                                        if(map.containsKey("Winner")) {
-                                            winners.add(map.get("Winner").toString());
-                                        }
-
-                                    }
-                                }
-                            }
-                        });
-
-
-
-                        CollectionReference dref = firebaseFirestore.collection(sportname).document(tournamentid).collection(roundname);
-                        dref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                draw.clear();
-
-                                if (task.isSuccessful()) {
-
-
-                                    if (!task.getResult().isEmpty()) {
-
-                                        make_draw.setVisibility(View.GONE);
-
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                            Map map = document.getData();
-                                            String p1= (String) map.get("Player1");
-                                            String p2= (String) map.get("Player2");
-                                            draw.add(p1+","+p2);
-
-                                        }
-                                        adapter.notifyDataSetChanged();
-                                        n=(draw.size())*2;
-                                        Log.d(TAG,"de"+n);
-
-                                        if(n>0&&n<=2)
-                                        {
-                                            round_name.setText("Final");
-                                            mround="Final";
-
-                                        }
-                                        else if(n>2&&n<=4)
-                                        {
-                                            round_name.setText("Semi-Final");
-                                            mround="Semi-Final";
-                                        }
-                                        else if(n>4&&n<=8)
-                                        {
-                                            round_name.setText("Quarter-Final");
-                                            mround="Quarter-Final";
-                                        }
-                                        else {
-                                            round_name.setText(roundname);
-                                            mround=roundname;
-                                        }
-
-
-                                    }else {
-                                        if((isAdmin)&&(winners.size()==players1.size()))
-                                        {
-                                            make_draw.setVisibility(View.VISIBLE);
-                                        }
-
-                                        Toast.makeText(getActivity(),"Draws Yet to be Displayed!",Toast.LENGTH_SHORT).show();
-
-                                    }
-                                }
-
-
-                            }
-                        });
-
-
-        make_draw.setOnClickListener(new View.OnClickListener() {
+       make_draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // firebaseAuth= FirebaseAuth.getInstance();
-               // FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-               // String ID = firebaseUser.getUid();
+
                 CollectionReference drawref = firebaseFirestore.collection(sportname).document(tournamentid).collection(preround);
                 drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        winners.clear();
+                        players1.clear();
 
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                 Map map = document.getData();
-                                predraw.add(map.get("Winner").toString());
-
+                                if (map.containsKey("Player1")) {
+                                    players1.add(map.get("Player1").toString());
+                                }
+                                if (map.containsKey("Winner")) {
+                                    winners.add(map.get("Winner").toString());
+                                }
                             }
-                            postdraw = DrawMaker(predraw);
-                            for (Object d : postdraw) {
-                                String p = d.toString();
-                                DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
-                                String[] pp = p.split(",");
-                                Map<String, Object> draw = new HashMap<>();
-                                draw.put("Player1", pp[0]);
-                                draw.put("Player2", pp[1]);
 
-                                doc.collection(roundname).add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if ((winners.size() == players1.size()) && (winners.size() >= 1)) {
+                                postdraw = DrawMaker(winners);
+                                for (Object d : postdraw) {
+                                    String p = d.toString();
+                                    DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
+                                    String[] pp = p.split(",");
+                                    Map<String, Object> draw = new HashMap<>();
+                                    draw.put("Player1", pp[0]);
+                                    draw.put("Player2", pp[1]);
 
-                                        if (task.isSuccessful()) {
-                                                            // getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
-                                            Toast.makeText(getActivity(), roundname+"Draws Listed!", Toast.LENGTH_SHORT).show();
-                                            make_draw.setVisibility(View.GONE);
-                                            getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
+                                    doc.collection(roundname).add(draw).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
 
-                                        } else {
-                                            Log.d(TAG, "error!");
+                                            if (task.isSuccessful()) {
+                                                // getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
+                                                Toast.makeText(getActivity(), roundname + " Draws Listed!", Toast.LENGTH_SHORT).show();
+                                                make_draw.setVisibility(View.GONE);
+                                               getFragmentManager().beginTransaction().detach(EventRoundTwoFragment.this).attach(EventRoundTwoFragment.this).commit();
+
+                                            } else {
+                                                Log.d(TAG, "error!");
+                                            }
+
                                         }
-
-                                    }
-                                });
+                                    });
+                                }
+                            }else {
+                                Toast.makeText(getActivity(), preround+" Yet to be Completed!", Toast.LENGTH_SHORT).show();
                             }
                                             //////////////////////////////////////////////////////////////////////////////////////
                         }
@@ -301,18 +227,80 @@ public class EventRoundTwoFragment extends Fragment {
             }
         });
 
-        drawlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                EventResultFragment fragment=new EventResultFragment(drawlist.getItemAtPosition(position).toString(),tournamentid,sportname,mround,roundname,isAdmin,position,isTeam,isSlot);
-                FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment,fragment);
-                transaction.addToBackStack("back");
-                transaction.commit();
+        return root;
+    }
+
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        eventRoundTwoViewModel= new ViewModelProvider(this).get(EventRoundTwoViewModel.class);
+        sname.setText(sportname);
+        eventRoundTwoViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+            @Override
+            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
+                if(!stringObjectHashMap.isEmpty()) {
+                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
+
+                }
+
             }
         });
-        return root;
+
+        mDrawAdapter = new DrawRecyclerAdapter(getContext(),eventRoundTwoViewModel.getDrawsList(tournamentid,sportname,roundname).getValue(),this,isTeam);
+        mDrawList.setAdapter(mDrawAdapter);
+        eventRoundTwoViewModel.getDrawsList(tournamentid,sportname,roundname).observe(getViewLifecycleOwner(), new Observer<List<Draw>>() {
+            @Override
+            public void onChanged(List<Draw> draws) {
+                if(draws != null)
+                {
+                    if(draws.size()>0) {
+                        make_draw.setVisibility(View.GONE);
+                        mDrawAdapter.setData(draws);
+                    }
+
+                }
+            }
+
+        });
+
+        eventRoundTwoViewModel.getDrawId(tournamentid,sportname,roundname).observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                drawId= (ArrayList) strings;
+                if(drawId!=null) {
+                    n = drawId.size();
+                    if(n>0&&n<=1)
+                    {
+                        round_name.setText("Final");
+                        mround="Final";
+                    }
+                    else if(n>1&&n<=2)
+                    {
+                        round_name.setText("Semi-Final");
+                        mround="Semi-Final";
+                    }
+                    else if(n>2&&n<=4)
+                    {
+                        round_name.setText("Quarter-Final");
+                        mround="Quarter-Final";
+                    }
+                    else {
+                        round_name.setText(roundname);
+                        mround=roundname;
+                    }
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void OnItemClicked(int position) {
+        EventResultFragment fragment = new EventResultFragment(drawId.get(position).toString(), tournamentid, sportname, mround, roundname, isAdmin, position, isTeam, isSlot);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.nav_host_fragment, fragment);
+        transaction.addToBackStack("back");
+        transaction.commit();
     }
 
     public ArrayList DrawMaker(ArrayList p)
@@ -362,21 +350,6 @@ public class EventRoundTwoFragment extends Fragment {
         return returner1;
     }
 
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        eventRoundTwoViewModel= new ViewModelProvider(this).get(EventRoundTwoViewModel.class);
-        sname.setText(sportname);
-        eventRoundTwoViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
-            @Override
-            public void onChanged(HashMap<String, Object> stringObjectHashMap) {
-                if(!stringObjectHashMap.isEmpty()) {
-                    tname.setText(stringObjectHashMap.get("Tournament Name").toString());
 
-                }
-
-            }
-        });
-
-    }
 
 }

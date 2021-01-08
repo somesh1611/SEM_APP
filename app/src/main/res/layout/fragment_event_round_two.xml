@@ -51,13 +51,12 @@
 
     </View>
 
-    <ListView
-        android:id="@+id/drawlist"
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="150dp">
-
-    </ListView>
+        android:layout_marginTop="150dp"
+        android:id="@+id/drawlist">
+    </androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/make_draw_fab"
@@ -65,7 +64,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
-        android:visibility="gone"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#ff69b4"
         android:src="@drawable/ic_baseline_done_24">

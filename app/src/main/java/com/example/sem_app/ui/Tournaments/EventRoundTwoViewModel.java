@@ -1,19 +1,24 @@
 package com.example.sem_app.ui.Tournaments;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class EventRoundTwoViewModel extends ViewModel {
     public LiveData<HashMap<String,Object>> getEventDetails(String tid) {
@@ -55,6 +60,74 @@ public class EventRoundTwoViewModel extends ViewModel {
 
                                 }
                             });
+                }
+            }
+        });
+        return retval1;
+    }
+
+    public LiveData<List<Draw>> getDrawsList(String tid,String sname,String rname){
+        MutableLiveData<List<Draw>> retval = new MutableLiveData<>();
+        List<Draw> drawList = new ArrayList<>();
+        //Do the Query and populate the drawList object here.
+        //Don't forget to call setvalue once the list is populated in onComplete/onSuccess.
+        FirebaseFirestore.getInstance().collection(sname).document(tid).collection(rname)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                drawList.clear();
+
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                        if(document.contains("Winner")) {
+
+                            Draw draw1 = new Draw(document.getId(), document.get("Player1").toString(),
+                                    document.get("Player2").toString(),
+                                    document.get("Score1").toString(),
+                                    document.get("Score2").toString(), document.get("Winner").toString());
+                            drawList.add(draw1);
+                        }else {
+                            Draw draw2 = new Draw(document.getId(), document.get("Player1").toString(),
+                                    document.get("Player2").toString());
+                            drawList.add(draw2);
+                        }
+
+
+                    }
+
+                    retval.setValue(drawList);
+
+
+                }
+            }
+        });
+
+        return retval;
+
+    }
+
+    public LiveData<List<String>> getDrawId(String tid, String sname, String rname) {
+
+        MutableLiveData<List<String>> retval1 = new MutableLiveData<>();
+        List<String> drawIdList = new ArrayList<>();
+
+        FirebaseFirestore.getInstance().collection(sname).document(tid).collection(rname)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                drawIdList.clear();
+
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                        drawIdList.add(document.getId());
+
+                    }
+                    retval1.setValue(drawIdList);
                 }
             }
         });

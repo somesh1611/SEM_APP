@@ -13,12 +13,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class EventResultViewModel extends ViewModel {
 
@@ -71,59 +69,65 @@ public class EventResultViewModel extends ViewModel {
         MutableLiveData<HashMap<String, Object>> result = new MutableLiveData<>();
         HashMap<String, Object> map = new HashMap<>();
         FirebaseFirestore.getInstance().collection(sname).document(tid).collection(rname)
-                .whereEqualTo("Player1",p1).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .document(p1).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Map rmap = document.getData();
-                        if(rmap.containsKey("Tie"))
+
+                       // Map rmap = (task.getResult()).getData();
+                        map.put("Player1",task.getResult().get("Player1"));
+                        map.put("Player2",task.getResult().get("Player2"));
+                        if(task.getResult().contains("Tie"))
                         {
-                            map.put("Tie",rmap.get("Tie"));
-                            map.put("Score1",rmap.get("Score1"));
-                            map.put("Score2",rmap.get("Score2"));
-                            result.setValue(map);
-                        }else if(rmap.containsKey("Winner"))
+                            map.put("Tie",task.getResult().get("Tie"));
+                            map.put("Score1",task.getResult().get("Score1"));
+                            map.put("Score2",task.getResult().get("Score2"));
+
+                        }else if(task.getResult().contains("Winner"))
                         {
 
-                            map.put("Score1",rmap.get("Score1"));
-                            map.put("Score2",rmap.get("Score2"));
-                            map.put("Winner",rmap.get("Winner"));
+                            map.put("Score1",task.getResult().get("Score1"));
+                            map.put("Score2",task.getResult().get("Score2"));
+                            map.put("Winner",task.getResult().get("Winner"));
 
-                            if(rmap.containsKey("SET1"))
+                            if(task.getResult().contains("SET1"))
                             {
-                                map.put("SET1",rmap.get("SET1"));
+                                map.put("SET1",task.getResult().get("SET1"));
 
                             }
-                            if(rmap.containsKey("SET2"))
+                            if(task.getResult().contains("SET2"))
                             {
-                                map.put("SET2",rmap.get("SET2"));
+                                map.put("SET2",task.getResult().get("SET2"));
 
                             }
-                            if(rmap.containsKey("SET3"))
+                            if(task.getResult().contains("SET3"))
                             {
-                                map.put("SET3",rmap.get("SET3"));
+                                map.put("SET3",task.getResult().get("SET3"));
 
                             }
-                            if(rmap.containsKey("SET4"))
+                            if(task.getResult().contains("SET4"))
                             {
-                                map.put("SET4",rmap.get("SET4"));
+                                map.put("SET4",task.getResult().get("SET4"));
 
                             }
-                            if(rmap.containsKey("SET5"))
+                            if(task.getResult().contains("SET5"))
                             {
-                                map.put("SET5",rmap.get("SET5"));
+                                map.put("SET5",task.getResult().get("SET5"));
 
                             }
 
-                            result.setValue(map);
+
 
                         }
-                    }
+
+                    result.setValue(map);
+
                 }
 
             }
         });
+
         return result;
     }
 
