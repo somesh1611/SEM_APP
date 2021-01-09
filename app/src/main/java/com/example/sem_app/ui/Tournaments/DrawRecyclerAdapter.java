@@ -73,13 +73,6 @@ public class DrawRecyclerAdapter extends RecyclerView.Adapter<DrawRecyclerAdapte
                 }
             }
 
-
-
-        /*
-         * Method to implement :
-         * Draw.getTeamName() *1 for each team
-         * Draw.getTeamAScore() and getTeamBScore();
-         * */
     }
 
     @Override

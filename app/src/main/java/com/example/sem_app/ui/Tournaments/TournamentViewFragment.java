@@ -46,7 +46,7 @@ import java.util.Map;
 public class TournamentViewFragment extends Fragment implements DatePickerDialog.OnDateSetListener {
     TextView Tname,Thost,Tstart,Tend,TMname,TMnumber;
     private String TAG;
-    public String documentid="";
+    public String status;
     private String tournamentid;
     Button button;
     ArrayList aspect = new ArrayList();
@@ -149,6 +149,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                status="";
 
 
                 if(task.isSuccessful())
@@ -190,6 +191,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                         fab.setVisibility(View.VISIBLE);
                         fab1.setVisibility(View.VISIBLE);
                         fab2.setVisibility(View.VISIBLE);
+
 
                     }
 

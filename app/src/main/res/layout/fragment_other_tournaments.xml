@@ -18,13 +18,14 @@
 
     </TextView>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
+
         android:id="@+id/other_tournaments_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="100dp">
 
-    </ListView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <View
         android:layout_width="match_parent"

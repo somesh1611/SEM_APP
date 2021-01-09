@@ -1,84 +1,118 @@
 package com.example.sem_app.ui.Tournaments;
 
-public class Tournament {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
+public class Tournament {
 
     String name;
     String host;
     String start;
     String end;
-    String sports;
-    String mName;
-    String mNumber;
+
 
     public Tournament() {
 
     }
 
-    public Tournament(String name,String host,String start,String end,String sports,String mName,String mNumber) {
+    public Tournament(String name,String host,String start,String end) {
         this.name = name;
         this.host = host;
         this.start = start;
         this.end = end;
-        this.sports = sports;
-        this.mName=mName;
-        this.mNumber = mNumber;
-    }
-
-    public String getmNumber() {
-        return mNumber;
-    }
-
-    public void setmNumber(String mNumber) {
-        this.mNumber = mNumber;
-    }
-
-    public String getmName() { return mName; }
-
-    public void setmName(String mName) {
-        this.mName = mName;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getHost() {
         return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     public String getStart() {
         return start;
     }
 
-    public void setStart(String start) {
-        this.start = start;
-    }
-
     public String getEnd() {
         return end;
     }
 
-    public void setEnd(String end) {
-        this.end = end;
-    }
+    public String getStatus()
+    {
+        String status="";
 
-    public String getSports() {
-        return sports;
-    }
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int year = calendar.get(Calendar.YEAR);
 
-    public void setSports(String sports) {
-        this.sports = sports;
-    }
+        String today = day+"/"+month+"/"+year;
 
+        Date tstart = null;
+        Date tend = null;
+        Date datePreviousDate = null;
+        Date current = null;
+
+
+        int MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            current = dateFormat.parse(today);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            tstart = dateFormat.parse(start);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            tend = dateFormat.parse(end);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        String previousDate = dateFormat.format(tstart.getTime() - MILLIS_IN_DAY);
+
+        try
+        {
+            datePreviousDate = dateFormat.parse(previousDate);
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        if(current.after(tend))
+        {
+            status="Over";
+
+        }
+        else if(current.after(datePreviousDate))
+        {
+            status="Live";
+
+        }else {
+            status="Upcoming";
+        }
+
+        return status;
+
+    }
 
 
 

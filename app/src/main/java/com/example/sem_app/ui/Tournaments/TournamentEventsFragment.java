@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.Nullable;
@@ -15,7 +14,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.sem_app.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -25,22 +23,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 
 public class TournamentEventsFragment extends Fragment {
 
     ListView listview;
     String TAG;
-    Button button1;
-    //String[] arraySportsList={"Cricket","FootBall","VolleyBall","BasketBall","DodgeBall","Kabaddi","Kho-Kho","Badminton","Chess","Carrom"};
     String[] tournamentEvents;
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth firebaseAuth;
     String tournamentid;
-    ArrayList selectsports = new ArrayList();
-    String id;
-    Map map;
     ArrayList allusers = new ArrayList();
     ArrayList events = new ArrayList();
     Boolean isAdmin;
@@ -55,10 +47,6 @@ public class TournamentEventsFragment extends Fragment {
 
     }
 
-
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,13 +54,7 @@ public class TournamentEventsFragment extends Fragment {
 
          View root = inflater.inflate(R.layout.fragment_tournament_events, container, false);
         listview = root.findViewById(R.id.tournament_events_listview);
-      //  button1 = root.findViewById(R.id.participate_button);
-
         firebaseFirestore=FirebaseFirestore.getInstance();
-        firebaseAuth= FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String ID = firebaseUser.getUid();
-
 
        CollectionReference colref=firebaseFirestore.collection("Users");
         colref.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -116,29 +98,7 @@ public class TournamentEventsFragment extends Fragment {
 
                                }
                            });
-                           /*.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                               @Override
-                               public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                                   if (task.isSuccessful()) {
-                                       String sports = task.getResult().get("Sports Included").toString();
-                                       tournamentEvents = sports.split(",");
-                                       events.addAll(Arrays.asList(tournamentEvents));
-
-                                       ArrayAdapter<String> adapter = new Event_list_adapter(getActivity(),
-                                               events);
-                                       adapter.notifyDataSetChanged();
-                                       listview.setAdapter(adapter);
-                                   } else {
-
-                                       Log.d(TAG, "invalid");
-
-
-                                   }
-
-
-                               }
-                           });*/
 
                }
 

@@ -4,221 +4,79 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sem_app.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MyTournamentsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MyTournamentsFragment extends Fragment {
+public class MyTournamentsFragment extends Fragment implements TournamentRecyclerAdapter.OnTournamentItemClickedListner {
 
-    ListView listView;
-    ArrayList<String> my_tournaments_name =new ArrayList<>();
-    ArrayList<String> my_tournaments_host =new ArrayList<>();
-    ArrayList<String> my_tournaments_id =new ArrayList<>();
-    ArrayList<String> my_tournaments_status =new ArrayList<>();
+    ArrayList tournamentId = new ArrayList();
     Boolean admin=true;
-
-    FirebaseFirestore firebaseFirestore;
-    FirebaseAuth firebaseAuth;
     private String TAG;
-
-    Date start = null;
-    Date end = null;
-    Date datePreviousDate = null;
-    Date current = null;
-    int MILLIS_IN_DAY;
-    SimpleDateFormat dateFormat;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    RecyclerView mTournamentList;
+    TournamentRecyclerAdapter mTournamentAdapter;
+    MyTournamentsViewModel myTournamentsViewModel;
 
     public MyTournamentsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MyTournamentsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MyTournamentsFragment newInstance(String param1, String param2) {
-        MyTournamentsFragment fragment = new MyTournamentsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_my_tournaments, container, false);
 
-        listView = root.findViewById(R.id.my_tournaments_list);
-
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH)+1;
-        int year = calendar.get(Calendar.YEAR);
-
-        String today = day+"/"+month+"/"+year;
-
-         MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
-
-         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-        try {
-            current = dateFormat.parse(today);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        firebaseFirestore=FirebaseFirestore.getInstance();
-        firebaseAuth= FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String ID = firebaseUser.getUid();
-
-
-
-
-        firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        my_tournaments_name.clear();
-                        my_tournaments_host.clear();
-                        my_tournaments_id.clear();
-                        my_tournaments_status.clear();
-
-                        for(DocumentSnapshot Snapshot:value)
-                        {
-                            String tname = Snapshot.getString("Tournament Name");
-                            String thost = Snapshot.getString("Tournament Host");
-                            String tend = Snapshot.getString("Ending Date");
-                            String tstart = Snapshot.getString("Starting Date");
-                            String id = Snapshot.getId();
-
-                            try
-                            {
-                                start = dateFormat.parse(tstart);
-                            }
-                            catch(Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            try
-                            {
-                                end = dateFormat.parse(tend);
-                            }
-                            catch(Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            String previousDate = dateFormat.format(start.getTime() - MILLIS_IN_DAY);
-
-                            try
-                            {
-                                datePreviousDate = dateFormat.parse(previousDate);
-
-                            }
-                            catch(Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            if(current.after(end))
-                            {
-                                my_tournaments_status.add("Over");
-
-                            }
-                            else if(current.after(datePreviousDate))
-                            {
-                                my_tournaments_status.add("Live");
-
-                            }else {
-                                my_tournaments_status.add("Upcoming");
-                            }
-
-                            my_tournaments_name.add(tname);
-                            my_tournaments_host.add(thost);
-                            my_tournaments_id.add(id);
-
-                        }
-                       // Log.d(TAG, "document"+ my_tournaments.size());
-                        ArrayAdapter<String> adapter = new Tournament_list_adapter(getActivity(),
-                                my_tournaments_name,my_tournaments_host, my_tournaments_id,my_tournaments_status);
-
-                        adapter.notifyDataSetChanged();
-                        listView.setAdapter(adapter);
-
-
-                    }
-                });
-
-
-
-
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               // Toast.makeText(getActivity(),"mm "+listView.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
-                TournamentViewFragment fragment=new TournamentViewFragment(listView.getItemAtPosition(position),admin);
-                FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment,fragment);
-                transaction.addToBackStack("Back");
-                transaction.commit();
-            }
-        });
+        mTournamentList = root.findViewById(R.id.my_tournaments_list);
+        mTournamentList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mTournamentList.setHasFixedSize(true);
 
         return root;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        myTournamentsViewModel= new ViewModelProvider(this).get(MyTournamentsViewModel.class);
+        mTournamentAdapter= new TournamentRecyclerAdapter(myTournamentsViewModel.getTournamentsList().getValue(),this,getContext());
+        mTournamentList.setAdapter(mTournamentAdapter);
+        myTournamentsViewModel.getTournamentsList().observe(getViewLifecycleOwner(), new Observer<List<Tournament>>() {
+            @Override
+            public void onChanged(List<Tournament> tournaments) {
+
+                if(tournaments != null)
+                {
+                    mTournamentAdapter.setData(tournaments);
+                }
+
+            }
+        });
+
+        myTournamentsViewModel.getTournamentId().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                tournamentId= (ArrayList) strings;
+            }
+        });
+
+    }
+
+    @Override
+    public void OnItemClicked(int position) {
+        TournamentViewFragment fragment=new TournamentViewFragment(tournamentId.get(position).toString(),admin);
+        FragmentTransaction transaction=getFragmentManager().beginTransaction();
+        transaction.replace(R.id.nav_host_fragment,fragment);
+        transaction.addToBackStack("Back");
+        transaction.commit();
+    }
 }

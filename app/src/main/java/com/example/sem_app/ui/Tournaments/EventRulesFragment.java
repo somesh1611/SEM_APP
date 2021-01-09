@@ -144,9 +144,6 @@ public class EventRulesFragment extends Fragment {
 
                         }
 
-                    }else {
-
-                        listView.isEnabled();
                     }
                 }
             }

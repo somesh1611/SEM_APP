@@ -122,21 +122,11 @@ public class EventRoundTwoFragment extends Fragment implements DrawRecyclerAdapt
         tname = root.findViewById(R.id.tournament_name);
         sname = root.findViewById(R.id.sport_name);
         make_draw=root.findViewById(R.id.make_draw_fab);
-
         mDrawList=root.findViewById(R.id.drawlist);
-
-        //round_name.setText(roundname);
 
         mDrawList = root.findViewById(R.id.drawlist);
         mDrawList.setLayoutManager(new LinearLayoutManager(getContext()));
         mDrawList.setHasFixedSize(true);
-
-        if(isAdmin)
-        {
-            make_draw.setVisibility(View.VISIBLE);
-        }else {
-            make_draw.setVisibility(View.GONE);
-        }
 
         switch (roundname)
         {
@@ -253,8 +243,12 @@ public class EventRoundTwoFragment extends Fragment implements DrawRecyclerAdapt
             public void onChanged(List<Draw> draws) {
                 if(draws != null)
                 {
-                    if(draws.size()>0) {
-                        make_draw.setVisibility(View.GONE);
+                    if(draws.size()==0)
+                    {
+                        make_draw.setVisibility(View.VISIBLE);
+                    }
+                    else if(draws.size()>0) {
+
                         mDrawAdapter.setData(draws);
                     }
 
