@@ -39,7 +39,7 @@ public class MyProfileFragment extends Fragment {
     FirebaseFirestore firebaseFirestore;
     TextView profile_name,profile_mail,profile_year,profile_branch;
     FloatingActionButton fab_profile;
-    EditText nameEdit,mailEdit;
+    EditText nameEdit;
     Spinner branch_edit,year_edit;
     ArrayList field=new ArrayList();
 
@@ -136,7 +136,6 @@ public class MyProfileFragment extends Fragment {
 
         final View profile_edit=getLayoutInflater().inflate(R.layout.profile_editor,null);
         nameEdit=profile_edit.findViewById(R.id.edit_name);
-        mailEdit=profile_edit.findViewById(R.id.edit_mail);
         year_edit=profile_edit.findViewById(R.id.edit_year);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),R.array.cls,android.R.layout.simple_list_item_activated_1);
         adapter.setDropDownViewResource(android.R.layout.simple_list_item_activated_1);
@@ -154,10 +153,6 @@ public class MyProfileFragment extends Fragment {
         {
             nameEdit.setVisibility(View.GONE);
         }
-        if(!field.contains("E-Mail"))
-        {
-            mailEdit.setVisibility(View.GONE);
-        }
         if(!field.contains("Branch"))
         {
             branch_edit.setVisibility(View.GONE);
@@ -172,18 +167,13 @@ public class MyProfileFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 Map user_update_info=new HashMap();
-                String un,um,uyear,ubranch;
+                String un,uyear,ubranch;
 
 
                 if(field.contains("Name"))
                 {
                     un=nameEdit.getText().toString();
                     user_update_info.put("Name",un);
-                }
-                if(field.contains("E-Mail"))
-                {
-                    um=mailEdit.getText().toString();
-                    user_update_info.put("Email",um);
                 }
                 if(field.contains("Branch"))
                 {
@@ -197,15 +187,9 @@ public class MyProfileFragment extends Fragment {
                 }
 
 
-
-
-
-
                firebaseFirestore = FirebaseFirestore.getInstance();
                 firebaseAuth= FirebaseAuth.getInstance();
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-
                 String ID = firebaseUser.getUid();
 
 

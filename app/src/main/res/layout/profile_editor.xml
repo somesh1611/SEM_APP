@@ -15,22 +15,13 @@
         android:hint="Enter Name"
         android:inputType="textPersonName" />
 
-    <EditText
-        android:id="@+id/edit_mail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edit_name"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="16dp"
-        android:hint="Enter Email Address"
-        android:inputType="textEmailAddress" />
+
 
     <Spinner
         android:id="@+id/edit_branch"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_below="@id/edit_mail"
+        android:layout_below="@id/edit_name"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="16dp" />

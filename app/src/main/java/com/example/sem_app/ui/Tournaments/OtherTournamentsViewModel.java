@@ -72,6 +72,49 @@ public class OtherTournamentsViewModel extends ViewModel {
         return retval;
     }
 
+   /* public LiveData<List<Tournament>> getTournamentsList() {
+        MutableLiveData<List<Tournament>> retval = new MutableLiveData<>();
+        List<Tournament> tournamentsList = new ArrayList<>();
+        ArrayList allusers = new ArrayList();
+        allusers.clear();
+        FirebaseFirestore.getInstance().collection("Sports Tournaments")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if(task.isSuccessful())
+                {
+                    for(QueryDocumentSnapshot document : task.getResult())
+                    {
+                        document.getReference().collection("My Tournaments")
+                                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                                for(QueryDocumentSnapshot q:queryDocumentSnapshots) {
+
+                                    Tournament tournament = new Tournament(q.get("Tournament Name").toString(),
+                                            q.get("Tournament Host").toString(),
+                                            q.get("Starting Date").toString(),
+                                            q.get("Ending Date").toString());
+                                    tournamentsList.add(tournament);
+                                }
+
+                                retval.setValue(tournamentsList);
+
+                            }
+                        });
+                    }
+                }
+
+            }
+        });
+
+        return retval;
+    }*/
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
     public LiveData<List<String>> getTournamentId() {
 
         MutableLiveData<List<String>> retval1 = new MutableLiveData<>();

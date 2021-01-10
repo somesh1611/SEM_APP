@@ -158,18 +158,24 @@ public class EventRulesFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(isAdmin) {
+                    drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    if (position > 0) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().isEmpty()) {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    if (position > 0) {
 
-                        builder.setTitle("Remove This Rule?");
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String current_rule = (String) listView.getItemAtPosition(position);
-                             CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("rules");
+                                        builder.setTitle("Remove This Rule?");
+
+                                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                String current_rule = (String) listView.getItemAtPosition(position);
+                                                CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("rules");
                                                 Query query1 = ruleref1.whereEqualTo("Rule", current_rule);
                                                 query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                     @Override
@@ -194,28 +200,38 @@ public class EventRulesFragment extends Fragment {
 
 
 
+                                                    }
+                                                });
+
+                                                /////////////////////////////////////////////////////////////////////////////////////////
+
+
+                                            }
+                                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+
+
+                                            }
+                                        });
+
+
+                                        builder.create();
+                                        builder.show();
+
+                                    }else{
+                                        Toast.makeText(getActivity(),"Built In Rule,Cannot be Deleted!",Toast.LENGTH_SHORT).show();
                                     }
-                                });
-
-                                /////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+                                }
                             }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
 
 
-                            }
-                        });
 
-
-                        builder.create();
-                        builder.show();
-
-                    }else{
-                        Toast.makeText(getActivity(),"Built In Rule,Cannot be Deleted!",Toast.LENGTH_SHORT).show();
-                    }
+                        }
+                    });
 
                 }
 

@@ -36,6 +36,7 @@ public class TournamentEventsFragment extends Fragment {
     ArrayList allusers = new ArrayList();
     ArrayList events = new ArrayList();
     Boolean isAdmin;
+    String start,end;
 
 
 
@@ -83,14 +84,14 @@ public class TournamentEventsFragment extends Fragment {
                                        {
 
                                            String sports = Snapshot.get("Sports Included").toString();
+
                                            tournamentEvents = sports.split(",");
                                            events.addAll(Arrays.asList(tournamentEvents));
 
                                            ArrayAdapter<String> adapter = new Event_list_adapter(getActivity(),
                                                    events);
-                                           adapter.notifyDataSetChanged();
                                            listview.setAdapter(adapter);
-
+                                           adapter.notifyDataSetChanged();
                                            break;
 
                                        }
@@ -98,12 +99,11 @@ public class TournamentEventsFragment extends Fragment {
 
                                }
                            });
-
-
                }
 
             }
         });
+
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

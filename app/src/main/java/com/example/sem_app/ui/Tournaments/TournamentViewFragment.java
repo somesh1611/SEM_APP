@@ -49,8 +49,9 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
     public String status;
     private String tournamentid;
     Button button;
+    String sdate,edate;
     ArrayList aspect = new ArrayList();
-    Boolean isAdmin;
+    Boolean isAdmin,isOver;
 
     FloatingActionButton fab,fab1,fab2;
     FirebaseFirestore firebaseFirestore;
@@ -100,18 +101,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
 
         //////////////////////////////////////////////////////////////////////////////////////////////////
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentid,isAdmin);
-                FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment,fragment);
-                transaction.addToBackStack("back");
-                transaction.commit();
-
-            }
-        });
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -192,13 +182,16 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                         fab1.setVisibility(View.VISIBLE);
                         fab2.setVisibility(View.VISIBLE);
 
+                    }else{
 
+                        fab2.setVisibility(View.VISIBLE);
                     }
 
                 }
 
             }
         });
+
         }
 
 
@@ -229,6 +222,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                                                 @Override
                                                 public void onSuccess(Object o) {
                                                    // getFragmentManager().beginTransaction().detach(TournamentViewFragment.this).attach(TournamentViewFragment.this).commit();
+
                                                     TournamentsFragment fragment=new TournamentsFragment();
                                                     FragmentTransaction transaction=getFragmentManager().beginTransaction();
                                                     transaction.replace(R.id.nav_host_fragment,fragment);
@@ -286,6 +280,19 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
 
                 builder1.create();
                 builder1.show();
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentid,isAdmin);
+                FragmentTransaction transaction=getFragmentManager().beginTransaction();
+                transaction.replace(R.id.nav_host_fragment,fragment);
+                transaction.addToBackStack("back");
+                transaction.commit();
+
             }
         });
 

@@ -211,53 +211,65 @@ public class EventParticipationFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(isAdmin) {
+                    firebaseFirestore.collection(sportname).document(tournamentid).collection("Round1")
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
+                            if (task.isSuccessful()) {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                if (task.getResult().isEmpty()) {
 
-                        builder.setTitle("Remove This Participant?");
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                                    builder.setTitle("Remove This Participant?");
 
-                               // String current_part = (String) listView.getItemAtPosition(position);
-                                String pid= (String) participant_id.get(position);
-       CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants");
-             Query query1 = ruleref1.whereEqualTo("uid", pid);
-             query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-               @Override
-                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
+                                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // String current_part = (String) listView.getItemAtPosition(position);
+                                            String pid= (String) participant_id.get(position);
+                                            CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants");
+                                            Query query1 = ruleref1.whereEqualTo("uid", pid);
+                                            query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
 
-                      for (QueryDocumentSnapshot document : task.getResult()) {
+                                                        for (QueryDocumentSnapshot document : task.getResult()) {
 
-                               String part_id = document.getId();
-                                DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants").document(part_id);
-                              docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                    participant_id.remove(participant_id.get(position));
-                                       participant.remove(listView.getItemAtPosition(position));
-                                       adapter.notifyDataSetChanged();
-                        Toast.makeText(getActivity(), "Removed", Toast.LENGTH_SHORT).show();
+                                                            String part_id = document.getId();
+                                                            DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants").document(part_id);
+                                                            docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    participant_id.remove(participant_id.get(position));
+                                                                    participant.remove(listView.getItemAtPosition(position));
+                                                                    adapter.notifyDataSetChanged();
+                                                                    Toast.makeText(getActivity(), "Removed", Toast.LENGTH_SHORT).show();
 
-                                                                    }
-                                                                });
-                                     }
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            });
+
                                         }
-                                    }
-                                });
+                                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    });
 
-                            }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                                    builder.create();
+                                    builder.show();
 
-                        builder.create();
-                        builder.show();
+                                }
+                            }
+                        }
+                    });
+
 
                 }
 

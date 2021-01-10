@@ -87,7 +87,6 @@
     </string-array>
     <string-array name="updateProfile">
         <item>Name</item>
-        <item>E-Mail</item>
         <item>Branch</item>
         <item>Year</item>
     </string-array>
