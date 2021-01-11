@@ -25,15 +25,16 @@ public class EventViewFragment extends Fragment {
     TextView tname,sname,wname;
     ArrayList team_sports=new ArrayList();
     Button part,rule;
-    Boolean isAdmin,isTeam;
+    Boolean isAdmin,isTeam,isOver;
     EventViewViewModel eventViewViewModel;
 
 
 
-    public EventViewFragment(String tid, String sn,Boolean a) {
+    public EventViewFragment(String tid, String sn,Boolean a,Boolean b) {
         tournamentid=tid;
         sportname=sn;
         isAdmin=a;
+        isOver=b;
 
     }
 
@@ -64,7 +65,7 @@ public class EventViewFragment extends Fragment {
       part.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               EventParticipationFragment fragment=new EventParticipationFragment(tournamentid,sportname,isAdmin,isTeam);
+               EventParticipationFragment fragment=new EventParticipationFragment(tournamentid,sportname,isAdmin,isTeam,isOver);
                FragmentTransaction transaction=getFragmentManager().beginTransaction();
                transaction.replace(R.id.nav_host_fragment,fragment);
                transaction.addToBackStack("back");
@@ -74,7 +75,7 @@ public class EventViewFragment extends Fragment {
        rule.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               EventRulesFragment fragment=new EventRulesFragment(tournamentid,sportname,isAdmin);
+               EventRulesFragment fragment=new EventRulesFragment(tournamentid,sportname,isAdmin,isOver);
                FragmentTransaction transaction=getFragmentManager().beginTransaction();
                transaction.replace(R.id.nav_host_fragment,fragment);
                transaction.addToBackStack("back");
@@ -89,10 +90,11 @@ public class EventViewFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         eventViewViewModel = new ViewModelProvider(this).get(EventViewViewModel.class);
         sname.setText(sportname);
-        eventViewViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventViewViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
+
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
 
                 }

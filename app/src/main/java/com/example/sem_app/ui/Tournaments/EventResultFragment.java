@@ -545,10 +545,11 @@ public class EventResultFragment extends Fragment {
         match.setText("Match " + pos);
 
 
-        eventResultViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventResultViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if (!stringObjectHashMap.isEmpty()) {
+
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
 
                 }

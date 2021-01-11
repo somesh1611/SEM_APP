@@ -62,17 +62,18 @@ public class EventParticipationFragment extends Fragment {
     String id,tid,tid1;
     int type;
     String sy,sb, sy1,sb1;
-    Boolean isAdmin,isTeam;
+    Boolean isAdmin,isTeam,isOver;
     EventParticipationViewModel eventParticipationViewModel;
 
 
 
-    public EventParticipationFragment(String tid, String sn,Boolean a,Boolean b) {
+    public EventParticipationFragment(String tid, String sn,Boolean a,Boolean b,Boolean c) {
 
         tournamentid = tid;
         sportname = sn;
         isAdmin=a;
         isTeam=b;
+        isOver=c;
 
     }
 
@@ -210,67 +211,69 @@ public class EventParticipationFragment extends Fragment {
       listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(isAdmin) {
-                    firebaseFirestore.collection(sportname).document(tournamentid).collection("Round1")
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(!isOver) {
+                    if (isAdmin) {
+                        firebaseFirestore.collection(sportname).document(tournamentid).collection("Round1")
+                                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                            if (task.isSuccessful()) {
+                                if (task.isSuccessful()) {
 
-                                if (task.getResult().isEmpty()) {
+                                    if (task.getResult().isEmpty()) {
 
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                                    builder.setTitle("Remove This Participant?");
+                                        builder.setTitle("Remove This Participant?");
 
-                                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            // String current_part = (String) listView.getItemAtPosition(position);
-                                            String pid= (String) participant_id.get(position);
-                                            CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants");
-                                            Query query1 = ruleref1.whereEqualTo("uid", pid);
-                                            query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if (task.isSuccessful()) {
+                                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // String current_part = (String) listView.getItemAtPosition(position);
+                                                String pid = (String) participant_id.get(position);
+                                                CollectionReference ruleref1 = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants");
+                                                Query query1 = ruleref1.whereEqualTo("uid", pid);
+                                                query1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if (task.isSuccessful()) {
 
-                                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                                            String part_id = document.getId();
-                                                            DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants").document(part_id);
-                                                            docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    participant_id.remove(participant_id.get(position));
-                                                                    participant.remove(listView.getItemAtPosition(position));
-                                                                    adapter.notifyDataSetChanged();
-                                                                    Toast.makeText(getActivity(), "Removed", Toast.LENGTH_SHORT).show();
+                                                                String part_id = document.getId();
+                                                                DocumentReference docref = firebaseFirestore.collection(sportname).document(tournamentid).collection("participants").document(part_id);
+                                                                docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        participant_id.remove(participant_id.get(position));
+                                                                        participant.remove(listView.getItemAtPosition(position));
+                                                                        adapter.notifyDataSetChanged();
+                                                                        Toast.makeText(getActivity(), "Removed", Toast.LENGTH_SHORT).show();
 
-                                                                }
-                                                            });
+                                                                    }
+                                                                });
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            });
+                                                });
 
-                                        }
-                                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    });
+                                            }
+                                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        });
 
-                                    builder.create();
-                                    builder.show();
+                                        builder.create();
+                                        builder.show();
 
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
 
 
+                    }
                 }
 
                 return true;
@@ -294,8 +297,10 @@ public class EventParticipationFragment extends Fragment {
                                         fab_slot_view.setVisibility(View.VISIBLE);
 
                                     }else {
-                                        join.setVisibility(View.VISIBLE);
-                                        fab_slot.setVisibility(View.VISIBLE);
+                                        if(!isOver) {
+                                            join.setVisibility(View.VISIBLE);
+                                            fab_slot.setVisibility(View.VISIBLE);
+                                        }
                                     }
 
                                 }
@@ -321,8 +326,10 @@ public class EventParticipationFragment extends Fragment {
                             fab_slot_view.setVisibility(View.VISIBLE);
 
                         }else {
+                            if(!isOver) {
 
-                            join.setVisibility(View.VISIBLE);
+                                join.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 }
@@ -533,10 +540,11 @@ public class EventParticipationFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         eventParticipationViewModel= new ViewModelProvider(this).get(EventParticipationViewModel.class);
         sname.setText(sportname);
-        eventParticipationViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventParticipationViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
+
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
 
                 }

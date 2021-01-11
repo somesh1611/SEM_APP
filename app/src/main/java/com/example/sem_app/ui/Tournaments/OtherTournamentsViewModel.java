@@ -1,7 +1,6 @@
 package com.example.sem_app.ui.Tournaments;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,10 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -21,7 +17,7 @@ import java.util.List;
 
 public class OtherTournamentsViewModel extends ViewModel {
 
-    public LiveData<List<Tournament>> getTournamentsList() {
+    /*public LiveData<List<Tournament>> getTournamentsList() {
         MutableLiveData<List<Tournament>> retval = new MutableLiveData<>();
         List<Tournament> tournamentsList = new ArrayList<>();
         ArrayList allusers = new ArrayList();
@@ -70,52 +66,44 @@ public class OtherTournamentsViewModel extends ViewModel {
                     }
                 });
         return retval;
-    }
+    }*/
 
-   /* public LiveData<List<Tournament>> getTournamentsList() {
+    public LiveData<List<Tournament>> getTournamentsList() {
         MutableLiveData<List<Tournament>> retval = new MutableLiveData<>();
         List<Tournament> tournamentsList = new ArrayList<>();
-        ArrayList allusers = new ArrayList();
-        allusers.clear();
-        FirebaseFirestore.getInstance().collection("Sports Tournaments")
+        String ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance().collectionGroup("My Tournaments")
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                if(task.isSuccessful())
-                {
-                    for(QueryDocumentSnapshot document : task.getResult())
-                    {
-                        document.getReference().collection("My Tournaments")
-                                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                for(QueryDocumentSnapshot q:queryDocumentSnapshots) {
+                        if(document.get("User ID").toString().contentEquals(ID)) {
 
-                                    Tournament tournament = new Tournament(q.get("Tournament Name").toString(),
-                                            q.get("Tournament Host").toString(),
-                                            q.get("Starting Date").toString(),
-                                            q.get("Ending Date").toString());
-                                    tournamentsList.add(tournament);
-                                }
 
-                                retval.setValue(tournamentsList);
+                        }else {
+                            Tournament tournament = new Tournament(document.get("Tournament Name").toString(),
+                                    document.get("Tournament Host").toString(),
+                                    document.get("Starting Date").toString(),
+                                    document.get("Ending Date").toString());
+                            tournamentsList.add(tournament);
+                        }
 
-                            }
-                        });
                     }
+                    retval.setValue(tournamentsList);
                 }
+
 
             }
         });
-
         return retval;
-    }*/
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    public LiveData<List<String>> getTournamentId() {
+    /*public LiveData<List<String>> getTournamentId() {
 
         MutableLiveData<List<String>> retval1 = new MutableLiveData<>();
         List<String> tournamentIdList = new ArrayList<>();
@@ -158,6 +146,38 @@ public class OtherTournamentsViewModel extends ViewModel {
 
                     }
                 });
+        return retval1;
+    }*/
+
+    public LiveData<List<String>> getTournamentId() {
+
+        MutableLiveData<List<String>> retval1 = new MutableLiveData<>();
+        List<String> tournamentIdList = new ArrayList<>();
+        String ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance().collectionGroup("My Tournaments")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if(task.isSuccessful())
+                {
+                    for(QueryDocumentSnapshot document : task.getResult())
+                    {
+                        if(document.get("User ID").toString().contentEquals(ID)) {
+
+
+                        }else {
+
+                            tournamentIdList.add(document.getId());
+                        }
+
+                    }
+                    retval1.setValue(tournamentIdList);
+                }
+
+            }
+        });
+
         return retval1;
     }
 }

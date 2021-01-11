@@ -1,7 +1,6 @@
 package com.example.sem_app.ui.Tournaments;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,14 +8,11 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TournamentViewViewModel extends ViewModel {
@@ -48,53 +44,31 @@ public class TournamentViewViewModel extends ViewModel {
                     }
                 }
             });
-        } else {
-            ArrayList allusers = new ArrayList();
-            allusers.clear();
-            CollectionReference usercolref=FirebaseFirestore.getInstance().collection("Users");
-            usercolref.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        } else{
+
+            FirebaseFirestore.getInstance().collectionGroup("My Tournaments")
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    for(DocumentSnapshot Snapshot:value)
-                    {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
 
-                        allusers.add(Snapshot.getId());
+                            if(document.getId().contentEquals(tid)) {
 
-                    }
-                if(allusers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                {
-                    allusers.remove(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                }
+                                map.put("Tournament Name", document.get("Tournament Name"));
+                                map.put("Tournament Host", document.get("Tournament Host"));
+                                map.put("Start Date", document.get("Starting Date"));
+                                map.put("End Date", document.get("Ending Date"));
+                                map.put("Manager Name",document.get("Tournament Manager Name"));
+                                map.put("Manager Phone", document.get("Tournament Manager Phone Number"));
 
-                    for(Object i:allusers) {
+                                retval1.setValue(map);
 
-                     FirebaseFirestore.getInstance().collection("Sports Tournaments").document(i.toString())
-                             .collection("My Tournaments")
-                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                 @Override
-                                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                break;
+                            }
 
-                                     for (DocumentSnapshot Snapshot : value) {
-                                         String did = Snapshot.getId();
-                                         if(did==tid)
-                                         {
-
-                                                      map.put("Tournament Name", Snapshot.get("Tournament Name"));
-                                                      map.put("Tournament Host", Snapshot.get("Tournament Host"));
-                                                      map.put("Start Date", Snapshot.get("Starting Date"));
-                                                      map.put("End Date", Snapshot.get("Ending Date"));
-                                                      map.put("Manager Name",Snapshot.get("Tournament Manager Name"));
-                                                      map.put("Manager Phone", Snapshot.get("Tournament Manager Phone Number"));
-                                                      retval1.setValue(map);
-
-                                                      break;
-
-                                         }
-                                     }
-
-                                 }
-                             });
+                        }
                     }
                 }
             });

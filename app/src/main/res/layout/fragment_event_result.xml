@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="25dp"
-            android:text="Zest"
             android:textAlignment="center"
             android:textColor="#9966cc"
             android:textSize="30sp"
@@ -33,7 +32,6 @@
             android:layout_below="@id/tName_text"
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
-            android:text="Cricket"
             android:textColor="#9966cc"
             android:textSize="24sp"
             android:textStyle="bold">
@@ -43,15 +41,13 @@
         <TextView
             android:id="@+id/round_text"
             android:layout_width="wrap_content"
-            android:textColor="#9966cc"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@id/sport_text"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="16dp"
-            android:text="Round1"
+            android:textColor="#9966cc"
             android:textSize="24sp"
-            android:textStyle="bold">
-        </TextView>
+            android:textStyle="bold"></TextView>
 
         <TextView
             android:id="@+id/match_text"
@@ -60,7 +56,6 @@
             android:layout_below="@id/divider"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
-            android:text="Match 1"
             android:textSize="22sp"
             android:textStyle="bold">
 

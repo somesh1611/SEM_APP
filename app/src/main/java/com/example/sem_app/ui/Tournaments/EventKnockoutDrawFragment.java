@@ -440,10 +440,11 @@ public class EventKnockoutDrawFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         eventKnockoutDrawViewModel= new ViewModelProvider(this).get(EventKnockoutDrawViewModel.class);
         sname.setText(sportname);
-        eventKnockoutDrawViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventKnockoutDrawViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
+
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
                 }
 

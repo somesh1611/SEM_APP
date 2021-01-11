@@ -225,7 +225,7 @@ public class EventRoundTwoFragment extends Fragment implements DrawRecyclerAdapt
         super.onActivityCreated(savedInstanceState);
         eventRoundTwoViewModel= new ViewModelProvider(this).get(EventRoundTwoViewModel.class);
         sname.setText(sportname);
-        eventRoundTwoViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventRoundTwoViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {

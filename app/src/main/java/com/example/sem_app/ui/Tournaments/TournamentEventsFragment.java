@@ -8,21 +8,25 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.sem_app.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class TournamentEventsFragment extends Fragment {
@@ -30,20 +34,26 @@ public class TournamentEventsFragment extends Fragment {
     ListView listview;
     String TAG;
     String[] tournamentEvents;
-    FirebaseFirestore firebaseFirestore;
-    FirebaseAuth firebaseAuth;
     String tournamentid;
-    ArrayList allusers = new ArrayList();
     ArrayList events = new ArrayList();
-    Boolean isAdmin;
+    Boolean isAdmin,isOver;
     String start,end;
 
+    Date tstart = null;
+    Date tend = null;
+    Date datePreviousDate = null;
+    Date current = null;
+    int MILLIS_IN_DAY;
+    SimpleDateFormat dateFormat;
 
 
-    public TournamentEventsFragment(String tid,Boolean a) {
+
+    public TournamentEventsFragment(String tid,Boolean a,String s,String e) {
 
         tournamentid = tid;
         isAdmin=a;
+        start=s;
+        end=e;
 
 
     }
@@ -55,60 +65,119 @@ public class TournamentEventsFragment extends Fragment {
 
          View root = inflater.inflate(R.layout.fragment_tournament_events, container, false);
         listview = root.findViewById(R.id.tournament_events_listview);
-        firebaseFirestore=FirebaseFirestore.getInstance();
 
-       CollectionReference colref=firebaseFirestore.collection("Users");
-        colref.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                allusers.clear();
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int year = calendar.get(Calendar.YEAR);
 
-                for(DocumentSnapshot Snapshot:value)
-                {
+        String today = day+"/"+month+"/"+year;
 
-                    allusers.add(Snapshot.getId());
+        MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
+
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            current = dateFormat.parse(today);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            tstart = dateFormat.parse(start);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            tend = dateFormat.parse(end);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        String previousDate = dateFormat.format(tstart.getTime() - MILLIS_IN_DAY);
+
+        try
+        {
+            datePreviousDate = dateFormat.parse(previousDate);
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        if((!current.after(tend))&&(!current.after(datePreviousDate)))
+        {
+            isOver=false;
+
+        }else {
+            isOver=true;
+        }
+
+        //Toast.makeText(getActivity(),"ee "+isOver.toString(),Toast.LENGTH_SHORT).show();
+
+
+        if(isAdmin)
+        {
+            FirebaseFirestore.getInstance().collection("Sports Tournaments").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .collection("My Tournaments").document(tournamentid)
+                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    events.clear();
+                    if(task.isSuccessful())
+                    {
+
+                        String sports = task.getResult().get("Sports Included").toString();
+
+                        tournamentEvents = sports.split(",");
+                        events.addAll(Arrays.asList(tournamentEvents));
+
+                        ArrayAdapter<String> adapter = new Event_list_adapter(getActivity(),
+                                events);
+                        listview.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+
+                    }
 
                 }
+            });
+        }else {
+            FirebaseFirestore.getInstance().collectionGroup("My Tournaments")
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    events.clear();
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
 
-               for(Object i:allusers) {
-                   events.clear();
-                  FirebaseFirestore.getInstance().collection("Sports Tournaments").document(i.toString())
-                           .collection("My Tournaments")
-                           .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                               @Override
-                               public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                            if(document.getId().contentEquals(tournamentid)) {
 
-                                   for (DocumentSnapshot Snapshot : value) {
-                                       String did = Snapshot.getId();
-                                       if(did==tournamentid)
-                                       {
+                                String sports = document.get("Sports Included").toString();
+                                tournamentEvents = sports.split(",");
+                                events.addAll(Arrays.asList(tournamentEvents));
+                                ArrayAdapter<String> adapter = new Event_list_adapter(getActivity(),
+                                        events);
+                                listview.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                                break;
+                            }
 
-                                           String sports = Snapshot.get("Sports Included").toString();
-
-                                           tournamentEvents = sports.split(",");
-                                           events.addAll(Arrays.asList(tournamentEvents));
-
-                                           ArrayAdapter<String> adapter = new Event_list_adapter(getActivity(),
-                                                   events);
-                                           listview.setAdapter(adapter);
-                                           adapter.notifyDataSetChanged();
-                                           break;
-
-                                       }
-                                   }
-
-                               }
-                           });
-               }
-
-            }
-        });
-
+                        }
+                    }
+                }
+            });
+        }
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EventViewFragment fragment=new EventViewFragment(tournamentid,listview.getItemAtPosition(position).toString(),isAdmin);
+                EventViewFragment fragment=new EventViewFragment(tournamentid,listview.getItemAtPosition(position).toString(),isAdmin,isOver);
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");

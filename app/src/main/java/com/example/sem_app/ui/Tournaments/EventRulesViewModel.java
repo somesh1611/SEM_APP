@@ -1,64 +1,64 @@
 package com.example.sem_app.ui.Tournaments;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.firestore.CollectionReference;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EventRulesViewModel extends ViewModel {
 
-    public LiveData<HashMap<String,Object>> getEventDetails(String tid) {
+    public LiveData<HashMap<String,Object>> getEventDetails(String tid,Boolean a) {
         MutableLiveData<HashMap<String, Object>> retval1 = new MutableLiveData<>();
         HashMap<String, Object> map = new HashMap<>();
-        //////////////////////////////////////////////////////////////////////////////
-        ArrayList allusers = new ArrayList();
-        allusers.clear();
-        CollectionReference usercolref= FirebaseFirestore.getInstance().collection("Users");
-        usercolref.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+        if(a)
+        {
 
-                for(DocumentSnapshot Snapshot:value)
-                {
+            FirebaseFirestore.getInstance().collection("Sports Tournaments").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .collection("My Tournaments").document(tid)
+                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful())
+                    {
 
-                    allusers.add(Snapshot.getId());
+                        map.put("Tournament Name",task.getResult().get("Tournament Name"));
+                        retval1.setValue(map);
 
+                    }
                 }
-                for(Object i:allusers) {
+            });
+        } else{
+            FirebaseFirestore.getInstance().collectionGroup("My Tournaments")
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    FirebaseFirestore.getInstance().collection("Sports Tournaments").document(i.toString())
-                            .collection("My Tournaments")
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                    for (DocumentSnapshot Snapshot : value) {
-                                        String did = Snapshot.getId();
-                                        if(did==tid)
-                                        {
+                            if(document.getId().contentEquals(tid)) {
 
-                                            map.put("Tournament Name", Snapshot.get("Tournament Name"));
-                                            retval1.setValue(map);
-                                            break;
+                                map.put("Tournament Name", document.get("Tournament Name"));
+                                retval1.setValue(map);
+                                break;
+                            }
 
-                                        }
-                                    }
-
-                                }
-                            });
+                        }
+                    }
                 }
-            }
-        });
+            });
+        }
+
         return retval1;
     }
 }

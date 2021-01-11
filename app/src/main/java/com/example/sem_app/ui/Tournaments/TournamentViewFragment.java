@@ -71,16 +71,9 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
 
     TournamentViewViewModel tournamentViewViewModel;
 
+    public TournamentViewFragment(String tid,boolean a) {
 
-    public TournamentViewFragment()
-    {
-
-    }
-
-
-    public TournamentViewFragment(Object tid,boolean a) {
-
-        tournamentid=tid.toString();
+        tournamentid=tid;
         isAdmin=a;
 
     }
@@ -97,15 +90,6 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         TMname = root.findViewById(R.id.manager_name_text);
         TMnumber = root.findViewById(R.id.manager_phone_text);
         button = root.findViewById(R.id.see_event_button);
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-
         fab = root.findViewById(R.id.fab_menu);
         fab1 = root.findViewById(R.id.fab_edit);
         fab2 = root.findViewById(R.id.fab_delete);
@@ -140,8 +124,6 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 status="";
-
-
                 if(task.isSuccessful())
                 {
                     String tend = task.getResult().getString("Ending Date");
@@ -182,6 +164,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                         fab1.setVisibility(View.VISIBLE);
                         fab2.setVisibility(View.VISIBLE);
 
+
                     }else{
 
                         fab2.setVisibility(View.VISIBLE);
@@ -196,6 +179,7 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -287,7 +271,9 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
             @Override
             public void onClick(View v) {
 
-                TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentid,isAdmin);
+                //Toast.makeText(getActivity(),"mi "+Tstart.getText(),Toast.LENGTH_SHORT).show();
+
+               TournamentEventsFragment fragment=new TournamentEventsFragment(tournamentid,isAdmin,Tstart.getText().toString(),Tend.getText().toString());
                 FragmentTransaction transaction=getFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment,fragment);
                 transaction.addToBackStack("back");
@@ -314,7 +300,6 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                         TMname.setText(stringObjectHashMap.get("Manager Name").toString());
                         TMnumber.setText(stringObjectHashMap.get("Manager Phone").toString());
                     }
-
             }
         });
 
@@ -503,5 +488,6 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
         }
 
     }
+
 
 }

@@ -53,15 +53,16 @@ public class EventRulesFragment extends Fragment {
     ArrayList allusers = new ArrayList();
     ArrayAdapter<String> adapter;
     String id,ID;
-    Boolean isAdmin;
+    Boolean isAdmin,isOver;
     private EditText addNewRule;
     EventRulesViewModel eventRulesViewModel;
 
 
-    public EventRulesFragment(String tid, String sn,Boolean a) {
+    public EventRulesFragment(String tid, String sn,Boolean a,Boolean b) {
         tournamentid = tid;
         sportname = sn;
         isAdmin=a;
+        isOver=b;
 
     }
 
@@ -137,10 +138,9 @@ public class EventRulesFragment extends Fragment {
                 if (task.isSuccessful()) {
                     if (task.getResult().isEmpty()) {
 
-                        if(isAdmin)
+                        if((isAdmin)&&(!isOver))
                         {
                             fab_rule.setVisibility(View.VISIBLE);
-
 
                         }
 
@@ -157,7 +157,8 @@ public class EventRulesFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(isAdmin) {
+                if(!isOver) {
+                if (isAdmin) {
                     drawref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -199,7 +200,6 @@ public class EventRulesFragment extends Fragment {
                                                         }
 
 
-
                                                     }
                                                 });
 
@@ -219,15 +219,13 @@ public class EventRulesFragment extends Fragment {
                                         builder.create();
                                         builder.show();
 
-                                    }else{
-                                        Toast.makeText(getActivity(),"Built In Rule,Cannot be Deleted!",Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getActivity(), "Built In Rule,Cannot be Deleted!", Toast.LENGTH_SHORT).show();
                                     }
-
 
 
                                 }
                             }
-
 
 
                         }
@@ -235,8 +233,10 @@ public class EventRulesFragment extends Fragment {
 
                 }
 
-                return true;
+
             }
+                return true;
+        }
         });
 
 
@@ -331,10 +331,11 @@ public class EventRulesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         eventRulesViewModel = new ViewModelProvider(this).get(EventRulesViewModel.class);
         sname.setText(sportname);
-        eventRulesViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventRulesViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
+
                     tname.setText(stringObjectHashMap.get("Tournament Name").toString());
 
                 }

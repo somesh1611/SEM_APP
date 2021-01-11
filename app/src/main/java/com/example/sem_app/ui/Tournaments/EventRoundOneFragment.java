@@ -92,7 +92,7 @@ public class EventRoundOneFragment extends Fragment implements DrawRecyclerAdapt
         super.onActivityCreated(savedInstanceState);
         eventRoundOneViewModel= new ViewModelProvider(this).get(EventRoundOneViewModel.class);
         sname.setText(sportname);
-        eventRoundOneViewModel.getEventDetails(tournamentid).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
+        eventRoundOneViewModel.getEventDetails(tournamentid,isAdmin).observe(getViewLifecycleOwner(), new Observer<HashMap<String, Object>>() {
             @Override
             public void onChanged(HashMap<String, Object> stringObjectHashMap) {
                 if(!stringObjectHashMap.isEmpty()) {
