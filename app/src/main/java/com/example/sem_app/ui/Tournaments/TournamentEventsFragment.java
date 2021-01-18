@@ -111,7 +111,7 @@ public class TournamentEventsFragment extends Fragment {
         {
             e.printStackTrace();
         }
-        if((!current.after(tend))&&(!current.after(datePreviousDate)))
+        if((!current.after(tend)))
         {
             isOver=false;
 
