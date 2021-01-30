@@ -12,6 +12,9 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="bgColor">@color/white</item>
+        <item name="textColor">@color/black</item>
+
     </style>
 
     <style name="Theme.SEM_APP.NoActionBar">

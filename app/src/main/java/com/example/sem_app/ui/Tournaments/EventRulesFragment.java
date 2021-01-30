@@ -2,6 +2,7 @@ package com.example.sem_app.ui.Tournaments;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -276,34 +277,43 @@ public class EventRulesFragment extends Fragment {
                         newbuilder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
 
                                 String r = addNewRule.getText().toString();
-                                Map<String, Object> newRule = new HashMap<>();
-                                newRule.put("Rule", r);
 
-                                doc.collection("rules").add(newRule).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
-
-                                        if (task.isSuccessful()) {
+                                if (TextUtils.isEmpty(r)) {
+                                    Toast.makeText(getActivity(), "Empty Rule!", Toast.LENGTH_SHORT).show();
+                                } else {
 
 
-                                            rules.add(r);
-                                            adapter.notifyDataSetChanged();
-
-                                            Toast.makeText(getActivity(), "New Rule Added Successfully", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(getActivity(), "Error!", Toast.LENGTH_SHORT).show();
+                                    DocumentReference doc = firebaseFirestore.collection(sportname).document(tournamentid);
 
 
-                                            Log.d(TAG, "error!");
+                                    Map<String, Object> newRule = new HashMap<>();
+                                    newRule.put("Rule", r);
+
+                                    doc.collection("rules").add(newRule).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+
+                                            if (task.isSuccessful()) {
+
+
+                                                rules.add(r);
+                                                adapter.notifyDataSetChanged();
+
+                                                Toast.makeText(getActivity(), "New Rule Added Successfully", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getActivity(), "Error!", Toast.LENGTH_SHORT).show();
+
+
+                                                Log.d(TAG, "error!");
+                                            }
+
                                         }
-
-                                    }
-                                });
+                                    });
 
 
+                                }
                             }
                         });
 

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -419,33 +420,76 @@ public class TournamentViewFragment extends Fragment implements DatePickerDialog
                 if(aspect.contains("Tournament Name"))
                 {
                     tun=tNameEdit.getText().toString();
-                    tupdate_info.put("Tournament Name",tun);
+                    if(TextUtils.isEmpty(tun))
+                    {
+                        Toast.makeText(getActivity(),"Tournament Name is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        tupdate_info.put("Tournament Name", tun);
+                    }
                 }
 
                 if(aspect.contains("Tournament Host"))
                 {
                     tuh=tHostEdit.getText().toString();
-                    tupdate_info.put("Tournament Host",tuh);
+                    if(TextUtils.isEmpty(tuh))
+                    {
+                        Toast.makeText(getActivity(),"Host Name is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        tupdate_info.put("Tournament Host", tuh);
+                    }
                 }
                 if(aspect.contains("Tournament Manager Name"))
                 {
                     tumn=tMEdit.getText().toString();
-                    tupdate_info.put("Tournament Manager Name",tumn);
+                    if(TextUtils.isEmpty(tumn))
+                    {
+                        Toast.makeText(getActivity(),"Manager Name is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        tupdate_info.put("Tournament Manager Name", tumn);
+                    }
+
                 }
                 if(aspect.contains("Tournament Manager Phone Number"))
                 {
                     tump=tMNEdit.getText().toString();
-                    tupdate_info.put("Tournament Manager Phone Number",tump);
+                    if(TextUtils.isEmpty(tump))
+                    {
+                        Toast.makeText(getActivity(),"Manager Phone is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        tupdate_info.put("Tournament Manager Phone Number", tump);
+                    }
                 }
                  if(aspect.contains("Tournament Start Date"))
                 {
                     tusd=tStartEdit.getText().toString();
-                    tupdate_info.put("Starting Date",tusd);
+                    if(TextUtils.isEmpty(tusd))
+                    {
+                        Toast.makeText(getActivity(),"Start Date is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        tupdate_info.put("Starting Date", tusd);
+                    }
                 }
                 if(aspect.contains("Tournament End Date"))
                 {
                     tued = tEndEdit.getText().toString();
-                   tupdate_info.put("Ending Date",tued);
+                    if(TextUtils.isEmpty(tued))
+                    {
+                        Toast.makeText(getActivity(),"End Date is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        tupdate_info.put("Ending Date", tued);
+                    }
                 }
 
 

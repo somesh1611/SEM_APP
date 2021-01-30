@@ -2,7 +2,6 @@ package com.example.sem_app;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -83,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    //@Override
+    //public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+        //getMenuInflater().inflate(R.menu.main, menu);
+        //return true;
+    //}
 
     @Override
     public boolean onSupportNavigateUp() {

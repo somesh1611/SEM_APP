@@ -16,6 +16,7 @@
         android:layout_centerVertical="false"
         android:layout_marginEnd="10dp"
         android:text="Match 1"
+        android:textColor="?attr/textColor"
         android:textSize="18sp"
         android:textStyle="bold">
 
@@ -28,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
+        android:textColor="?attr/textColor"
         android:textSize="18sp">
 
     </TextView>
@@ -40,6 +42,7 @@
         android:layout_below="@id/player1_label"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
+        android:textColor="?attr/textColor"
         android:layout_marginBottom="5dp"
 
 

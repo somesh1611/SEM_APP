@@ -1,5 +1,6 @@
 package com.example.sem_app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,7 +72,10 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
         tvLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SignUpActivity.this.finish();
+
+                //SignUpActivity.this.finish();
+                Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
+                startActivity(intent);
             }
         });
         firebaseAuth = FirebaseAuth.getInstance();
@@ -188,5 +193,23 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+        new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit")
+                .setMessage("Are you sure?")
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Intent i1= new Intent(Intent.ACTION_MAIN);
+                        i1.addCategory(Intent.CATEGORY_HOME);
+                        i1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i1);
+                        finishAffinity();
+                        finish();
+                    }
+                }).setNegativeButton("no", null).show();
     }
 }

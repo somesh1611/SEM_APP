@@ -28,48 +28,44 @@
         tools:ignore="MissingConstraints" >
 
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="16dp"
+            android:text="Login"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:ignore="MissingConstraints" />
+
+
+
     </RelativeLayout>
-
-    <TextView android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/LoginPanel"
-        android:textColor="@android:color/white"
-        android:layout_marginLeft="60dp"
-        android:layout_marginBottom="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        tools:ignore="MissingConstraints" />
-
-    <TextView android:id="@+id/tvSignUp"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/LoginPanel"
-        android:gravity="right"
-        android:layout_marginRight="60dp"
-        android:layout_marginBottom="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        tools:ignore="MissingConstraints" />
 
     <LinearLayout
         android:id="@+id/LoginPanel"
-        app:layout_constraintTop_toBottomOf="@+id/header"
-        android:layout_marginTop="60dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
         android:background="@drawable/shape_login_panel"
-        android:layout_height="350dp"
+
+        android:orientation="vertical"
+        android:paddingLeft="40dp"
         android:paddingTop="70dp"
         android:paddingRight="40dp"
-        android:paddingLeft="40dp"
+        android:layout_marginLeft="30dp"
 
-        android:orientation="vertical">
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        tools:layout_editor_absoluteX="30dp">
 
         <EditText
             android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:textColorHint="?attr/textColor"
             android:hint="Email"
             android:inputType="textEmailAddress" />
 
@@ -78,14 +74,17 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:hint="Password"
+            android:textColorHint="?attr/textColor"
             android:inputType="textPassword"
             android:password="true" />
 
         <TextView
             android:id="@+id/login_forgotPassword"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_marginTop="15dp"
+            android:textColor="?attr/textColor"
             android:gravity="right"
             android:text="Forgot password?" />
 
@@ -94,9 +93,9 @@
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="60dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:backgroundTint="@color/color_blue"
             android:gravity="center"
             android:text="Login"
@@ -124,5 +123,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="right"
+        android:text="Sign Up"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/LoginPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintVertical_bias="0.0" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

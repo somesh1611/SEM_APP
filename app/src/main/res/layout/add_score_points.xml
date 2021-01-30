@@ -11,6 +11,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:text="Team 1: "
+        android:textColor="?attr/textColor"
         android:textSize="18sp"
         android:textStyle="bold">
 
@@ -24,6 +25,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Team 2: "
+        android:textColor="?attr/textColor"
+
         android:textSize="18sp"
         android:textStyle="bold">
 
@@ -38,6 +41,7 @@
         android:layout_marginEnd="16dp"
         android:layout_toRightOf="@id/team1_name"
         android:hint="Enter Score"
+        android:textColorHint="?attr/textColor"
         android:inputType="number">
 
     </EditText>
@@ -51,6 +55,7 @@
         android:layout_marginEnd="16dp"
         android:layout_toRightOf="@id/team2_name"
         android:hint="Enter Score"
+        android:textColorHint="?attr/textColor"
         android:inputType="number">
 
     </EditText>

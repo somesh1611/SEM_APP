@@ -3,6 +3,7 @@ package com.example.sem_app.ui.MyProfile;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -173,17 +174,26 @@ public class MyProfileFragment extends Fragment {
                 if(field.contains("Name"))
                 {
                     un=nameEdit.getText().toString();
-                    user_update_info.put("Name",un);
+                    if(TextUtils.isEmpty(un))
+                    {
+                        Toast.makeText(getActivity(),"Name is Required!",Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }else {
+                        user_update_info.put("Name", un);
+                    }
                 }
                 if(field.contains("Branch"))
                 {
                     ubranch = branch_edit.getSelectedItem().toString();
-                    user_update_info.put("Branch",ubranch);
+                    user_update_info.put("Branch", ubranch);
+
                 }
                 if(field.contains("Year"))
                 {
                     uyear = year_edit.getSelectedItem().toString();
-                    user_update_info.put("Year",uyear);
+                    user_update_info.put("Year", uyear);
+
                 }
 
 

@@ -22,6 +22,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
             android:hint="Enter Tournament Name"
+            android:textColorHint="?attr/textColor"
             android:inputType="textPersonName" />
 
         <EditText
@@ -33,6 +34,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginRight="16dp"
             android:hint="Enter Tournament Host Name"
+            android:textColorHint="?attr/textColor"
             android:inputType="textPersonName" />
 
         <EditText
@@ -44,6 +46,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginRight="16dp"
             android:hint="Enter Tournament Manager Name"
+            android:textColorHint="?attr/textColor"
             android:inputType="textPersonName" />
 
         <EditText
@@ -55,6 +58,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginRight="16dp"
             android:hint="Enter Tournament Manager Phone Number"
+            android:textColorHint="?attr/textColor"
             android:inputType="phone" />
     </RelativeLayout>
 
@@ -69,6 +73,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:hint="Choose Start Date"
+        android:textColorHint="?attr/textColor"
         android:inputType="date"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,6 +104,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:hint="Choose End Date"
+        android:textColorHint="?attr/textColor"
         android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

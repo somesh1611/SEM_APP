@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,8 +87,26 @@ public class TournamentsFragment extends Fragment implements DatePickerDialog.On
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
+                            if(TextUtils.isEmpty(newTournamentName.getText().toString())){
+                                Toast.makeText(getActivity(),"Tournament Name is Required.",Toast.LENGTH_SHORT).show();
+                                return;
+                            }else if(TextUtils.isEmpty(newTournamentHost.getText().toString())) {
+                                Toast.makeText(getActivity(),"Tournament Host is Required.",Toast.LENGTH_SHORT).show();
+                                return;
 
-                            addSports();
+                            }else if(TextUtils.isEmpty(newTournamentStartDate.getText().toString())) {
+                                Toast.makeText(getActivity(),"Start Date is Required.",Toast.LENGTH_SHORT).show();
+                                return;
+
+                            }else if(TextUtils.isEmpty(newTournamentEndDate.getText().toString())) {
+                                Toast.makeText(getActivity(),"End Date is Required.",Toast.LENGTH_SHORT).show();
+                                return;
+
+                            }
+                            else {
+
+                                addSports();
+                            }
 
                         }
                     });
@@ -244,55 +263,66 @@ public class TournamentsFragment extends Fragment implements DatePickerDialog.On
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                String tn=newTournamentName.getText().toString();
-                String th=newTournamentHost.getText().toString();
-                String tsd=newTournamentStartDate.getText().toString();
 
-                String ted=newTournamentEndDate.getText().toString();
-                String tmn=tournamentManagerName1.getText().toString();
-                String tmp=tournamentManagerNumber1.getText().toString();
+                String tn = newTournamentName.getText().toString();
+                String th = newTournamentHost.getText().toString();
+                String tsd = newTournamentStartDate.getText().toString();
 
-                String sportsadded="";
-                for (String sport:userSports)
-                {
-                    sportsadded=sportsadded+sport+",";
-                }
-
-                Log.d(TAG, "sports"+sportsadded);
-
-                firebaseFirestore = FirebaseFirestore.getInstance();
-                firebaseAuth= FirebaseAuth.getInstance();
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                String ID = firebaseUser.getUid();
-
-                Map<String,Object> user = new HashMap<>();
-                user.put("Tournament Name",tn);
-                user.put("Tournament Host",th);
-
-                user.put("Starting Date",tsd);
-                user.put("Ending Date",ted);
-                user.put("Tournament Manager Name",tmn);
-                user.put("Tournament Manager Phone Number",tmp);
-                user.put("Sports Included",sportsadded);
-                user.put("User ID",ID);
-                Log.d(TAG, "name"+ID);
-
-                firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments").add(user).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        if(task.isSuccessful())
-                        {
-                            Toast.makeText(getActivity(), "Tournament Created Successfully!", Toast.LENGTH_SHORT).show();
-                        }else{
-                            Log.d(TAG,"Failed to create");
-                        }
+                String ted = newTournamentEndDate.getText().toString();
+                String tmn = tournamentManagerName1.getText().toString();
+                String tmp = tournamentManagerNumber1.getText().toString();
 
 
+                if (TextUtils.isEmpty(tmn)) {
+                    Toast.makeText(getActivity(), "Manager Name is Required", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (TextUtils.isEmpty(tmp)) {
+                    Toast.makeText(getActivity(), "Manager Phone Number is Required", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (tmp.length() != 10) {
+                    Toast.makeText(getActivity(), "Enter Valid Phone Number", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+
+                    String sportsadded = "";
+                    for (String sport : userSports) {
+                        sportsadded = sportsadded + sport + ",";
                     }
-                });
+
+                    Log.d(TAG, "sports" + sportsadded);
+
+                    firebaseFirestore = FirebaseFirestore.getInstance();
+                    firebaseAuth = FirebaseAuth.getInstance();
+                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                    String ID = firebaseUser.getUid();
+
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("Tournament Name", tn);
+                    user.put("Tournament Host", th);
+
+                    user.put("Starting Date", tsd);
+                    user.put("Ending Date", ted);
+                    user.put("Tournament Manager Name", tmn);
+                    user.put("Tournament Manager Phone Number", tmp);
+                    user.put("Sports Included", sportsadded);
+                    user.put("User ID", ID);
+                    Log.d(TAG, "name" + ID);
+
+                    firebaseFirestore.collection("Sports Tournaments").document(ID).collection("My Tournaments").add(user).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getActivity(), "Tournament Created Successfully!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.d(TAG, "Failed to create");
+                            }
 
 
+                        }
+                    });
 
+
+                }
             }
         });
 
